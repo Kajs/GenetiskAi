@@ -16,5 +16,13 @@ public class Coordinate {
 	public double getY() {
 		return y;
 	}
+	
+	public void setX(double newX) {
+		x=newX;
+	}
+	
+	public void setY(double newY) {
+		y=newY;
+	}
 
 }

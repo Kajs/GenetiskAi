@@ -17,6 +17,7 @@ import model.*;
 public class BoardRenderer extends JPanel {
 	private Board board;
 	private ArrayList<ArrayList<Hex>> hexMatrix;
+	private Ai ai;
 	private int columns = 4;
 	private int rows = 5;
 	private ArrayList<ArrayList<Path2D>> allPath2DColumns = new ArrayList<ArrayList<Path2D>>();
@@ -29,6 +30,9 @@ public class BoardRenderer extends JPanel {
     board = new Board(new Coordinate(50, 10), rows, columns, 50);
     hexMatrix = board.getHexMatrix();
     g2 = (Graphics2D)g;
+
+    ai = new Ai(new Coordinate(1,1));
+    Graphics2D g2 = (Graphics2D)g;
     for(int column = 0; column < columns; column++) {
     	ArrayList<Hex> currentColumn = hexMatrix.get(column);
     	System.out.println("current column size is: " + Integer.toString(currentColumn.size()));
