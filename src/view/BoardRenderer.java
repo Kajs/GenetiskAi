@@ -30,9 +30,9 @@ public class BoardRenderer extends JPanel {
     board = new Board(new Coordinate(50, 10), rows, columns, 50);
     hexMatrix = board.getHexMatrix();
     g2 = (Graphics2D)g;
-
     ai = new Ai(new Coordinate(1,1));
-    Graphics2D g2 = (Graphics2D)g;
+    
+    
     for(int column = 0; column < columns; column++) {
     	ArrayList<Hex> currentColumn = hexMatrix.get(column);
     	System.out.println("current column size is: " + Integer.toString(currentColumn.size()));
@@ -50,7 +50,10 @@ public class BoardRenderer extends JPanel {
     	}
     	allPath2DColumns.add(columnPath2D);
     }
-  }
+    colorShape(new Coordinate(1,1), Color.red);
+    colorShape(ai.moveAction(), Color.green);
+    colorShape(ai.moveAction(), Color.green);
+    }
   
   public Path2D drawHex(Hex hexIn, Graphics2D g2) {
 	  Path2D hexPath = new Path2D.Double();
@@ -72,23 +75,9 @@ public class BoardRenderer extends JPanel {
 	  Double row = position.getY();
 	  ArrayList<Path2D> path2DArray = allPath2DColumns.get(col.intValue());
 	  Path2D hexShape = path2DArray.get(row.intValue());
-	  g2.setColor(Color.red);
+	  g2.setColor(color);
 	  g2.fill(hexShape);
 	  
   }
   
-  public static void main(String[] args) {
-    JFrame frame = new JFrame();
-    frame.setTitle("DrawPoly");
-    frame.setSize(800, 600);
-    frame.addWindowListener(new WindowAdapter() {
-      public void windowClosing(WindowEvent e) {
-        System.exit(0);
-      }
-    });
-    Container contentPane = frame.getContentPane();
-    contentPane.add(new BoardRenderer());
-
-    frame.show();
-  }
 }
