@@ -1,23 +1,17 @@
 package control;
 
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-
-import view.BoardRenderer;
+import model.Coordinate;
 
 public class Launcher {
-	private static int windowWidth;
-    private static int windowHeight;
+	static int width = 800;
+	static int height = 600;
+	static int rows = 6;
+	static int columns = 5;
+	static double hexSideSize = 49;
+	static Coordinate startPosition = new Coordinate(Math.sin(Math.toRadians(30)) * hexSideSize, 1);
 
 	public static void main(String[] args) {
-		windowWidth = 800;
-		windowHeight = 600;
-		Controller control = new Controller(windowWidth, windowHeight);
-	    
+		@SuppressWarnings("unused")
+		Controller control = new Controller(width, height, rows, columns, startPosition, hexSideSize);	    
 	  }
 }

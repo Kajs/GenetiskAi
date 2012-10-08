@@ -1,19 +1,29 @@
 package model;
 
+import java.awt.Color;
+
 public class Ai {
 	private Coordinate position;
+	private Color color;
 	
 	
-	public Ai(Coordinate startingPosition) {
+	public Ai(Coordinate startingPosition, int aiType) {
 		position = startingPosition;
-		int profession = 1;		
+		if (aiType == 1) { color = Color.green; }
+		else { color = Color.red; }
 		
 	}
 	
-	public Coordinate moveAction() {
-		position.setX((position.getX()+1));
-		position.setY((position.getY()+1));
+	public void moveAction() {
+		position.setIntX((position.getIntX()+1));
+		position.setIntY((position.getIntY()+1));
+	}
+	
+	public Coordinate getPosition() {
 		return position;
 	}
-
+	
+	public Color getColor() {
+		return color;
+	}
 }

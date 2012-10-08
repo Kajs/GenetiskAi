@@ -5,11 +5,10 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 public class WindowManager {
 	
-	public WindowManager(int width, int height, BoardRenderer board) {
+	public WindowManager(int width, int height, BoardRenderer boardRenderer) {
 		JFrame frame = new JFrame();
 	    frame.setTitle("GenetiskAIRollespil");
 	    frame.setSize(width, height);
@@ -20,7 +19,7 @@ public class WindowManager {
 	    });
 	    
 	    Container contentPane = frame.getContentPane();
-	    contentPane.add(board);
+	    contentPane.add(boardRenderer);
 	    
 	    frame.setVisible(true);
 	}

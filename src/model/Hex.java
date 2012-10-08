@@ -1,6 +1,7 @@
 package model;
+import java.awt.Color;
+import java.awt.geom.Path2D;
 import java.lang.Math;
-import java.util.ArrayList;
 
 public class Hex {
 	private double side;
@@ -8,32 +9,59 @@ public class Hex {
 	private double r;
 	private double x;
 	private double y;
+	private Path2D shape;
 	private Coordinate startPosition;
-	private ArrayList<Coordinate> coordinates = new ArrayList<Coordinate>();
+	private Color color;
+	private int row;
+	private int column;
 	
-	public Hex(double sideLength, Coordinate position) {
-	side = sideLength;
-	x = position.getX();
-	y = position.getY();
-	h = Math.sin(Math.toRadians(30)) * side;
-	r = Math.cos(Math.toRadians(30)) * side;
-	calculateVertices();
+	public Hex(double sideLength, Coordinate position, int rowIn, int colIn) {
+		row = rowIn;
+		column = colIn;
+		color = Color.white;
+		startPosition = position;
+	    side = sideLength;
+	    x = position.getX();
+	    y = position.getY();
+	    h = Math.sin(Math.toRadians(30)) * side;
+	    r = Math.cos(Math.toRadians(30)) * side;
+	    makeShape();
 	}
-    private void calculateVertices()
+	
+    private void makeShape()
     {
     	startPosition = new Coordinate(x, y);
-    	coordinates.add(startPosition);
-    	coordinates.add(new Coordinate(x + side, y));
-    	coordinates.add(new Coordinate(x + side + h, y + r));
-    	coordinates.add(new Coordinate(x + side, y + r + r));
-    	coordinates.add(new Coordinate(x, y + r + r));
-    	coordinates.add(new Coordinate(x - h, y + r));
+    	shape = new Path2D.Double();
+    	shape.moveTo(x, y);
+    	shape.lineTo(x + side, y);
+    	shape.lineTo(x + side + h, y + r);
+    	shape.lineTo(x + side, y + r + r);
+    	shape.lineTo(x, y + r + r);
+    	shape.lineTo(x - h, y + r);
+    	shape.closePath();
     }
-    public ArrayList<Coordinate> getVertices() {
-    	return coordinates;
+    
+    public void setColor(Color newColor) {
+    	color = newColor;
+    }
+    
+    public Color getColor() {
+    	return color;
     }
     
     public Coordinate getStartPosition() {
     	return startPosition;
+    }
+    
+    public Path2D getShape() {
+    	return shape;
+    }
+    
+    public int getRow() {
+    	return row;
+    }
+    
+    public int getColumn() {
+    	return column;
     }
 }
