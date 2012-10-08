@@ -1,7 +1,7 @@
 package model;
 
 public class Board {
-	private Hex[][] hexMatrix;
+	final Hex[][] hexMatrix;
 	private Hex[] hexArray;
 	
     public Board(Coordinate startPosition, int rows, int columns, double hexSideSize) { 

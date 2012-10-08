@@ -3,13 +3,15 @@ package view;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JPanel;
 
 import model.*;
 
 @SuppressWarnings("serial")
-public class BoardRenderer extends JPanel {
+public class BoardRenderer extends JPanel implements Observer {
 	private Graphics2D g2D;
 	private int rows;
 	private int columns;
@@ -36,8 +38,10 @@ public class BoardRenderer extends JPanel {
 	  }	  
   }
   
-  public void updateHexes(Hex[][] newHexMatrix) {
-	  hexMatrix = newHexMatrix;
-	  repaint();
-  }  
+  public void update(Observable obs, Object obj) {
+	  if (obj == hexMatrix) {
+		  hexMatrix = (Hex[][]) obj;
+		  repaint();
+	  }
+  }
 }

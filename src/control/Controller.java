@@ -7,9 +7,9 @@ import view.*;
 
 public class Controller {
 
-	static GameState gameState;
-	BoardRenderer boardRenderer;
-	WindowManager window;
+	public static GameState gameState;
+	final BoardRenderer boardRenderer;
+	final WindowManager window;
 	
 	public Controller(int width, int height, int rows, int columns, Coordinate startPosition, double hexSideSize) {
 		gameState = new GameState(startPosition, rows, columns, hexSideSize);
@@ -17,12 +17,12 @@ public class Controller {
 		
 		boardRenderer = new BoardRenderer(rows, columns, gameState.getHexMatrix());
 		boardRenderer.setBackground(Color.white);
-		window = new WindowManager(width, height, boardRenderer);
-		testMove();
+		gameState.addObserver(boardRenderer);
+		
+		window = new WindowManager(width, height, boardRenderer, this);
 	}
 	
 	public void testMove() {
 		gameState.newRound();
-		boardRenderer.updateHexes(gameState.getHexMatrix());
 	}
 }
