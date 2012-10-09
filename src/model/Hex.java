@@ -12,18 +12,14 @@ public class Hex {
 	private Path2D shape;
 	private Coordinate startPosition;
 	private Color color;
-	private int row;
-	private int column;
 	private boolean isOccupied = false;
 	
-	public Hex(double sideLength, Coordinate position, int rowIn, int colIn) {
-		row = rowIn;
-		column = colIn;
+	public Hex(double sideLength, Coordinate position) {
 		color = Color.white;
 		startPosition = position;
 	    side = sideLength;
-	    x = position.getX();
-	    y = position.getY();
+	    x = position.getXD();
+	    y = position.getYD();
 	    h = Math.sin(Math.toRadians(30)) * side;
 	    r = Math.cos(Math.toRadians(30)) * side;
 	    makeShape();
@@ -56,14 +52,6 @@ public class Hex {
     
     public Path2D getShape() {
     	return shape;
-    }
-    
-    public int getRow() {
-    	return row;
-    }
-    
-    public int getColumn() {
-    	return column;
     }
     
     public boolean isOccupied() {

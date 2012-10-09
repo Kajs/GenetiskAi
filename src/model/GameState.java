@@ -26,7 +26,7 @@ public class GameState extends Observable {
 	public void insertAi(Ai ai, int team) {
 		if (team == 1) { team1Alive.add(ai); }
 		else { team2Alive.add(ai); }
-		board.getHexMatrix()[ai.getPosition().getIntY()][ai.getPosition().getIntX()].setColor(ai.getColor());
+		board.getHexMatrix()[ai.getPosition().getX()][ai.getPosition().getY()].setColor(ai.getColor());
 	}
 	
 	public void newRound() {
@@ -34,21 +34,21 @@ public class GameState extends Observable {
 		Hex[][] hexMatrix = board.getHexMatrix();
 		for (Ai ai : team1Alive) {
 			Coordinate orgPos = ai.getPosition();
-			Hex hex = hexMatrix[orgPos.getIntY()][orgPos.getIntX()];
+			Hex hex = hexMatrix[orgPos.getX()][orgPos.getY()];
 			hex.setColor(Color.white);
 			hex.setOccupied(false);
 			Coordinate newPos = ai.moveAction(team2Alive);
-			hex = hexMatrix[newPos.getIntY()][newPos.getIntX()];
+			hex = hexMatrix[newPos.getX()][newPos.getY()];
 			hex.setColor(ai.getColor());
 			hex.setOccupied(true);
 		}
 		for (Ai ai : team2Alive) {
 			Coordinate orgPos = ai.getPosition();
-			Hex hex = hexMatrix[orgPos.getIntY()][orgPos.getIntX()];
+			Hex hex = hexMatrix[orgPos.getX()][orgPos.getY()];
 			hex.setColor(Color.white);
 			hex.setOccupied(false);
 			Coordinate newPos = ai.moveAction(team1Alive);
-			hex = hexMatrix[newPos.getIntY()][newPos.getIntX()];
+			hex = hexMatrix[newPos.getX()][newPos.getY()];
 			hex.setColor(ai.getColor());
 			hex.setOccupied(true);
 		}
@@ -57,10 +57,10 @@ public class GameState extends Observable {
 	}
 	
 	public int isOccupied(Coordinate coordinate) {
-		int x = coordinate.getIntX();
-		int y = coordinate.getIntY();
+		int x = coordinate.getX();
+		int y = coordinate.getY();
 		if (x >= 0 && y >= 0 && x < rows && y < columns) {
-			if(board.getHexMatrix()[y][x].isOccupied()) { 
+			if(board.getHexMatrix()[x][y].isOccupied()) { 
 				return 1; }
 			else { return 0; }
 		}

@@ -69,16 +69,16 @@ public class Warrior implements Ai {
     	if (enemies.isEmpty()) { return position; }
     	
 		Ai closest = enemies.get(0);
-		int fX = position.getIntX();
-		int fY = position.getIntY();
-		int eX = closest.getPosition().getIntX();
-		int eY = closest.getPosition().getIntY();
+		int fX = position.getX();
+		int fY = position.getY();
+		int eX = closest.getPosition().getX();
+		int eY = closest.getPosition().getY();
 		int dx = fX - eX;
 		int dy = fY - eY;
 		
     	for (Ai enemy : enemies) {
-			int newDx = fX - enemy.getPosition().getIntX();
-			int newDy = fY - enemy.getPosition().getIntY();
+			int newDx = fX - enemy.getPosition().getX();
+			int newDy = fY - enemy.getPosition().getY();
 		
 			if (abs(newDx) + abs(newDy) < abs(dx) + abs(dy)) {
 				closest = enemy;
@@ -91,8 +91,8 @@ public class Warrior implements Ai {
     	if (x + y < 1) { return position; }
 
     	for (Coordinate coordinate : freeCoordinates(fX, fY)) {
-    		int newDx = abs(coordinate.getIntX() - closest.getPosition().getIntX());
-    		int newDy = abs(coordinate.getIntY() - closest.getPosition().getIntY());
+    		int newDx = abs(coordinate.getX() - closest.getPosition().getX());
+    		int newDy = abs(coordinate.getY() - closest.getPosition().getY());
     		if (x + y > newDx + newDy) {
     			x = newDx;
     			y = newDy;

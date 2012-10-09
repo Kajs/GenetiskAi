@@ -1,51 +1,51 @@
 package model;
 
 public class Coordinate {
-	private double x;
-	private double y;
-	private int intX;
-	private int intY;
+	private double xD;
+	private double yD;
+	private int x;
+	private int y;
 	
-	public Coordinate(double xIn, double yIn) {
-		x = xIn;
-		y = yIn;		
+	public Coordinate(double xD, double yD) {
+		this.xD = xD;
+		this.yD = yD;		
 	}
 	
-	public Coordinate(int xIn, int yIn) {
-		intX = xIn;
-		intY = yIn;		
+	public Coordinate(int x, int y) {
+		this.x = x;
+		this.y = y;		
 	}
 	
-	public double getX() {
+	public double getXD() {
+		return xD;
+	}
+	
+	public double getYD() {
+		return yD;
+	}
+	
+	public void setXD(double xD) {
+		this.xD = xD;
+	}
+	
+	public void setYD(double yD) {
+		this.yD = yD;
+	}
+	
+	public int getX() {
 		return x;
 	}
 	
-	public double getY() {
+	public int getY() {
 		return y;
 	}
 	
-	public void setX(double newX) {
-		x = newX;
+	public void setX(int x) {
+		this.x = x;
 	}
 	
-	public void setY(double newY) {
-		y = newY;
-	}
-	
-	public int getIntX() {
-		return intX;
-	}
-	
-	public int getIntY() {
-		return intY;
-	}
-	
-	public void setIntX(int newX) {
-		intX = newX;
-	}
-	
-	public void setIntY(int newY) {
-		intY = newY;
+	public void setY(int y) {
+		this.y = y;
 	}
 
 }

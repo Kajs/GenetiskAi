@@ -27,9 +27,9 @@ public class BoardRenderer extends JPanel implements Observer {
   public void paint(Graphics g) {
 	  super.paintComponent(g);
 	  g2D = (Graphics2D)g;
-	  for(int col = 0; col < columns; col++) {
-	      for(int row = 0; row < rows; row++) {
-	    	  Hex hex = hexMatrix[col][row];
+	  for(int row = 0; row < rows; row++) {
+	      for(int col = 0; col < columns; col++) {
+	    	  Hex hex = hexMatrix[row][col];
 	    	  g2D.setColor(hex.getColor());
 	    	  g2D.fill(hex.getShape());
 	    	  g2D.setColor(Color.black);

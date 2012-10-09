@@ -9,18 +9,18 @@ public class Board {
     	double h = Math.sin(Math.toRadians(30)) * hexSideSize;
     	double r = Math.cos(Math.toRadians(30)) * hexSideSize;
 		double a = 2 * r;
-    	for(int col = 0; col < columns; col++) {
-    		double displacement = col % 2 * a/2;
-    		hexArray = new Hex[rows];
-    		for(int row = 0; row < rows; row++) {
+    	for(int row = 0; row < rows; row++) {
+    		hexArray = new Hex[columns];
+    		for(int col = 0; col < columns; col++) {
+    			double displacement = col % 2 * a/2;
     			double xScale = col * (hexSideSize + h);
     			double yScale = row * (2 * r) + displacement;
-    			double startPosX = startPosition.getX();
-    			double startPosY = startPosition.getY();
-    			Hex hex = new Hex(hexSideSize, new Coordinate(xScale + startPosX, yScale + startPosY), row, col);
-    			hexArray[row] = hex;
+    			double startPosX = startPosition.getXD();
+    			double startPosY = startPosition.getYD();
+    			Hex hex = new Hex(hexSideSize, new Coordinate(xScale + startPosX, yScale + startPosY));
+    			hexArray[col] = hex;
     		}
-    		hexMatrix[col] = hexArray;
+    		hexMatrix[row] = hexArray;
     	}
     }
     
