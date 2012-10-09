@@ -1,29 +1,25 @@
 package model;
 
 import java.awt.Color;
+import java.util.ArrayList;
 
-public class Ai {
-	private Coordinate position;
-	private Color color;
+public interface Ai {
 	
+	public Coordinate moveAction(ArrayList<Ai> enemies);
 	
-	public Ai(Coordinate startingPosition, int aiType) {
-		position = startingPosition;
-		if (aiType == 1) { color = Color.green; }
-		else { color = Color.red; }
-		
-	}
+	public OffensiveAction getOffensiveAction();
 	
-	public void moveAction() {
-		position.setIntX((position.getIntX()+1));
-		position.setIntY((position.getIntY()+1));
-	}
+	public Coordinate getPosition();
 	
-	public Coordinate getPosition() {
-		return position;
-	}
+	public Color getColor();
 	
-	public Color getColor() {
-		return color;
-	}
+	public boolean setHp(int newHp);
+	
+	public int getHp();
+	
+	public boolean getStunned();
+	
+	public void setStunned(int stunRounds);
+	
+	public Coordinate nearestEnemy(ArrayList<Ai> enemies);
 }

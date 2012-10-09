@@ -6,9 +6,16 @@ import java.util.Observable;
 
 public class GameState extends Observable {
 	final Board board;
-	final ArrayList<Ai> aiList = new ArrayList<Ai>();
+	private ArrayList<Ai> team1Alive = new ArrayList<Ai>();
+	//private ArrayList<Ai> team1Dead = new ArrayList<Ai>();
+	private ArrayList<Ai> team2Alive = new ArrayList<Ai>();
+	//private ArrayList<Ai> team2Dead = new ArrayList<Ai>();
+	private int rows;
+	private int columns;
 	
 	public GameState(Coordinate startPosition, int rows, int columns, double hexSideSize) {
+		this.rows = rows;
+		this.columns = columns;
 		board = new Board(startPosition, rows, columns, hexSideSize);
 	}
 	
@@ -16,23 +23,47 @@ public class GameState extends Observable {
 		return board.getHexMatrix();
 	}
 	
-	public void insertAi(Ai ai) {
-		aiList.add(ai);
+	public void insertAi(Ai ai, int team) {
+		if (team == 1) { team1Alive.add(ai); }
+		else { team2Alive.add(ai); }
 		board.getHexMatrix()[ai.getPosition().getIntY()][ai.getPosition().getIntX()].setColor(ai.getColor());
 	}
 	
 	public void newRound() {
+	    System.out.println("Taking a round");
 		Hex[][] hexMatrix = board.getHexMatrix();
-		for (Ai ai : aiList) {
+		for (Ai ai : team1Alive) {
 			Coordinate orgPos = ai.getPosition();
-			hexMatrix[orgPos.getIntY()][orgPos.getIntX()].setColor(Color.white);
-			ai.moveAction();
-			Coordinate newPos = ai.getPosition();
-			hexMatrix[newPos.getIntY()][newPos.getIntX()].setColor(ai.getColor());
-			
-			setChanged();
-			notifyObservers(hexMatrix);
-			System.out.println("Taking a round");
+			Hex hex = hexMatrix[orgPos.getIntY()][orgPos.getIntX()];
+			hex.setColor(Color.white);
+			hex.setOccupied(false);
+			Coordinate newPos = ai.moveAction(team2Alive);
+			hex = hexMatrix[newPos.getIntY()][newPos.getIntX()];
+			hex.setColor(ai.getColor());
+			hex.setOccupied(true);
 		}
+		for (Ai ai : team2Alive) {
+			Coordinate orgPos = ai.getPosition();
+			Hex hex = hexMatrix[orgPos.getIntY()][orgPos.getIntX()];
+			hex.setColor(Color.white);
+			hex.setOccupied(false);
+			Coordinate newPos = ai.moveAction(team1Alive);
+			hex = hexMatrix[newPos.getIntY()][newPos.getIntX()];
+			hex.setColor(ai.getColor());
+			hex.setOccupied(true);
+		}
+		setChanged();
+		notifyObservers(hexMatrix);
+	}
+	
+	public int isOccupied(Coordinate coordinate) {
+		int x = coordinate.getIntX();
+		int y = coordinate.getIntY();
+		if (x >= 0 && y >= 0 && x < rows && y < columns) {
+			if(board.getHexMatrix()[y][x].isOccupied()) { 
+				return 1; }
+			else { return 0; }
+		}
+		else { return -1; }
 	}
 }

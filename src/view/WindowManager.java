@@ -34,6 +34,7 @@ public class WindowManager {
 	    		Controller.gameState.newRound();
 	    	}
 	    });
+	   
 	   JMenu Round = new JMenu("Round");
 	   Round.add(newRound);
 	   JMenuBar menuBar = new JMenuBar();

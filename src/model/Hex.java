@@ -14,6 +14,7 @@ public class Hex {
 	private Color color;
 	private int row;
 	private int column;
+	private boolean isOccupied = false;
 	
 	public Hex(double sideLength, Coordinate position, int rowIn, int colIn) {
 		row = rowIn;
@@ -63,5 +64,13 @@ public class Hex {
     
     public int getColumn() {
     	return column;
+    }
+    
+    public boolean isOccupied() {
+    	return isOccupied;
+    }
+    
+    public void setOccupied(boolean isOccupied) {
+    	this.isOccupied = isOccupied;
     }
 }
