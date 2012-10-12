@@ -1,5 +1,6 @@
 package control;
 
+import control.Controller;
 import model.Coordinate;
 
 public class Launcher {

@@ -1,5 +1,8 @@
 package model;
 
+import model.Coordinate;
+import model.Hex;
+
 public class Board {
 	final Hex[][] hexMatrix;
 	private Hex[] hexArray;

@@ -3,6 +3,10 @@ package model;
 import java.awt.Color;
 import java.util.ArrayList;
 
+import model.Ai;
+import model.Coordinate;
+import model.OffensiveAction;
+
 public interface Ai {
 	
 	public Coordinate moveAction(ArrayList<Ai> enemies);

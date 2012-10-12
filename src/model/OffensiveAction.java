@@ -1,5 +1,7 @@
 package model;
 
+import model.Coordinate;
+
 public class OffensiveAction {
 	private String type;
 	private Coordinate target;

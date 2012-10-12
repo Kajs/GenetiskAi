@@ -3,6 +3,8 @@ import java.awt.Color;
 import java.awt.geom.Path2D;
 import java.lang.Math;
 
+import model.Coordinate;
+
 public class Hex {
 	private double side;
 	private double h;

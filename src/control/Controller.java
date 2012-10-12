@@ -2,8 +2,14 @@ package control;
 
 import java.awt.Color;
 
+import model.Coordinate;
+import model.GameState;
+import model.Warrior;
+import model.Wizard;
 import model.*;
 import view.*;
+import view.BoardRenderer;
+import view.WindowManager;
 
 public class Controller {
 
