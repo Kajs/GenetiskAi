@@ -4,6 +4,11 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Observable;
 
+import model.Ai;
+import model.Board;
+import model.Coordinate;
+import model.Hex;
+
 public class GameState extends Observable {
 	final Board board;
 	private ArrayList<Ai> team1Alive = new ArrayList<Ai>();
