@@ -102,7 +102,7 @@ public class Warrior implements Ai {
     	return position;
     }
     
-    private ArrayList<Coordinate> freeCoordinates(int x, int y) {
+    private ArrayList<Coordinate> freeCoordinates(int x, int y) {  	
     	ArrayList<Coordinate> candidates = new ArrayList<Coordinate>();
     	Coordinate pos1 = new Coordinate(x + 1, y);
     	if (Controller.isOccupied(pos1) == 0) { candidates.add(pos1); }

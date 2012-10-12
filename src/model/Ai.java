@@ -7,8 +7,6 @@ public interface Ai {
 	
 	public Coordinate moveAction(ArrayList<Ai> enemies);
 	
-	public OffensiveAction getOffensiveAction();
-	
 	public Coordinate getPosition();
 	
 	public Color getColor();
