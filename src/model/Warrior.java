@@ -52,10 +52,16 @@ public class Warrior extends Ai {
 	
 	public void weight (Coordinate adjacentHex, Ai nearestEnemy) {
 		int w = position.distance(nearestEnemy.getPosition());
+		String actionType;
+		if (w == 1) {
+			actionType = "attack";
+		}
+		else actionType = "move";
+		
 		System.out.println("Weigth, bestWeight: " + w + ", " + bestWeight + " adj x, y: " + adjacentHex.getX() + ", " + adjacentHex.getY() + " x, y: " + position.getX() + ", " + position.getY() );
 		if (w > bestWeight) {
 			bestWeight = w;
-			bestAction = new Action(adjacentHex, "move"); //not done			 
+			bestAction = new Action(adjacentHex, actionType); //not done			 
 		}
 	}
 }

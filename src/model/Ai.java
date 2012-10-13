@@ -51,6 +51,7 @@ public class Ai {
     
     public void setHp(int newHp) {
 		hp = newHp;
+		System.out.println("Hp is now: " + hp);
 	}
 
     public int getHp() {
