@@ -10,8 +10,8 @@ import control.Controller;
 public class Warrior extends Ai {
 	
 	public Coordinate position;
-    final Color color;
-    final String aiType;
+    private Color color;
+    private String aiType;
     private int hp;
     private int meleeDamage;
     public int stunned;

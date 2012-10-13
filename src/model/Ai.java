@@ -1,11 +1,12 @@
 package model;
 
+import static java.lang.Math.abs;
+
 import java.awt.Color;
 import java.util.ArrayList;
-
+import control.Controller;
+import model.Ai;
 import model.Coordinate;
-import model.OffensiveAction;
-
 import control.Controller;
 import static java.lang.Math.abs;
 
