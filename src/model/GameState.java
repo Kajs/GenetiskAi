@@ -31,43 +31,41 @@ public class GameState extends Observable {
 	}
 	
 	public void insertAi(Ai ai, int team) {
-		if (team == 1) { team1Alive.add(ai); }
-		else { team2Alive.add(ai); }
-		Hex hex = board.getHexMatrix()[ai.getPosition().getX()][ai.getPosition().getY()];
-		hex.setColor(ai.getColor());
-		hex.setAi(ai);
-		hex.setOccupied(true);
 		ai.setTeam(team);
-		
+		if (team == 1) { team1Alive.add(ai); }
+		else { if (team == 2) {team2Alive.add(ai); }
+		       else {System.out.println("Ai team was not 1 or 2");}
+		}
+		Hex hex = hexMatrix[ai.getPosition().getX()][ai.getPosition().getY()];
+		hex.setColor(ai.getColor());
+		hex.setAi(ai);		
 	}
 	
 	public void newRound() {
 	    System.out.println("Taking a round");
 		for (Ai ai : team1Alive) {
 			Coordinate orgPos = ai.getPosition();
-			Hex hex = hexMatrix[orgPos.getX()][orgPos.getY()];
-			hex.setColor(Color.white);
-			hex.setOccupied(false);
+			Hex orgHex = hexMatrix[orgPos.getX()][orgPos.getY()];
 			
 			Coordinate newPos = ai.action(hexCake(orgPos)).getPosition();
-			hex = hexMatrix[newPos.getX()][newPos.getY()];
-			hex.setColor(ai.getColor());
-			hex.setOccupied(true);
+			Hex newHex = hexMatrix[newPos.getX()][newPos.getY()];
+			moveAi(ai, orgHex, newHex);
 		}
 		for (Ai ai : team2Alive) {
 			Coordinate orgPos = ai.getPosition();
-			Hex hex = hexMatrix[orgPos.getX()][orgPos.getY()];
-			hex.setColor(Color.white);
-			hex.setOccupied(false);
+			Hex orgHex = hexMatrix[orgPos.getX()][orgPos.getY()];
 			
 			Coordinate newPos = ai.action(hexCake(orgPos)).getPosition();
-			hex = hexMatrix[newPos.getX()][newPos.getY()];
-			hex.setColor(ai.getColor());
-			hex.setOccupied(true);
+			Hex newHex = hexMatrix[newPos.getX()][newPos.getY()];
+			moveAi(ai, orgHex, newHex);
 		}
-		
 		setChanged();
 		notifyObservers(hexMatrix);
+	}
+	
+	public void moveAi(Ai ai, Hex orgHex, Hex newHex) {
+		orgHex.removeAi();
+		newHex.setAi(ai);
 	}
 	
 	public int isOccupied(Coordinate coordinate) {
@@ -81,8 +79,8 @@ public class GameState extends Observable {
 		else { return -1; }
 	}
 	
-	public void colorHex(int row, int column, Color color) {
-		hexMatrix[row][column].setColor(color);
+	public void colorHex(Coordinate position, Color color) {
+		hexMatrix[position.getX()][position.getY()].setColor(color);
 		setChanged();
 		notifyObservers(hexMatrix);
 	}
@@ -107,8 +105,8 @@ public class GameState extends Observable {
 				if(x < 0 || y < 0 || x >= rows || y >= columns) { break; }
 				
 				for (int row = x; row >= 0; row--) {
-					hexMatrix[row][col].setColor(Color.black);
-					north.add(hexMatrix[x][y]);
+					//hexMatrix[row][col].setColor(Color.yellow);
+					north.add(hexMatrix[row][col]);
 				}
 				
 				if(prepareToBreak) { break; }
@@ -117,17 +115,18 @@ public class GameState extends Observable {
 				if (col % 2 == 0 && x > 0) {
 					x--;
 				}
-			}			
+			}
 			
 			x = origin.getX() - 1;
+			if(y % 2 == 0) { x--; }
 			prepareToBreak = false;
 			
-			for (int col = y; col < columns; col++) {
+			for (int col = y + 1; col < columns; col++) {
 				if(x < 0 || y < 0 || x >= rows || y >= columns) { break; }
 				
 				for (int row = x; row >= 0; row--) {
-					hexMatrix[row][col].setColor(Color.black);
-					north.add(hexMatrix[x][y]);
+					//hexMatrix[row][col].setColor(Color.yellow);
+					north.add(hexMatrix[row][col]);
 				}
 				
 				if(prepareToBreak) { break; }
@@ -145,8 +144,8 @@ public class GameState extends Observable {
 				if(x < 0 || y < 0 || x >= rows || y >= columns) { break; }
 				
 				for (int row = x; row < rows; row++) {
-				    //hexMatrix[row][col].setColor(Color.black);
-					south.add(hexMatrix[x][y]);
+				    //hexMatrix[row][col].setColor(Color.yellow);
+					south.add(hexMatrix[row][col]);
 				}
 				
 				if(prepareToBreak) { break; }
@@ -157,14 +156,15 @@ public class GameState extends Observable {
 				}
 			}			
 			
-			x = origin.getX() + 1;	
+			x = origin.getX() + 1;
+			if (y % 2 == 1) { x++; }
 			prepareToBreak = false;
-			for (int col = y; col < columns; col++) {
+			for (int col = y + 1; col < columns; col++) {
 				if(x < 0 || y < 0 || x >= rows || y >= columns) { break; }
 				
 				for (int row = x; row < rows; row++) {
-					//hexMatrix[row][col].setColor(Color.black);
-					south.add(hexMatrix[x][y]);
+					//hexMatrix[row][col].setColor(Color.yellow);
+					south.add(hexMatrix[row][col]);
 				}
 				
 				if(prepareToBreak) { break; }
@@ -184,8 +184,8 @@ public class GameState extends Observable {
 				if(x < 0 || y < 0 || x >= rows || y >= columns) { break; }
 				
 				for (int row = x; row >= 0; row--) {
-					//hexMatrix[row][col].setColor(Color.black);
-					northWest.add(hexMatrix[x][y]);
+					//hexMatrix[row][col].setColor(Color.yellow);
+					northWest.add(hexMatrix[row][col]);
 				}
 				if (col % 2 == 1 && x < rows - 1) {
 					x++;
@@ -201,8 +201,8 @@ public class GameState extends Observable {
 				if(x < 0 || y < 0 || x >= rows || y >= columns) { break; }
 				
 				for (int row = x; row >= 0; row--) {
-					//hexMatrix[row][col].setColor(Color.black);
-					northEast.add(hexMatrix[x][y]);
+					//hexMatrix[row][col].setColor(Color.yellow);
+					northEast.add(hexMatrix[row][col]);
 				}
 				if (col % 2 == 1 && x < rows - 1) {
 					x++;
@@ -218,8 +218,8 @@ public class GameState extends Observable {
 				if(x < 0 || y < 0 || x >= rows || y >= columns) { break; }
 				
 				for (int row = x; row < rows; row++) {
-					//hexMatrix[row][col].setColor(Color.black);
-					southEast.add(hexMatrix[x][y]);
+					//hexMatrix[row][col].setColor(Color.yellow);
+					southEast.add(hexMatrix[row][col]);
 				}
 				if (col % 2 == 0 && x > 0) {
 					x--;
@@ -235,19 +235,21 @@ public class GameState extends Observable {
 				if(x < 0 || y < 0 || x >= rows || y >= columns) { break; }
 				
 				for (int row = x; row < rows; row++) {
-					//hexMatrix[row][col].setColor(Color.black);
-					southWest.add(hexMatrix[x][y]);
+					//hexMatrix[row][col].setColor(Color.yellow);
+					southWest.add(hexMatrix[row][col]);
 				}
 				if (col % 2 == 0 && x > 0) {
 					x--;
 				}
 			}
+/*
 System.out.println("north size: " + Integer.toString(north.size()));
 System.out.println("north east size: " + Integer.toString(northEast.size()));
 System.out.println("south east size: " + Integer.toString(southEast.size()));
 System.out.println("south size: " + Integer.toString(south.size()));
 System.out.println("south west size: " + Integer.toString(southWest.size()));
 System.out.println("north west size: " + Integer.toString(northWest.size()));
+*/
 			hexCake.add(north);
 			hexCake.add(northEast);
 			hexCake.add(southEast);

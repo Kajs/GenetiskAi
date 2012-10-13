@@ -4,11 +4,8 @@ import static java.lang.Math.abs;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import control.Controller;
 import model.Ai;
 import model.Coordinate;
-import control.Controller;
-import static java.lang.Math.abs;
 
 public class Ai {
 	
@@ -24,7 +21,7 @@ public class Ai {
     }
     
     public Action action(ArrayList<ArrayList<Hex>> hexCake) {
-    	System.out.println("Action ran from Ai");
+    	System.out.println("action from Ai needs to be overwritten by extending classes");
     	return null;
     }
     
@@ -98,64 +95,29 @@ public class Ai {
 	}
     
     public Ai nearestEnemy(ArrayList<Ai> enemies) {
+    	int size = enemies.size();
+    	if (size == 0) { return null; }
     	
 		Ai closest = enemies.get(0);
-		int fX = position.getX();
-		int fY = position.getY();
+		int x = position.getX();
+		int y = position.getY();
 		int eX = closest.getPosition().getX();
 		int eY = closest.getPosition().getY();
-		int dx = fX - eX;
-		int dy = fY - eY;
+		int dx = abs(eX - x);
+		int dy = abs(eY - y);
+	
+    	for (int i = 1; i < size; i++) {
+    		Ai enemy = enemies.get(i);
+    		Coordinate ePos = enemy.getPosition();
+			int newDx = abs(x - ePos.getX());
+			int newDy = abs(y - ePos.getY());
 		
-    	for (Ai enemy : enemies) {
-			int newDx = fX - enemy.getPosition().getX();
-			int newDy = fY - enemy.getPosition().getY();
-		
-			if (abs(newDx) + abs(newDy) < abs(dx) + abs(dy)) {
+			if (newDx + newDy < dx + dy) {
 				closest = enemy;
 				dx = newDx;
 				dy = newDy;
 			}
 		}
-    	int x = abs(dx);
-    	int y = abs(dy);
-    	if (x + y < 1) { return closest; }
-
-    	for (Coordinate coordinate : freeCoordinates(fX, fY)) {
-    		int newDx = abs(coordinate.getX() - closest.getPosition().getX());
-    		int newDy = abs(coordinate.getY() - closest.getPosition().getY());
-    		if (x + y > newDx + newDy) {
-    			x = newDx;
-    			y = newDy;
-    		    position = coordinate;
-    		}
-    	}
     	return closest;
-    }
-    
-    private ArrayList<Coordinate> freeCoordinates(int x, int y) {  	
-    	ArrayList<Coordinate> candidates = new ArrayList<Coordinate>();
-    	Coordinate pos1 = new Coordinate(x + 1, y);
-    	if (Controller.isOccupied(pos1) == 0) { candidates.add(pos1); }
-    	Coordinate pos2 = new Coordinate(x - 1, y);
-    	if (Controller.isOccupied(pos2) == 0) { candidates.add(pos2); }
-    	Coordinate pos3 = new Coordinate(x, y + 1);
-    	if (Controller.isOccupied(pos3) == 0) { candidates.add(pos3); }
-    	Coordinate pos4 = new Coordinate(x, y - 1);
-    	if (Controller.isOccupied(pos4) == 0) { candidates.add(pos4); }
-    	
-    	if (y % 2 == 0) {
-    	    Coordinate pos5 = new Coordinate(x - 1, y - 1);
-    	    if (Controller.isOccupied(pos5) == 0) { candidates.add(pos5); }
-    	    Coordinate pos6 = new Coordinate(x - 1, y + 1);
-    	    if (Controller.isOccupied(pos6) == 0) { candidates.add(pos6); }
-    	}
-    	else {
-    		Coordinate pos5 = new Coordinate(x + 1, y + 1);
-    	    if (Controller.isOccupied(pos5) == 0) { candidates.add(pos5); }
-    	    Coordinate pos6 = new Coordinate(x + 1, y + 1);
-    	    if (Controller.isOccupied(pos6) == 0) { candidates.add(pos6); }
-    	}
-    	return candidates;
     }
 }

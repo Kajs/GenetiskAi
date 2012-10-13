@@ -57,7 +57,7 @@ public class Coordinate {
 		int x = co.getX();
 		int y = co.getY();
 		boolean isEven = (y % 2 == 0);
-		if (direction == 0) { return new Coordinate(x + 1, y); }         //North
+		if (direction == 0) { return new Coordinate(x - 1, y); }        //North
 		if (direction == 1) {                                           //North East
 			if (isEven) { return new Coordinate(x - 1, y + 1); }
 			else { return new Coordinate(x, y + 1); }

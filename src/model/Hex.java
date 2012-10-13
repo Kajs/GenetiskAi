@@ -76,9 +76,14 @@ public class Hex {
     
     public void setAi(Ai ai) {
     	this.ai = ai;
+    	isOccupied = true;
+    	color = ai.getColor();
+    	ai.setPosition(position);
     }
     
-    public void setOccupied(boolean occupied) {
-    	isOccupied = occupied;
+    public void removeAi() {
+    	ai = null;
+    	isOccupied = false;
+    	color = Color.white;
     }
 }
