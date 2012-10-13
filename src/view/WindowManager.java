@@ -37,10 +37,24 @@ public class WindowManager {
 	    	}
 	    });
 	   
+	   JMenuItem simulateTen = new JMenuItem("SimulateTen");
+	   simulateTen.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		int x = 0;
+	    		while (x<10) {
+		    		Controller.gameState.newRound();
+		    		x++;
+	    		}
+	    	}
+	    });
+	   
 	   JMenu Round = new JMenu("Round");
 	   Round.add(newRound);
+	   JMenu Simulate = new JMenu("Simulation");
+	   Simulate.add(simulateTen);
 	   JMenuBar menuBar = new JMenuBar();
 	   menuBar.add(Round);
+	   menuBar.add(Simulate);
 	   frame.setJMenuBar(menuBar);
 	   
 	    
