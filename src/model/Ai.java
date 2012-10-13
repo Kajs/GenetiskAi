@@ -21,10 +21,6 @@ public class Ai {
     
     public Ai() {
     }
-    
-    public OffensiveAction getOffensiveAction() {
-    	return new OffensiveAction("melee", new Coordinate(1, 1), meleeDamage, false);
-    }
 
     public Coordinate moveAction(ArrayList<ArrayList<Hex>> hexCake) {
     	for (Hex hex : hexCake.get(0)) {
@@ -32,6 +28,53 @@ public class Ai {
     	}
 		return position;
 	}
+    
+    public Coordinate getPosition() {
+		return position;
+	}
+    
+    public void setPosition(Coordinate newPos) {
+    	position = newPos;
+    }
+    
+    public Color getColor() {
+		return color;
+	}
+    
+    public void setColor(Color color) {
+    	this.color = color;
+    }
+    
+    public void setAiType(String type) {
+    	aiType = type;
+    }
+    
+    public String getAiType() {
+    	return aiType;
+    }    
+    
+    public void setHp(int newHp) {
+		hp = newHp;
+	}
+
+    public int getHp() {
+    	return hp;
+    }
+    
+    public boolean isAlive() {
+    	if (hp > 0) {
+			return true;
+		}
+		else return false;
+    }
+    
+    public int getMeleeDamage() {
+    	return meleeDamage;
+    }
+    
+    public void setMeleeDamage(int damage) {
+    	meleeDamage = damage;
+    }
 
 	public void setStunned(int stunRounds) {
 		stunned = stunRounds;
@@ -46,26 +89,6 @@ public class Ai {
 			return false;
 		}
 	}
-
-	public Coordinate getPosition() {
-		return position;
-	}
-
-	public Color getColor() {
-		return color;
-	}
-
-	public boolean setHp(int newHp) {
-		hp = newHp;
-		if (hp > 0) {
-			return true;
-		}
-		else return false;
-	}
-
-    public int getHp() {
-    	return hp;
-    }
     
     public Coordinate nearestEnemy(ArrayList<Ai> enemies) {
     	if (enemies.isEmpty()) { return position; }
