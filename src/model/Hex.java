@@ -14,7 +14,9 @@ public class Hex {
 	private Path2D shape;
 	private Coordinate startPosition;
 	private Color color;
+	private Coordinate position;
 	private boolean isOccupied = false;
+    private Ai ai;
 	
 	public Hex(double sideLength, Coordinate position) {
 		color = Color.white;
@@ -57,10 +59,26 @@ public class Hex {
     }
     
     public boolean isOccupied() {
-    	return isOccupied;
+        return isOccupied;
     }
     
-    public void setOccupied(boolean isOccupied) {
-    	this.isOccupied = isOccupied;
+    public Coordinate getPosition() {
+    	return position;
+    }
+    
+    public void setPosition(Coordinate newPos) {
+    	position = newPos;
+    }
+    
+    public Ai getAi() {
+    	return ai;
+    }
+    
+    public void setAi(Ai ai) {
+    	this.ai = ai;
+    }
+    
+    public void setOccupied(boolean occupied) {
+    	isOccupied = occupied;
     }
 }

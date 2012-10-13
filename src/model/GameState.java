@@ -33,7 +33,12 @@ public class GameState extends Observable {
 	public void insertAi(Ai ai, int team) {
 		if (team == 1) { team1Alive.add(ai); }
 		else { team2Alive.add(ai); }
-		board.getHexMatrix()[ai.getPosition().getX()][ai.getPosition().getY()].setColor(ai.getColor());
+		Hex hex = board.getHexMatrix()[ai.getPosition().getX()][ai.getPosition().getY()];
+		hex.setColor(ai.getColor());
+		hex.setAi(ai);
+		hex.setOccupied(true);
+		ai.setTeam(team);
+		
 	}
 	
 	public void newRound() {
@@ -44,7 +49,7 @@ public class GameState extends Observable {
 			hex.setColor(Color.white);
 			hex.setOccupied(false);
 			
-			Coordinate newPos = ai.moveAction(hexCake(orgPos));
+			Coordinate newPos = ai.action(hexCake(orgPos)).getPosition();
 			hex = hexMatrix[newPos.getX()][newPos.getY()];
 			hex.setColor(ai.getColor());
 			hex.setOccupied(true);
@@ -55,7 +60,7 @@ public class GameState extends Observable {
 			hex.setColor(Color.white);
 			hex.setOccupied(false);
 			
-			Coordinate newPos = ai.moveAction(hexCake(orgPos));
+			Coordinate newPos = ai.action(hexCake(orgPos)).getPosition();
 			hex = hexMatrix[newPos.getX()][newPos.getY()];
 			hex.setColor(ai.getColor());
 			hex.setOccupied(true);

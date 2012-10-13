@@ -18,16 +18,15 @@ public class Ai {
     private int hp;
     private int meleeDamage;
     public int stunned;
+    private int team;
     
     public Ai() {
     }
-
-    public Coordinate moveAction(ArrayList<ArrayList<Hex>> hexCake) {
-    	for (Hex hex : hexCake.get(0)) {
-    		hex.setColor(Color.black);
-    	}
-		return position;
-	}
+    
+    public Action action(ArrayList<ArrayList<Hex>> hexCake) {
+    	System.out.println("Action ran from Ai");
+    	return null;
+    }
     
     public Coordinate getPosition() {
 		return position;
@@ -89,9 +88,16 @@ public class Ai {
 			return false;
 		}
 	}
+	
+	public int getTeam() {
+		return team;
+	}
+	
+	public void setTeam(int team) {
+		this.team = team;
+	}
     
-    public Coordinate nearestEnemy(ArrayList<Ai> enemies) {
-    	if (enemies.isEmpty()) { return position; }
+    public Ai nearestEnemy(ArrayList<Ai> enemies) {
     	
 		Ai closest = enemies.get(0);
 		int fX = position.getX();
@@ -113,7 +119,7 @@ public class Ai {
 		}
     	int x = abs(dx);
     	int y = abs(dy);
-    	if (x + y < 1) { return position; }
+    	if (x + y < 1) { return closest; }
 
     	for (Coordinate coordinate : freeCoordinates(fX, fY)) {
     		int newDx = abs(coordinate.getX() - closest.getPosition().getX());
@@ -124,7 +130,7 @@ public class Ai {
     		    position = coordinate;
     		}
     	}
-    	return position;
+    	return closest;
     }
     
     private ArrayList<Coordinate> freeCoordinates(int x, int y) {  	

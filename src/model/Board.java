@@ -21,6 +21,7 @@ public class Board {
     			double startPosX = startPosition.getXD();
     			double startPosY = startPosition.getYD();
     			Hex hex = new Hex(hexSideSize, new Coordinate(xScale + startPosX, yScale + startPosY));
+    			hex.setPosition(new Coordinate(row, col));
     			hexArray[col] = hex;
     		}
     		hexMatrix[row] = hexArray;

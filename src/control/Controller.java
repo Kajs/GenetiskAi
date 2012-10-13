@@ -16,7 +16,7 @@ public class Controller {
 	public Controller(int width, int height, int rows, int columns, Coordinate startPosition, double hexSideSize) {
 		gameState = new GameState(startPosition, rows, columns, hexSideSize);
 		gameState.insertAi(new Warrior(new Coordinate(3, columns - 3)), 1);
-		//gameState.insertAi(new Wizard(new Coordinate(11, 10)), 2);
+		gameState.insertAi(new Warrior(new Coordinate(3, columns - 4)), 2);
 		
 		boardRenderer = new BoardRenderer(rows, columns, gameState.getHexMatrix());
 		boardRenderer.setBackground(Color.white);
