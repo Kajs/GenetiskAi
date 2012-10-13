@@ -1,16 +1,13 @@
 package model;
 
+import static java.lang.Math.abs;
+
 import java.awt.Color;
 import java.util.ArrayList;
 
-import model.Ai;
-import model.Coordinate;
-import model.OffensiveAction;
-
 import control.Controller;
-import static java.lang.Math.abs;
 
-public class Warrior implements Ai {
+public class Warrior extends Ai {
 	
 	public Coordinate position;
     final Color color;
@@ -18,21 +15,21 @@ public class Warrior implements Ai {
     private int hp;
     private int meleeDamage;
     public int stunned;
-    
-    public Warrior(Coordinate startingPosition) {
+	
+	public Warrior(Coordinate startingPosition) {
 	    position = startingPosition;
 	    aiType = "Warrior";
 	    color = Color.red;
 	    hp = 20;
 	    meleeDamage = 5;
     }
-    
-    public OffensiveAction getOffensiveAction() {
+	
+	public OffensiveAction getOffensiveAction() {
     	return new OffensiveAction("melee", new Coordinate(1, 1), meleeDamage, false);
     }
 
-    public Coordinate moveAction(ArrayList<Ai> enemies) {		
-		return nearestEnemy(enemies);
+    public Coordinate moveAction(ArrayList<ArrayList<Hex>> hexCake) {
+    	return position;
 	}
 
 	public void setStunned(int stunRounds) {
