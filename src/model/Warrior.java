@@ -39,7 +39,7 @@ public class Warrior extends Ai {
 			Ai nearestEnemy = nearestEnemy(enemies);
 			if (nearestEnemy != null) {
 				weight(position.adjacentHex(position, i), nearestEnemy);
-			}
+			}	
 		}
 		
 		if(bestAction == null) {
