@@ -12,9 +12,9 @@ import model.Hex;
 public class GameState extends Observable {
 	final Board board;
 	private ArrayList<Ai> team1Alive = new ArrayList<Ai>();
-	//private ArrayList<Ai> team1Dead = new ArrayList<Ai>();
+	private ArrayList<Ai> team1Dead = new ArrayList<Ai>();
 	private ArrayList<Ai> team2Alive = new ArrayList<Ai>();
-	//private ArrayList<Ai> team2Dead = new ArrayList<Ai>();
+	private ArrayList<Ai> team2Dead = new ArrayList<Ai>();
 	private final int rows;
 	private final int columns;
 	private final Hex[][] hexMatrix;
@@ -46,21 +46,51 @@ public class GameState extends Observable {
 		for (Ai ai : team1Alive) {
 			Coordinate orgPos = ai.getPosition();
 			Hex orgHex = hexMatrix[orgPos.getX()][orgPos.getY()];
-			
-			Coordinate newPos = ai.action(hexCake(orgPos)).getPosition();
+			Action preferredAction = ai.action(hexCake(orgPos));
+			Coordinate newPos = preferredAction.getPosition();
 			Hex newHex = hexMatrix[newPos.getX()][newPos.getY()];
-			moveAi(ai, orgHex, newHex);
+			Ai targetAi = newHex.getAi();
+			if (preferredAction.getType().equals("move")) {
+				moveAi(ai, orgHex, newHex);
+			} else {
+				targetAi.setHp(targetAi.getHp()-ai.getMeleeDamage());
+				if (!targetAi.isAlive()) {
+					killAi(newHex);
+				}
+			}
+			
 		}
 		for (Ai ai : team2Alive) {
 			Coordinate orgPos = ai.getPosition();
 			Hex orgHex = hexMatrix[orgPos.getX()][orgPos.getY()];
-			
-			Coordinate newPos = ai.action(hexCake(orgPos)).getPosition();
+			Action preferredAction = ai.action(hexCake(orgPos));
+			Coordinate newPos = preferredAction.getPosition();
 			Hex newHex = hexMatrix[newPos.getX()][newPos.getY()];
-			moveAi(ai, orgHex, newHex);
+			Ai targetAi = newHex.getAi();
+			if (preferredAction.getType().equals("move")) {
+				moveAi(ai, orgHex, newHex);
+			} else {
+				targetAi.setHp(targetAi.getHp()-ai.getMeleeDamage());
+				if (!targetAi.isAlive()) {
+					killAi(newHex);
+				}
+			}
 		}
 		setChanged();
 		notifyObservers(hexMatrix);
+	}
+	
+	public void killAi(Hex hex) {
+		Ai ai = hex.getAi();
+		hex.removeAi();
+		if (ai.getTeam() == 1) {
+			team1Alive.remove(ai);
+			team1Dead.add(ai);
+		}
+		else {
+			team2Alive.remove(ai);
+			team2Dead.add(ai);			
+		}
 	}
 	
 	public void moveAi(Ai ai, Hex orgHex, Hex newHex) {
