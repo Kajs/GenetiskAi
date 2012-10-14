@@ -50,12 +50,17 @@ public class Coordinate {
 	}
 	
 	public int distance(Coordinate end) {
-		return abs(end.getY() - y) + abs(end.getX() - x);
+		System.out.println("Running the distance");
+		int dx = end.getX() - x;
+		int largest = abs(dx);
+		int dy = end.getY() - y;
+		if (abs(dy) > largest) { largest = abs(dy); }
+		int dd = dy - dx;
+		if (abs(dd) > largest) { largest =abs(dd); }
+		return largest;
 	}
 	
-	public Coordinate  adjacentHex(Coordinate co, int direction) {
-		int x = co.getX();
-		int y = co.getY();
+	public Coordinate  adjacentPosition(int direction) {
 		boolean isEven = (y % 2 == 0);
 		if (direction == 0) { return new Coordinate(x - 1, y); }        //North
 		if (direction == 1) {                                           //North East

@@ -7,18 +7,19 @@ public class Warrior extends Ai {
 	private Action bestAction;
 	private int bestWeight;
 	
-	public Warrior(Coordinate startingPosition) {
+	public Warrior(Coordinate startingPosition, int team) {
 		setPosition(startingPosition);
 		setAiType("Warrior");
 		setColor(Color.red);
 		setHp(20);
 		setMeleeDamage(5);
+		this.team = team;
+		generateId();
     }
 	
-	public Action action(ArrayList<ArrayList<Hex>> hexCake) {
+	public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, int myTeamHp, int enemyTeamHp) {
 		bestAction = null;
 		bestWeight = 0; //needs certain minimum
-		
 		for (int i = 0; i < hexCake.size(); i++) {
 			ArrayList<Hex> slice = hexCake.get(i);
 			ArrayList<Ai> enemies = new ArrayList<Ai>();
@@ -31,14 +32,14 @@ public class Warrior extends Ai {
 						allies.add(foundAi);
 					}
 					else {
-						System.out.println("I found an enemy during loop " + i);
+						//System.out.println("I found an enemy during loop " + i);
 						enemies.add(foundAi);
 					}
 				}
 			}
-			Ai nearestEnemy = nearestEnemy(enemies);
+			Ai nearestEnemy = nearestAi(enemies);
 			if (nearestEnemy != null) {
-				weight(position.adjacentHex(position, i), nearestEnemy);
+				weight(adjacentHexes[i], enemies, allies, myTeamHp, enemyTeamHp);
 			}	
 		}
 		
@@ -46,22 +47,39 @@ public class Warrior extends Ai {
 			System.out.println("No best action found, staying put");
 			bestAction = new Action(position, "move");
 		}
-
+		System.out.println(id + " chose " + bestAction.getType() + " at (" + bestAction.getPosition().getX() + "," + bestAction.getPosition().getY() + ")");
+		
 		return bestAction;
 	}
 	
-	public void weight (Coordinate adjacentHex, Ai nearestEnemy) {
-		int w = position.distance(nearestEnemy.getPosition());
-		String actionType;
-		if (w == 1) {
-			actionType = "attack";
-		}
-		else actionType = "move";
+	public void weight (Hex adjacentHex, ArrayList<Ai> enemies, ArrayList<Ai> allies, int myTeamHp, int enemyTeamHp) {
+		Ai nearestEnemy = nearestAi(enemies);
+		Ai nearestAlly = nearestAi(allies);
 		
-		System.out.println("Weigth, bestWeight: " + w + ", " + bestWeight + " adj x, y: " + adjacentHex.getX() + ", " + adjacentHex.getY() + " x, y: " + position.getX() + ", " + position.getY() );
-		if (w > bestWeight) {
-			bestWeight = w;
-			bestAction = new Action(adjacentHex, actionType); //not done			 
+		if (adjacentHex != null) {
+			String actionType;
+			int w;
+			if(adjacentHex.isOccupied()) {
+				if(adjacentHex.getAi().getTeam() != team) {
+					
+					actionType = "attack";
+					w=10;
+					//w = 1 + position.distance(nearestEnemy.getPosition());
+				}
+				else {
+					actionType = "support";
+					w = -1;
+				}
+			}
+			else {
+				actionType = "move";
+				w=5;
+				//w = position.distance(nearestEnemy.getPosition());
+			}
+			if (w > bestWeight) {
+				bestWeight = w;
+				bestAction = new Action(adjacentHex.getPosition(), actionType); //not done			 
+			}
 		}
 	}
 }

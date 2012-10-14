@@ -30,13 +30,14 @@ public class GameState extends Observable {
 		return hexMatrix;
 	}
 	
-	public void insertAi(Ai ai, int team) {
-		ai.setTeam(team);
+	public void insertAi(Ai ai, int team, Color color) {
 		if (team == 1) { team1Alive.add(ai); }
 		else { if (team == 2) {team2Alive.add(ai); }
 		       else {System.out.println("Ai team was not 1 or 2");}
 		}
 		Hex hex = hexMatrix[ai.getPosition().getX()][ai.getPosition().getY()];
+		ai.setColor(color);
+		
 		hex.setColor(ai.getColor());
 		hex.setAi(ai);		
 	}
@@ -46,7 +47,7 @@ public class GameState extends Observable {
 		for (Ai ai : team1Alive) {
 			Coordinate orgPos = ai.getPosition();
 			Hex orgHex = hexMatrix[orgPos.getX()][orgPos.getY()];
-			Action preferredAction = ai.action(hexCake(orgPos));
+			Action preferredAction = ai.action(adjacentHexes(orgPos), hexCake(orgPos), teamHp(team1Alive), teamHp(team2Alive));
 			Coordinate newPos = preferredAction.getPosition();
 			Hex newHex = hexMatrix[newPos.getX()][newPos.getY()];
 			Ai targetAi = newHex.getAi();
@@ -63,7 +64,7 @@ public class GameState extends Observable {
 		for (Ai ai : team2Alive) {
 			Coordinate orgPos = ai.getPosition();
 			Hex orgHex = hexMatrix[orgPos.getX()][orgPos.getY()];
-			Action preferredAction = ai.action(hexCake(orgPos));
+			Action preferredAction = ai.action(adjacentHexes(orgPos), hexCake(orgPos), teamHp(team2Alive), teamHp(team1Alive));
 			Coordinate newPos = preferredAction.getPosition();
 			Hex newHex = hexMatrix[newPos.getX()][newPos.getY()];
 			Ai targetAi = newHex.getAi();
@@ -287,5 +288,31 @@ System.out.println("north west size: " + Integer.toString(northWest.size()));
 			hexCake.add(southWest);
 			hexCake.add(northWest);
 			return hexCake;
+	}
+	
+	public Hex[] adjacentHexes(Coordinate coordinate) {
+		Hex[] adjacentHexes = new Hex[6];
+		
+		for (int i = 0; i < 6; i++) {
+			Coordinate adjacentCoordinate = coordinate.adjacentPosition(i);
+			if(withinBounds(adjacentCoordinate)) {
+				adjacentHexes[i] = hexMatrix[adjacentCoordinate.getX()][adjacentCoordinate.getY()];
+			}
+		}
+		return adjacentHexes;
+	}
+	
+	public boolean withinBounds(Coordinate coordinate) {
+		int x = coordinate.getX();
+		int y = coordinate.getY();
+		return (x >= 0 && x < rows && y >= 0 && y < columns);
+	}
+	
+	public int teamHp(ArrayList<Ai> ais) {
+		int totalHp = 0;
+		for (Ai ai : ais) {
+			totalHp = totalHp + ai.getHp();
+		}
+		return totalHp;
 	}
 }

@@ -10,17 +10,18 @@ import model.Coordinate;
 public class Ai {
 	
 	public Coordinate position;
-    private Color color;
-    private String aiType;
-    private int hp;
-    private int meleeDamage;
+    public Color color;
+    public String aiType;
+    public int hp;
+    public int meleeDamage;
     public int stunned;
-    private int team;
+    public int team;
+    public String id;
     
     public Ai() {
     }
     
-    public Action action(ArrayList<ArrayList<Hex>> hexCake) {
+    public Action action(Hex[] adjacenHexes, ArrayList<ArrayList<Hex>> hexCake, int myTeamHp, int enemyTeamHp) {
     	System.out.println("action from Ai needs to be overwritten by extending classes");
     	return null;
     }
@@ -51,7 +52,7 @@ public class Ai {
     
     public void setHp(int newHp) {
 		hp = newHp;
-		System.out.println("Hp is now: " + hp);
+		if (id != null) { System.out.println(id + ": Hp = " + hp); }
 	}
 
     public int getHp() {
@@ -95,11 +96,11 @@ public class Ai {
 		this.team = team;
 	}
     
-    public Ai nearestEnemy(ArrayList<Ai> enemies) {
-    	int size = enemies.size();
+    public Ai nearestAi(ArrayList<Ai> ais) {
+    	int size = ais.size();
     	if (size == 0) { return null; }
     	
-		Ai closest = enemies.get(0);
+		Ai closest = ais.get(0);
 		int x = position.getX();
 		int y = position.getY();
 		int eX = closest.getPosition().getX();
@@ -108,7 +109,7 @@ public class Ai {
 		int dy = abs(eY - y);
 	
     	for (int i = 1; i < size; i++) {
-    		Ai enemy = enemies.get(i);
+    		Ai enemy = ais.get(i);
     		Coordinate ePos = enemy.getPosition();
 			int newDx = abs(x - ePos.getX());
 			int newDy = abs(y - ePos.getY());
@@ -120,5 +121,9 @@ public class Ai {
 			}
 		}
     	return closest;
+    }
+    
+    public void generateId() {
+    	id = aiType + ", " + "team " + getTeam() + " from (" + position.getX() + "," + position.getY() + ")";
     }
 }

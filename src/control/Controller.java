@@ -14,8 +14,10 @@ public class Controller {
 	
 	public Controller(int width, int height, int rows, int columns, Coordinate startPosition, double hexSideSize) {
 		gameState = new GameState(startPosition, rows, columns, hexSideSize);
-		gameState.insertAi(new Warrior(new Coordinate(3, 3)), 1);
-		gameState.insertAi(new Warrior(new Coordinate(5, 6)), 2);
+		gameState.insertAi(new Warrior(new Coordinate(3, 3), 1), 1, Color.red);
+	    gameState.insertAi(new Warrior(new Coordinate(0, 0), 1), 1, Color.red);
+		gameState.insertAi(new Warrior(new Coordinate(5, 6), 2), 2, Color.green);
+		gameState.insertAi(new Warrior(new Coordinate(4, 4), 2), 2, Color.green);
 		
 		boardRenderer = new BoardRenderer(rows, columns, gameState.getHexMatrix());
 		boardRenderer.setBackground(Color.white);
