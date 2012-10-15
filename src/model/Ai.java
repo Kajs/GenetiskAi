@@ -17,6 +17,10 @@ public class Ai {
     public int stunned;
     public int team;
     public String id;
+    public int[] weights;
+    public Action bestAction;
+	public double bestWeight;
+	public double scale = 5.0;
     
     public Ai() {
     }
@@ -126,4 +130,72 @@ public class Ai {
     public void generateId() {
     	id = aiType + ", " + "team " + getTeam() + " from (" + position.getX() + "," + position.getY() + ")";
     }
+    
+    public void setWeights(int[] weights) {
+    	this.weights = weights;
+    }
+    
+    public double getWeigth(int position) {
+    	return weights[position];
+    }
+    
+    public void setWeight(int position, int value) {
+    	weights[position] = value;
+    }
+    
+    public void w3MoveNearEnemy(Coordinate adjacentPosition, int hp, int nearestEnemyHp, int nearestEnemyDistance) {
+    	if (nearestEnemyDistance != 0) {
+    		double weight = hp * weights[0] + nearestEnemyHp * weights[5] + (scale / nearestEnemyDistance) * weights[8];
+    		if (weight > bestWeight) {
+    			bestWeight = weight;
+    			bestAction = new Action(adjacentPosition, "move");
+    		}    		
+    	}
+	}
+	
+	public void w4MoveNearAlly(Coordinate adjacentPosition, int hp, int nearestAllyHp, int nearestAllyDistance) {
+		if (nearestAllyDistance != 0) {
+			double weight = hp * weights[0] + nearestAllyHp * weights[6] * (scale / nearestAllyDistance) * weights[7];
+			if (weight > bestWeight) {
+				bestWeight = weight;
+				bestAction = new Action(adjacentPosition, "move");
+			}
+		}
+	}
+	
+	public void w5MoveAwayEnemies(Coordinate adjacentPosition, int hp, int totalEnemies, int sliceEnemies, int nearestEnemyDistance) {
+		double weight = hp * weights[0] + totalEnemies * weights[9] - sliceEnemies * weights[3] + nearestEnemyDistance * weights[8];
+		if (weight > bestWeight) {
+			bestWeight = weight;
+			bestAction = new Action(adjacentPosition, "move");
+		}
+	}
+	
+	public void w6MoveAwayAllies(Coordinate adjacentPosition, int hp, int totalAllies, int sliceAllies, int nearestAllyDistance) {
+		double weight = hp * weights[0] + totalAllies * weights[10] - sliceAllies * weights[4] + nearestAllyDistance * weights[7];
+		if (weight > bestWeight) {
+			bestWeight = weight;
+			bestAction = new Action(adjacentPosition, "move");
+		}
+	}
+	
+	public void w7MoveMostEnemies(Coordinate adjacentPosition, int sliceEnemies, int nearestEnemyDistance) {
+		if (nearestEnemyDistance != 0) {
+			double weight = sliceEnemies * weights[3] + (5 / nearestEnemyDistance) * weights[8];
+			if (weight > bestWeight) {
+				bestWeight = weight;
+				bestAction = new Action(adjacentPosition, "move");
+			}
+		}
+	}
+	
+	public void w8MoveMostAllies(Coordinate adjacentPosition, int sliceAllies, int nearestAllyDistance) {
+		if (nearestAllyDistance != 0) {
+			double weight = sliceAllies * weights[4] + (5 / nearestAllyDistance) * weights[7];
+			if (weight > bestWeight) {
+				bestWeight = weight;
+				bestAction = new Action(adjacentPosition, "move");
+			}
+		}
+	}
 }

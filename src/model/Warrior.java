@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 
 public class Warrior extends Ai {
-	private Action bestAction;
-	private int bestWeight;
 	
 	public Warrior(Coordinate startingPosition, int team) {
 		setPosition(startingPosition);
@@ -17,9 +15,10 @@ public class Warrior extends Ai {
 		generateId();
     }
 	
-	public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, int myTeamHp, int enemyTeamHp) {
+	public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, int myTeamHp, int enemyTeamHp, int totalEnemies, int totalAllies) {
 		bestAction = null;
-		bestWeight = 0; //needs certain minimum
+		bestWeight = (int)Math.pow(-2, 31);
+		System.out.println(bestWeight);
 		for (int i = 0; i < hexCake.size(); i++) {
 			ArrayList<Hex> slice = hexCake.get(i);
 			ArrayList<Ai> enemies = new ArrayList<Ai>();
@@ -37,9 +36,8 @@ public class Warrior extends Ai {
 					}
 				}
 			}
-			Ai nearestEnemy = nearestAi(enemies);
-			if (nearestEnemy != null) {
-				weight(adjacentHexes[i], enemies, allies, myTeamHp, enemyTeamHp);
+			if (totalEnemies > 0) {
+				weight(adjacentHexes[i], enemies, allies, myTeamHp, enemyTeamHp, totalEnemies, totalAllies);
 			}	
 		}
 		
@@ -52,34 +50,70 @@ public class Warrior extends Ai {
 		return bestAction;
 	}
 	
-	public void weight (Hex adjacentHex, ArrayList<Ai> enemies, ArrayList<Ai> allies, int myTeamHp, int enemyTeamHp) {
+	public void weight (Hex adjacentHex, ArrayList<Ai> enemies, ArrayList<Ai> allies, int myTeamHp, int enemyTeamHp, int totalEnemies, int totalAllies) {
+		int nearestEnemyHp;
+		int nearestEnemyDistance;
+		int nearestAllyHp;
+		int nearestAllyDistance;
 		Ai nearestEnemy = nearestAi(enemies);
 		Ai nearestAlly = nearestAi(allies);
 		
+		if(nearestEnemy == null) { 
+			nearestEnemyHp = 0; 
+			nearestEnemyDistance = 0;
+			} 
+		else {
+			nearestEnemyHp = nearestEnemy.getHp();
+			nearestEnemyDistance = position.distance(nearestEnemy.getPosition());			
+			}
+		if(nearestAlly == null) { 
+			nearestAllyHp = 0;
+			nearestAllyDistance = 0;		
+		} 
+		else { 
+			nearestAllyHp = nearestAlly.getHp(); 
+			nearestAllyDistance = position.distance(nearestAlly.getPosition());		       
+		}
+		Coordinate adjacentPosition = adjacentHex.getPosition();
+		
 		if (adjacentHex != null) {
-			String actionType;
-			int w;
 			if(adjacentHex.isOccupied()) {
 				if(adjacentHex.getAi().getTeam() != team) {
-					
-					actionType = "attack";
-					w=10;
-					//w = 1 + position.distance(nearestEnemy.getPosition());
+					//attack
+					w0NormalAttack(adjacentPosition, hp, enemyTeamHp, enemies.size(), nearestEnemyHp);
+					w1StunAttack(adjacentPosition, hp, enemyTeamHp, enemies.size(), nearestEnemyHp);
 				}
 				else {
-					actionType = "support";
-					w = -1;
+					//support
 				}
 			}
 			else {
-				actionType = "move";
-				w=5;
-				//w = position.distance(nearestEnemy.getPosition());
-			}
-			if (w > bestWeight) {
-				bestWeight = w;
-				bestAction = new Action(adjacentHex.getPosition(), actionType); //not done			 
+				//move
+				w3MoveNearEnemy(adjacentPosition, hp, nearestEnemyHp, nearestEnemyDistance);
+				w4MoveNearAlly(adjacentPosition, hp, nearestAllyHp, nearestAllyDistance);
+				w5MoveAwayEnemies(adjacentPosition, hp, totalEnemies, enemies.size(), nearestEnemyDistance);
+				w6MoveAwayAllies(adjacentPosition, hp, totalAllies, allies.size(), nearestAllyDistance);
+				w7MoveMostEnemies(adjacentPosition, enemies.size(), nearestEnemyDistance);
+				w8MoveMostAllies(adjacentPosition, allies.size(), nearestAllyDistance);
 			}
 		}
 	}
+	
+	public void w0NormalAttack(Coordinate adjacentPosition, int hp, int enemyTeamHp, int sliceEnemies, int nearestEnemyHp) {
+		int weight = hp * weights[0] + enemyTeamHp * weights[2] + sliceEnemies * weights[3] * nearestEnemyHp * weights[5];
+		if (weight > bestWeight) {
+			bestWeight = weight;
+			bestAction = new Action(adjacentPosition, "normalAttack");
+		}
+	}
+	
+	public void w1StunAttack(Coordinate adjacentPosition, int hp, int enemyTeamHp, int sliceEnemies, int nearestEnemyHp) {
+		double weight = hp * weights[0] + enemyTeamHp * weights[2] + sliceEnemies * weights[3] + nearestEnemyHp * weights[5];
+		if (weight > bestWeight) {
+			bestWeight = weight;
+			bestAction = new Action(adjacentPosition, "stunAttack");
+		}
+	}
+	
+	
 }
