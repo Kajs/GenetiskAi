@@ -5,19 +5,21 @@ import java.util.ArrayList;
 
 public class BaseWarrior extends Ai {
 	private Action bestAction;
-	private int bestWeight;
+	private double bestWeight;
 	
-	public BaseWarrior(Coordinate startingPosition, int team) {
-		setPosition(startingPosition);
+	public BaseWarrior() {
 		setAiType("BaseWarrior");
 		setColor(Color.red);
 		setHp(20);
 		setMeleeDamage(5);
-		this.team = team;
-		generateId();
     }
 	
-	public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, int myTeamHp, int enemyTeamHp) {
+	public void reset() {
+		setHp(20);
+		setMeleeDamage(5);
+	}
+	
+	public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies) {
 		bestAction = null;
 		bestWeight = 0; //needs certain minimum
 		for (int i = 0; i < hexCake.size(); i++) {
@@ -45,20 +47,20 @@ public class BaseWarrior extends Ai {
 		
 		if(bestAction == null) {
 			System.out.println("No best action found, staying put");
-			bestAction = new Action(position, "move");
+			bestAction = new Action(position, "move", "stay");
 		}
-		System.out.println(id + " chose " + bestAction.getType() + " at (" + bestAction.getPosition().getX() + "," + bestAction.getPosition().getY() + ")");
+		System.out.println(id + " chose " + bestAction.getBaseType() + " at (" + bestAction.getPosition().getX() + "," + bestAction.getPosition().getY() + ")");
 		
 		return bestAction;
 	}
 	
-	public void weight (Hex adjacentHex, ArrayList<Ai> enemies, ArrayList<Ai> allies, int myTeamHp, int enemyTeamHp) {
+	public void weight (Hex adjacentHex, ArrayList<Ai> enemies, ArrayList<Ai> allies, double myTeamHp, double enemyTeamHp) {
 		Ai nearestEnemy = nearestAi(enemies);
 		Ai nearestAlly = nearestAi(allies);
 		
 		if (adjacentHex != null) {
 			String actionType;
-			int w;
+			double w;
 			if(adjacentHex.isOccupied()) {
 				if(adjacentHex.getAi().getTeam() != team) {
 					
@@ -67,7 +69,7 @@ public class BaseWarrior extends Ai {
 				}
 				else {
 					actionType = "support";
-					w = -1;
+					w = -100000;
 				}
 			}
 			else {
@@ -77,7 +79,7 @@ public class BaseWarrior extends Ai {
 			
 			if (w>bestWeight) {
 				bestWeight = w;
-				bestAction = new Action(adjacentHex.getPosition(), actionType); //not done			 	
+				bestAction = new Action(adjacentHex.getPosition(), actionType, "base"); //not done			 	
 			}
 			
 		}

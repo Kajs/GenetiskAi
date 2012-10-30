@@ -4,8 +4,9 @@ import java.awt.Color;
 import java.util.ArrayList;
 
 public class BaseWizard extends Ai {
+	/*
 	private Action bestAction;
-	private int bestWeight;
+	private double bestWeight;
 	
 	public BaseWizard(Coordinate startingPosition, int team) {
 		setPosition(startingPosition);
@@ -58,7 +59,7 @@ public class BaseWizard extends Ai {
 		
 		if (adjacentHex != null) {
 			String actionType;
-			int w;
+			double w;
 			if(adjacentHex.isOccupied()) {
 				if(adjacentHex.getAi().getTeam() != team) {
 					
@@ -87,4 +88,5 @@ public class BaseWizard extends Ai {
 			
 		}
 	}
+	*/
 }

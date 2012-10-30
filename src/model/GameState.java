@@ -10,71 +10,150 @@ import model.Coordinate;
 import model.Hex;
 
 public class GameState extends Observable {
-	final Board board;
+	private Board board;
 	private ArrayList<Ai> team1Alive = new ArrayList<Ai>();
 	private ArrayList<Ai> team1Dead = new ArrayList<Ai>();
 	private ArrayList<Ai> team2Alive = new ArrayList<Ai>();
 	private ArrayList<Ai> team2Dead = new ArrayList<Ai>();
 	private final int rows;
 	private final int columns;
-	private final Hex[][] hexMatrix;
+	private Hex[][] hexMatrix;
+	private final Coordinate startPosition;
+	private final double hexSideSize;
 	
 	public GameState(Coordinate startPosition, int rows, int columns, double hexSideSize) {
 		this.rows = rows;
 		this.columns = columns;
+		this.startPosition = startPosition;
+		this.hexSideSize = hexSideSize;
 		board = new Board(startPosition, rows, columns, hexSideSize);
 		hexMatrix = board.getHexMatrix();
+	}
+	
+	public void reset() {
+		team1Alive.clear();
+		team1Dead.clear();
+		team2Alive.clear();
+		team2Dead.clear();
+		board = new Board(startPosition, rows, columns, hexSideSize);
+		hexMatrix = board.getHexMatrix();
+	}
+	
+	public double[][] newGame(int maxRounds) {
+		//0_teamInitialHp, 1_teamHp, 2_teamAlive, 3_teamSize, 4_enemiesInitialHp, 5_enemiesHp, 6_enemiesAlive, 7_enemiesSize, 8_maxRounds, 9_rounds
+		double[][] results = new double[2][10];
+		double[] team1Results = new double[10];
+		double[] team2Results = new double[10];
+		
+		for (int i = 0; i <= maxRounds; i++) {
+			//System.out.println("Starting round " + i);
+			newRound();
+			if(team1Alive.isEmpty() || team2Alive.isEmpty() || i == maxRounds) {
+				//if(team1Alive.isEmpty()) {System.out.println("Team 1 died _-_-_-_");}
+				//if(team2Alive.isEmpty()) {System.out.println("Team 2 died _-_-_-_");}
+				//if(i == maxRounds) {System.out.println("Max rounds reached");}
+				
+				
+				double team1InitialHp = 0;
+				double team1Hp = 0;
+				double team1Survivors = (double) team1Alive.size();
+				double team1Size = team1Alive.size() + team1Dead.size();
+				for (Ai ai : team1Alive) { 
+					team1InitialHp = team1InitialHp + ai.getInitialHp();
+					team1Hp = team1Hp + ai.getHp();
+				}
+				for (Ai ai : team1Dead)  {
+					team1InitialHp = team1InitialHp + ai.getInitialHp();
+				}
+				
+				double team2InitialHp = 0;
+				double team2Hp = 0;
+				double team2Survivors = (double) team2Alive.size();
+				double team2Size = team2Alive.size() + team2Dead.size();
+				for (Ai ai : team2Alive) { 
+					team2InitialHp = team2InitialHp + ai.getInitialHp();
+					team2Hp = team2Hp + ai.getHp();
+				}
+				for (Ai ai : team2Dead)  {
+					team2InitialHp = team2InitialHp + ai.getInitialHp();
+				}
+				
+				team1Results[0] = team1InitialHp;
+				team1Results[1] = team1Hp;
+				team1Results[2] = team1Survivors;
+				team1Results[3] = team1Size;
+				team1Results[4] = team2InitialHp;
+				team1Results[5] = team2Hp;
+				team1Results[6] = team2Survivors;
+				team1Results[7] = team2Size;
+				team1Results[8] = maxRounds;
+				team1Results[9] = i;     //rounds
+				
+				team2Results[0] = team2InitialHp;
+				team2Results[1] = team2Hp;
+				team2Results[2] = team2Survivors;
+				team2Results[3] = team2Size;
+				team2Results[4] = team1InitialHp;
+				team2Results[5] = team1Hp;
+				team2Results[6] = team1Survivors;
+				team2Results[7] = team1Size;
+				team2Results[8] = maxRounds;
+				team2Results[9] = i;     //rounds
+				
+				results[0] = team1Results;
+				results[1] = team2Results;
+				
+				return results;
+			}
+		}
+		
+		System.out.println("Error in GameState.newGame(): did not stop properly");
+		return null;
 	}
 	
 	public Hex[][] getHexMatrix() {
 		return hexMatrix;
 	}
 	
-	public void insertAi(Ai ai, int team, Color color) {
+	public void insertAi(Ai ai, int team, Color color, Coordinate startPosition) {
+		ai.setTeam(team);
+		ai.setColor(color);
+		ai.setPosition(startPosition);
+		ai.generateId();
+		
 		if (team == 1) { team1Alive.add(ai); }
 		else { if (team == 2) {team2Alive.add(ai); }
 		       else {System.out.println("Ai team was not 1 or 2");}
 		}
-		Hex hex = hexMatrix[ai.getPosition().getX()][ai.getPosition().getY()];
-		ai.setColor(color);
 		
+		Hex hex = hexMatrix[ai.getPosition().getX()][ai.getPosition().getY()];		
 		hex.setColor(ai.getColor());
 		hex.setAi(ai);		
 	}
 	
 	public void newRound() {
-	    System.out.println("Taking a round");
 		for (Ai ai : team1Alive) {
-			Coordinate orgPos = ai.getPosition();
-			Hex orgHex = hexMatrix[orgPos.getX()][orgPos.getY()];
-			Action preferredAction = ai.action(adjacentHexes(orgPos), hexCake(orgPos), teamHp(team1Alive), teamHp(team2Alive));
-			Coordinate newPos = preferredAction.getPosition();
-			Hex newHex = hexMatrix[newPos.getX()][newPos.getY()];
-			Ai targetAi = newHex.getAi();
-			if (preferredAction.getType().equals("move")) {
-				moveAi(ai, orgHex, newHex);
-			} else {
-				targetAi.setHp(targetAi.getHp()-ai.getMeleeDamage());
-				if (!targetAi.isAlive()) {
-					killAi(newHex);
+			if (ai.getStunned()) { 
+				ai.setStunned(false);
 				}
-			}
-			
+			else {
+				Coordinate orgPos = ai.getPosition();
+				Hex orgHex = hexMatrix[orgPos.getX()][orgPos.getY()];
+				Action preferredAction = ai.action(adjacentHexes(orgPos), hexCake(orgPos), teamHp(team1Alive), teamHp(team2Alive), (double) team2Alive.size(), (double) team1Alive.size());
+				
+				parseAction(preferredAction, ai, orgHex);
+			}			
 		}
 		for (Ai ai : team2Alive) {
-			Coordinate orgPos = ai.getPosition();
-			Hex orgHex = hexMatrix[orgPos.getX()][orgPos.getY()];
-			Action preferredAction = ai.action(adjacentHexes(orgPos), hexCake(orgPos), teamHp(team2Alive), teamHp(team1Alive));
-			Coordinate newPos = preferredAction.getPosition();
-			Hex newHex = hexMatrix[newPos.getX()][newPos.getY()];
-			Ai targetAi = newHex.getAi();
-			if (preferredAction.getType().equals("move")) {
-				moveAi(ai, orgHex, newHex);
-			} else {
-				targetAi.setHp(targetAi.getHp()-ai.getMeleeDamage());
-				if (!targetAi.isAlive()) {
-					killAi(newHex);
-				}
+			if (ai.getStunned()) {
+				ai.setStunned(false);
+			}
+			else {
+				Coordinate orgPos = ai.getPosition();
+				Hex orgHex = hexMatrix[orgPos.getX()][orgPos.getY()];
+				Action preferredAction = ai.action(adjacentHexes(orgPos), hexCake(orgPos), teamHp(team2Alive), teamHp(team1Alive), (double) team1Alive.size(), (double) team2Alive.size());
+				
+				parseAction(preferredAction, ai, orgHex);
 			}
 		}
 		setChanged();
@@ -90,7 +169,7 @@ public class GameState extends Observable {
 		}
 		else {
 			team2Alive.remove(ai);
-			team2Dead.add(ai);			
+			team2Dead.add(ai);
 		}
 	}
 	
@@ -308,11 +387,51 @@ System.out.println("north west size: " + Integer.toString(northWest.size()));
 		return (x >= 0 && x < rows && y >= 0 && y < columns);
 	}
 	
-	public int teamHp(ArrayList<Ai> ais) {
-		int totalHp = 0;
+	public double teamHp(ArrayList<Ai> ais) {
+		double totalHp = 0;
 		for (Ai ai : ais) {
 			totalHp = totalHp + ai.getHp();
 		}
 		return totalHp;
+	}
+	
+	public void parseAction(Action preferredAction, Ai ai, Hex orgHex) {
+		Coordinate newPos = preferredAction.getPosition();
+		Hex newHex = hexMatrix[newPos.getX()][newPos.getY()];		
+		String baseType = preferredAction.getBaseType();
+		String extendedType = preferredAction.getExtendedType();
+		Ai targetAi = newHex.getAi();
+		
+		switch(baseType) {
+		case "move":
+			moveAi(ai, orgHex, newHex);
+			break;
+		case "attack":
+			if(extendedType.equals("stun")) {
+				targetAi.setStunned(true);
+			}
+			else {
+				if(targetAi.getShielded()) {
+					targetAi.setShielded(false);
+				}
+				else {
+					targetAi.setHp(targetAi.getHp() - ai.getMeleeDamage());
+					if(targetAi.getHp() < 0) {System.out.println("Setting hp = " + targetAi.getHp() + ", isAlive: " + targetAi.isAlive()); }
+					if (targetAi.isAlive() == false) {
+						killAi(newHex);
+						//System.out.println("Killed " + targetAi.getId() + " team1Size: " + team1Alive.size() + ", team2Size: " + team2Alive.size());						
+					}
+				}
+			}
+			break;
+		case "support":
+			if(extendedType.equals("shield")) {
+				targetAi.setShielded(true);
+			}
+			break;
+		default:
+			System.out.println("Unknown action type: " + baseType + ", " + extendedType);
+			break;
+		}
 	}
 }

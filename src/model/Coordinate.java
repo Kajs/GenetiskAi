@@ -49,15 +49,14 @@ public class Coordinate {
 		this.y = y;
 	}
 	
-	public int distance(Coordinate end) {
-		System.out.println("Running the distance");
+	public double distance(Coordinate end) {
 		int dx = end.getX() - x;
 		int largest = abs(dx);
 		int dy = end.getY() - y;
 		if (abs(dy) > largest) { largest = abs(dy); }
 		int dd = dy - dx;
-		if (abs(dd) > largest) { largest =abs(dd); }
-		return largest;
+		if (abs(dd) > largest) { largest = abs(dd); }
+		return (double) largest;
 	}
 	
 	public Coordinate  adjacentPosition(int direction) {

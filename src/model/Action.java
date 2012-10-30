@@ -2,11 +2,13 @@ package model;
 
 public class Action {
 	private Coordinate position;
-	private String type;
+	private String baseType;
+	private String extendedType;
 	
-	public Action(Coordinate position, String type) {
+	public Action(Coordinate position, String baseType, String extendedType) {
 		this.position = position;
-		this.type = type;
+		this.baseType = baseType;
+		this.extendedType = extendedType;
 	}
 	
 	
@@ -14,7 +16,11 @@ public class Action {
 		return position;
 	}
 	
-	public String getType() {
-		return type;
+	public String getBaseType() {
+		return baseType;
+	}
+	
+	public String getExtendedType() {
+		return extendedType;
 	}
 }

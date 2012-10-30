@@ -1,33 +1,35 @@
 package model;
 
 import static java.lang.Math.abs;
-
 import java.awt.Color;
 import java.util.ArrayList;
 import model.Ai;
 import model.Coordinate;
+import control.Launcher;
 
 public class Ai {
+	
+	int aActions = 2;
+	int sActions = 1;
+	int mActions = 6;
 	
 	public Coordinate position;
     public Color color;
     public String aiType;
-    public int hp;
-    public int meleeDamage;
-    public int stunned;
+    public double hp;
+    public double meleeDamage;
+    public boolean stunned;
+    public boolean shielded;
     public int team;
     public String id;
-    public int[] weights;
+    public double[][] weightMatrix;
     public Action bestAction;
 	public double bestWeight;
-	public double scale = 5.0;
+	public String supportAction;
+	public double standardMeleeDamage;
+	public double initialHp;
     
     public Ai() {
-    }
-    
-    public Action action(Hex[] adjacenHexes, ArrayList<ArrayList<Hex>> hexCake, int myTeamHp, int enemyTeamHp) {
-    	System.out.println("action from Ai needs to be overwritten by extending classes");
-    	return null;
     }
     
     public Coordinate getPosition() {
@@ -54,42 +56,45 @@ public class Ai {
     	return aiType;
     }    
     
-    public void setHp(int newHp) {
+    public void setHp(double newHp) {
 		hp = newHp;
-		if (id != null) { System.out.println(id + ": Hp = " + hp); }
+		if(id != null && !Launcher.isAutomatic) { System.out.println(aiType + ", team " + team + " at (" + position.getX() + ", " + position.getY() + "): hp = " + hp);}
 	}
 
-    public int getHp() {
+    public double getHp() {
     	return hp;
     }
     
     public boolean isAlive() {
-    	if (hp > 0) {
-			return true;
-		}
-		else return false;
+    	return hp > 0;
     }
     
-    public int getMeleeDamage() {
+    public double getMeleeDamage() {
     	return meleeDamage;
     }
     
-    public void setMeleeDamage(int damage) {
+    public void setMeleeDamage(double damage) {
     	meleeDamage = damage;
     }
 
-	public void setStunned(int stunRounds) {
-		stunned = stunRounds;
+	public void setStunned(boolean status) {
+		if(status == false && !Launcher.isAutomatic) {
+			System.out.println(id + " is stunned");
+		}
+		stunned = status;
 	}
 
 	public boolean getStunned() {
-		if (stunned > 0) {
-			stunned = stunned - 1;
-			return true;
-		}
-		else {
-			return false;
-		}
+		return stunned;
+	}
+	
+	public void setShielded(boolean status) {
+		if (!status && !Launcher.isAutomatic) { System.out.println(id + " lost shield"); }
+		shielded = status;
+	}
+	
+	public boolean getShielded() {
+		return shielded;
 	}
 	
 	public int getTeam() {
@@ -100,6 +105,18 @@ public class Ai {
 		this.team = team;
 	}
     
+	public void setSupportAction(String action) {
+		supportAction = action;
+	}
+	
+	public String getSupportAction() {
+		return supportAction;
+	}
+	
+	public double getInitialHp() {
+		return initialHp;
+	}
+	
     public Ai nearestAi(ArrayList<Ai> ais) {
     	int size = ais.size();
     	if (size == 0) { return null; }
@@ -131,71 +148,21 @@ public class Ai {
     	id = aiType + ", " + "team " + getTeam() + " from (" + position.getX() + "," + position.getY() + ")";
     }
     
-    public void setWeights(int[] weights) {
-    	this.weights = weights;
+    public String getId() {
+    	return id;
     }
     
-    public double getWeigth(int position) {
-    	return weights[position];
+    public void setWeights(double[][] weights) {
+    	weightMatrix = weights;
     }
     
-    public void setWeight(int position, int value) {
-    	weights[position] = value;
+    public double[][] getWeights() {
+    	return weightMatrix;
     }
     
-    public void w3MoveNearEnemy(Coordinate adjacentPosition, int hp, int nearestEnemyHp, int nearestEnemyDistance) {
-    	if (nearestEnemyDistance != 0) {
-    		double weight = hp * weights[0] + nearestEnemyHp * weights[5] + (scale / nearestEnemyDistance) * weights[8];
-    		if (weight > bestWeight) {
-    			bestWeight = weight;
-    			bestAction = new Action(adjacentPosition, "move");
-    		}    		
-    	}
-	}
-	
-	public void w4MoveNearAlly(Coordinate adjacentPosition, int hp, int nearestAllyHp, int nearestAllyDistance) {
-		if (nearestAllyDistance != 0) {
-			double weight = hp * weights[0] + nearestAllyHp * weights[6] * (scale / nearestAllyDistance) * weights[7];
-			if (weight > bestWeight) {
-				bestWeight = weight;
-				bestAction = new Action(adjacentPosition, "move");
-			}
-		}
-	}
-	
-	public void w5MoveAwayEnemies(Coordinate adjacentPosition, int hp, int totalEnemies, int sliceEnemies, int nearestEnemyDistance) {
-		double weight = hp * weights[0] + totalEnemies * weights[9] - sliceEnemies * weights[3] + nearestEnemyDistance * weights[8];
-		if (weight > bestWeight) {
-			bestWeight = weight;
-			bestAction = new Action(adjacentPosition, "move");
-		}
-	}
-	
-	public void w6MoveAwayAllies(Coordinate adjacentPosition, int hp, int totalAllies, int sliceAllies, int nearestAllyDistance) {
-		double weight = hp * weights[0] + totalAllies * weights[10] - sliceAllies * weights[4] + nearestAllyDistance * weights[7];
-		if (weight > bestWeight) {
-			bestWeight = weight;
-			bestAction = new Action(adjacentPosition, "move");
-		}
-	}
-	
-	public void w7MoveMostEnemies(Coordinate adjacentPosition, int sliceEnemies, int nearestEnemyDistance) {
-		if (nearestEnemyDistance != 0) {
-			double weight = sliceEnemies * weights[3] + (5 / nearestEnemyDistance) * weights[8];
-			if (weight > bestWeight) {
-				bestWeight = weight;
-				bestAction = new Action(adjacentPosition, "move");
-			}
-		}
-	}
-	
-	public void w8MoveMostAllies(Coordinate adjacentPosition, int sliceAllies, int nearestAllyDistance) {
-		if (nearestAllyDistance != 0) {
-			double weight = sliceAllies * weights[4] + (5 / nearestAllyDistance) * weights[7];
-			if (weight > bestWeight) {
-				bestWeight = weight;
-				bestAction = new Action(adjacentPosition, "move");
-			}
-		}
-	}
+    public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies) 
+    {
+    	System.out.println("Ai.Action() should be overwritten by extending classes");
+    	return new Action(new Coordinate(0, 0), "standard", "Ai");
+    }
 }
