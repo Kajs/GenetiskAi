@@ -56,7 +56,7 @@ public class BaseWarrior extends Ai {
 	
 	public void weight (Hex adjacentHex, ArrayList<Ai> enemies, ArrayList<Ai> allies, double myTeamHp, double enemyTeamHp) {
 		Ai nearestEnemy = nearestAi(enemies);
-		Ai nearestAlly = nearestAi(allies);
+		//Ai nearestAlly = nearestAi(allies);
 		
 		if (adjacentHex != null) {
 			String actionType;

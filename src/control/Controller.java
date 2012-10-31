@@ -8,28 +8,38 @@ import view.BoardRenderer;
 import view.WindowManager;
 
 public class Controller {
-	int choices = 6;
-	int information = 15;
-	int maxRounds = 100;
-	double keepPercent = 0.2;
-	double crossPercent = 0.8;
-	double drasticLikelihood = 0.3;
-	double mutateLikelihood = 0.4;
-	Coordinate startPosition;
-	double hexSideSize;
-	int rows;
-	int columns;
-
+	
+	static int width = 800;
+	static int height = 600;
+	static double hexSideSize = 40;
+	static int rows = 7;
+	static int columns = 8;
+	static Coordinate startPosition = new Coordinate(Math.sin(Math.toRadians(30)) * hexSideSize, 1);
+	
+	static int maxRounds = 25;
+	static int games = 1000;
+	
+	static int populationSize = 1000;
+	static int choices = 6;
+	static int information = 15;
+	static double keepPercent = 0.2;
+	static double crossPercent = 0.8;
+	static double drasticLikelihood = 0.3;
+	static double mutateLikelihood = 0.1;
+	
+	static Coordinate team1_ai1_startPos = new Coordinate(3, 3);
+	static Coordinate team1_ai2_startPos = new Coordinate(0, 0);
+	static Coordinate team1_ai3_startPos = new Coordinate(1, 1);
+	static Coordinate team2_ai1_startPos = new Coordinate(5, 6);
+	static Coordinate team2_ai2_startPos = new Coordinate(4, 4);
+	static Coordinate team2_ai3_startPos = new Coordinate(5, 5);
+	
 	public static GameState gameState;
 	public BoardRenderer boardRenderer;
 	public WindowManager window;
 	public GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm();
 	
-	public Controller(int width, int height, int rows, int columns, Coordinate startPosition, double hexSideSize, boolean automatic, int maxRounds, int games, int populationSize) {
-		this.startPosition = startPosition;
-		this.hexSideSize = hexSideSize;
-		this.rows = rows;
-		this.columns = columns;
+	public Controller(boolean automatic) {
 		
 		gameState = new GameState(startPosition, rows, columns, hexSideSize);
 		
@@ -59,38 +69,18 @@ public class Controller {
 	}
 	
 	public void evolve(int maxRounds, int games, int populationSize) {
-		ArrayList<Ai> team1Warriors = new ArrayList<Ai>();
-		ArrayList<Ai> team1Wizards = new ArrayList<Ai>();
-		ArrayList<Ai> team1Clerics = new ArrayList<Ai>();
+		ArrayList<ArrayList<Ai>> initialPopulation = geneticAlgorithm.initialPopulation(populationSize, choices, information);
+		ArrayList<Ai> team1Warriors = initialPopulation.get(0);
+		ArrayList<Ai> team1Wizards = initialPopulation.get(1);
+		ArrayList<Ai> team1Clerics = initialPopulation.get(2);
 		
-		double[][] enemyWeight1 = geneticAlgorithm.generateWeights(choices, information);
-		double[][] enemyWeight2 = geneticAlgorithm.generateWeights(choices, information);
-		double[][] enemyWeight3 = geneticAlgorithm.generateWeights(choices, information);
-		
-		double team1FinalAverageFitness = 0.0;
-		double team2FinalAverageFitness = 0.0;
-		
-		for (int i = 0; i < populationSize; i++) {
-			double[][] weights = geneticAlgorithm.generateWeights(choices, information);
-			team1Warriors.add(new Warrior(weights));
-		}
-		
-		for (int i = 0; i < populationSize; i++) {
-			double[][] weights = geneticAlgorithm.generateWeights(choices, information);
-			team1Wizards.add(new Warrior(weights));
-		}
-		
-		for (int i = 0; i < populationSize; i++) {
-			double[][] weights = geneticAlgorithm.generateWeights(choices, information);
-			team1Clerics.add(new Warrior(weights));
-		}
+		double tm1FinalAvrFit = 0;
+		double tm2FinalAvrFit = 0;
 		
 		for (int i = 0; i < games; i++) {
 			int lastAi = 0;
-			double team1AverageFitness = 0.0;
-			double team2AverageFitness = 0.0;
-			int team1Alive = -1;
-			int team2Alive = -1;
+			double tm1AvrFit = 0;
+			double tm2AvrFit = 0;
 			ArrayList<Double> team1Fitness = new ArrayList<Double>();
 			
 			while (lastAi < populationSize) {
@@ -99,48 +89,49 @@ public class Controller {
 				gameState = new GameState(startPosition, rows, columns, hexSideSize);
 				gameState.reset();
 				
-				gameState.insertAi(team1Warriors.get(lastAi), 1, Color.red, new Coordinate(3, 3));
-			    gameState.insertAi(team1Wizards.get(lastAi), 1, Color.orange, new Coordinate(0, 0));
-			    gameState.insertAi(team1Clerics.get(lastAi), 1, Color.yellow, new Coordinate(1, 1));
+				gameState.insertAi(team1Warriors.get(lastAi), 1, Color.red, team1_ai1_startPos);
+			    gameState.insertAi(team1Wizards.get(lastAi), 1, Color.orange, team1_ai2_startPos);
+			    gameState.insertAi(team1Clerics.get(lastAi), 1, Color.yellow, team1_ai3_startPos);
 			    
-			    gameState.insertAi(new BaseWarrior2(), 2, Color.blue, new Coordinate(5, 6));
-	    		gameState.insertAi(new BaseWarrior2(), 2, Color.blue, new Coordinate(4, 4));
-	    		gameState.insertAi(new BaseWarrior2(), 2, Color.blue, new Coordinate(5, 5));
-			    
-			    /*
-			    gameState.insertAi(new BaseWarrior(), 2, Color.blue, new Coordinate(5, 6));
-				gameState.insertAi(new BaseWarrior(), 2, Color.blue, new Coordinate(4, 4));
-				gameState.insertAi(new BaseWarrior(), 2, Color.blue, new Coordinate(5, 5));
-				*/
+			    gameState.insertAi(new BaseWarrior2(), 2, Color.blue, team2_ai1_startPos);
+	    		gameState.insertAi(new BaseWarrior2(), 2, Color.blue, team2_ai2_startPos);
+	    		gameState.insertAi(new BaseWarrior2(), 2, Color.blue, team2_ai3_startPos);
+
 				double[][] results = gameState.newGame(maxRounds);
 				
-				team1Alive = (int) results[0][2];
-				team2Alive = (int) results[1][2];
+				double tm1FitVal = geneticAlgorithm.fitness(results[0]);
+				double tm2FitVal = geneticAlgorithm.fitness(results[1]);
 				
-				double team1FitnessValue = geneticAlgorithm.fitness(results[0]);
-				double team2FitnessValue = geneticAlgorithm.fitness(results[1]);
+				tm1AvrFit = tm1AvrFit + tm1FitVal;
+				tm2AvrFit = tm2AvrFit + tm2FitVal;
 				
-				team1AverageFitness = team1AverageFitness + team1FitnessValue;
-				team2AverageFitness = team2AverageFitness + team2FitnessValue;
-				
-				team1Fitness.add(team1FitnessValue);
+				team1Fitness.add(tm1FitVal);
 				++lastAi;
 				
 				//System.out.println("Game " + i + ": team1 fitness = " + team1Fitness + ", team2Fitness = " + team2Fitness);
 			}
-			team1AverageFitness = team1AverageFitness / (double) populationSize;
-			team2AverageFitness = team2AverageFitness / (double) populationSize;
-			team1FinalAverageFitness = team1FinalAverageFitness + team1AverageFitness;
-			team2FinalAverageFitness = team2FinalAverageFitness + team2AverageFitness;
-			System.out.println("Game " + (i + 1) + " done: team 1 average fitness = " + team1AverageFitness  + ", team 2 average fitness = " + team2AverageFitness + ", team1Alive: " + team1Alive + ", team2Alive: " + team2Alive);
+			tm1AvrFit = tm1AvrFit / (double) populationSize;
+			tm2AvrFit = tm2AvrFit / (double) populationSize;
+			tm1FinalAvrFit = tm1FinalAvrFit + tm1AvrFit;
+			tm2FinalAvrFit = tm2FinalAvrFit + tm2AvrFit;
+			System.out.println("Game " + (i + 1) + ": tm1AvrFit = " + round(tm1AvrFit, 2)  + ", tm2AvrFit = " + round(tm2AvrFit, 2));
 			
 			team1Warriors = geneticAlgorithm.newPopulation(team1Warriors, team1Fitness, keepPercent, crossPercent, drasticLikelihood, mutateLikelihood);
 			team1Wizards = geneticAlgorithm.newPopulation(team1Wizards, team1Fitness, keepPercent, crossPercent, drasticLikelihood, mutateLikelihood);
 			team1Clerics = geneticAlgorithm.newPopulation(team1Clerics, team1Fitness, keepPercent, crossPercent, drasticLikelihood, mutateLikelihood);
 		}
-		team1FinalAverageFitness = team1FinalAverageFitness/(double)games;
-		team2FinalAverageFitness = team2FinalAverageFitness/(double)games;
+		tm1FinalAvrFit = tm1FinalAvrFit/(double)games;
+		tm2FinalAvrFit = tm2FinalAvrFit/(double)games;
 		
-		System.out.println("Final average fitness team1: " + team1FinalAverageFitness + ", team2: " + team2FinalAverageFitness);
+		System.out.println("Final average fitness team1: " + tm1FinalAvrFit + ", team2: " + tm2FinalAvrFit);
+	}
+	
+	public static double round(double value, int places) {
+	    if (places < 0) throw new IllegalArgumentException();
+
+	    long factor = (long) Math.pow(10, places);
+	    value = value * factor;
+	    long tmp = Math.round(value);
+	    return (double) tmp / factor;
 	}
 }
