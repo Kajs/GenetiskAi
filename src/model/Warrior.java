@@ -43,10 +43,9 @@ public class Warrior extends Ai {
 		}
 		
 		if(bestAction == null) {
-			if(!Launcher.isAutomatic) {System.out.println("No best action found, staying put");}
 			bestAction = new Action(position, "move", "stay");
 		}
-		if(!Launcher.isAutomatic) {System.out.println(aiType + ", team " + team + " at (" + position.getX() + ", " + position.getY() + ") chose " + bestAction.getBaseType() + ", " + bestAction.getExtendedType() + " on (" + bestAction.getPosition().getX() + ", " + bestAction.getPosition().getY() + ")");}
+		if(Launcher.allowActionOutput) {System.out.println(aiType + ", team " + team + " at (" + position.getX() + ", " + position.getY() + ") chose " + bestAction.getBaseType() + ", " + bestAction.getExtendedType() + " on (" + bestAction.getPosition().getX() + ", " + bestAction.getPosition().getY() + ")");}
 		
 		return bestAction;
 	}

@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Observable;
 
+import control.Controller;
+import control.Launcher;
 import model.Ai;
 import model.Board;
 import model.Coordinate;
@@ -18,14 +20,11 @@ public class GameState extends Observable {
 	private final int rows;
 	private final int columns;
 	private Hex[][] hexMatrix;
-	private final Coordinate startPosition;
-	private final double hexSideSize;
+	//private GeneticAlgorithm gA = new GeneticAlgorithm(); //for testing purposes
 	
 	public GameState(Coordinate startPosition, int rows, int columns, double hexSideSize) {
 		this.rows = rows;
 		this.columns = columns;
-		this.startPosition = startPosition;
-		this.hexSideSize = hexSideSize;
 		board = new Board(startPosition, rows, columns, hexSideSize);
 		hexMatrix = board.getHexMatrix();
 	}
@@ -35,12 +34,15 @@ public class GameState extends Observable {
 		team1Dead.clear();
 		team2Alive.clear();
 		team2Dead.clear();
-		board = new Board(startPosition, rows, columns, hexSideSize);
-		hexMatrix = board.getHexMatrix();
+		for (int r = 0; r < rows; r++) {
+			for (int c = 0; c < columns; c++) {
+				hexMatrix[r][c].reset();
+			}
+		}
 	}
 	
 	public double[][] newGame(int maxRounds) {
-		//0_teamInitialHp, 1_teamHp, 2_teamAlive, 3_teamSize, 4_enemiesInitialHp, 5_enemiesHp, 6_enemiesAlive, 7_enemiesSize, 8_maxRounds, 9_rounds
+		//format: 0_teamInitialHp, 1_teamHp, 2_teamAlive, 3_teamSize, 4_enemiesInitialHp, 5_enemiesHp, 6_enemiesAlive, 7_enemiesSize, 8_maxRounds, 9_rounds
 		double[][] results = new double[2][10];
 		double[] team1Results = new double[10];
 		double[] team2Results = new double[10];
@@ -48,6 +50,17 @@ public class GameState extends Observable {
 		for (int i = 0; i <= maxRounds; i++) {
 			//System.out.println("Starting round " + i);
 			newRound();
+			
+			if(Launcher.allowRoundDelay) {
+				try { Thread.sleep(Controller.roundDelay); } 
+				catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
+			}
+			
+			while(Launcher.isPaused) {
+				try { Thread.sleep(1000); } 
+				catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
+			}
+			
 			if(team1Alive.isEmpty() || team2Alive.isEmpty() || i == maxRounds) {
 				//if(team1Alive.isEmpty()) {System.out.println("Team 1 died _-_-_-_");}
 				//if(team2Alive.isEmpty()) {System.out.println("Team 2 died _-_-_-_");}
@@ -103,6 +116,8 @@ public class GameState extends Observable {
 				results[0] = team1Results;
 				results[1] = team2Results;
 				
+				//System.out.println("Team 1 fitnes: " + Controller.round(gA.fitness(results[0]), 2) + ", " + team1InitialHp + ", " + team1Hp + ", " + team1Survivors + ", " + team1Size + ", " + team2InitialHp + ", " + team2Hp + ", " + team2Survivors + ", " + team2Size);
+				
 				return results;
 			}
 		}
@@ -128,7 +143,10 @@ public class GameState extends Observable {
 		
 		Hex hex = hexMatrix[ai.getPosition().getX()][ai.getPosition().getY()];		
 		hex.setColor(ai.getColor());
-		hex.setAi(ai);		
+		hex.setAi(ai);
+		
+		setChanged();
+		notifyObservers(hexMatrix);
 	}
 	
 	public void newRound() {

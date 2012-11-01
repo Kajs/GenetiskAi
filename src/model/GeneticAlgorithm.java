@@ -8,35 +8,27 @@ import static java.lang.Math.sqrt;
 public class GeneticAlgorithm {
 	private int choices;
 	private int information;
-	private Random randomGenerator = new Random(); 
-	
+	private int size;
+	private Random randomGenerator = new Random(); 	
 	
 	public GeneticAlgorithm () {
 		
 	}
 	
-	public ArrayList<ArrayList<Ai>> initialPopulation(int size, int choices, int information) {
-		ArrayList<ArrayList<Ai>> population = new ArrayList<ArrayList<Ai>>();
-		ArrayList<Ai> warriors = new ArrayList<Ai>();
-		ArrayList<Ai> wizards = new ArrayList<Ai>();
-		ArrayList<Ai> clerics = new ArrayList<Ai>();
+	public double[][][] initialPopulation(int size, int choices, int information) {
+		this.size = size;
+		this.choices = choices;
+		this.information = information;
+		
+		double[][][] population = new double[size][choices + 1][information];
 		
 		for (int i = 0; i < size; i++) {
-			warriors.add(new Warrior(generateWeights(choices, information)));
-			wizards.add(new Warrior(generateWeights(choices, information))); //needs change to wizards
-			clerics.add(new Warrior(generateWeights(choices, information)));  //needs change to clerics
-		}
-		
-		population.add(warriors);
-		population.add(wizards);
-		population.add(clerics);
-		
+			population[i] = generateWeights(choices, information);
+		}		
 		return population;
 	}
 	
 	public double[][] generateWeights(int choices, int information) {
-		this.choices = choices;
-		this.information = information;
 		double[][] weights = new double[choices + 1][information];
 		
 		for (int i = 0; i < choices + 1; i++) {
@@ -53,84 +45,54 @@ public class GeneticAlgorithm {
 		return weights;
 	}
 	
-	public ArrayList<Ai> newPopulation(ArrayList<Ai> ais, ArrayList<Double> fitness, double keepPercent, double crossPercent, double drasticLikelihood, double mutateLikelihood) {
-		int keepAmount = (int)floor((double)ais.size() * keepPercent);
-		int crossAmount = (int)floor((double)ais.size() * crossPercent);
+	public double[][][] newPopulation(double[][][] population, ArrayList<Double> fitness, double keepPercent, double crossPercent, double drasticLikelihood, double mutateLikelihood) {
+		int keepAmount = (int)floor(size * keepPercent);
+		int crossAmount = (int)floor(size * crossPercent);
 		crossAmount = crossAmount - (crossAmount % 2);
-		int mutateAmount = ais.size() - keepAmount - crossAmount;
+		int mutateAmount = size - keepAmount - crossAmount;
 		
-		ArrayList<Ai> newPopulation = new ArrayList<Ai>();
+		double[][][] newPopulation = new double[size][choices+1][information];
 		
 		ArrayList<Double> scaledFitness = fitness;
 		double totalFitness = 0;
+		
 		for (int i = 0; i < scaledFitness.size(); i++) {
-			totalFitness = totalFitness + scaledFitness.get(i);
+			double fit = scaledFitness.get(i);
+			totalFitness = totalFitness + fit;
 		}
 		
-		ArrayList<Ai> carryOver = choseParents(keepAmount, ais, scaledFitness, totalFitness);
-		for (Ai ai : carryOver) {
-			if (ai.getAiType().equals("Warrior")) { 
-				newPopulation.add(new Warrior(ai.getWeights()));
-			}
-			/*
-			if (ai.getAiType().equals("Wizard")) { 
-				newPopulation.add(new Wizard(ai.getWeights()));  
-			}
-			if (ai.getAiType().equals("Cleric")) { 
-			    newPopulation.add(new Cleric(ai.getWeights())); 
-			}
-			*/
-		}	
+		for (int i = 0; i < keepAmount; i++) {
+			newPopulation[i] = choseParents(1, population, scaledFitness, totalFitness)[0];
+		}
 		
-		for(int i = 0; i < crossAmount/2; i++) {
-			ArrayList<Ai> parents = choseParents(2, ais, scaledFitness, totalFitness);
+		for(int i = keepAmount; i < crossAmount/2 + keepAmount; i++) {
+			double[][][] parents = choseParents(2, population, scaledFitness, totalFitness);			
+			double[][] child1 = crossover(parents[0], parents[1]);
+			double[][] child2 = crossover(parents[1], parents[0]);
 			
-			double[][] child1 = crossover(parents.get(0).getWeights(), parents.get(0).getWeights());
-			double[][] child2 = crossover(parents.get(0).getWeights(), parents.get(1).getWeights());
-			if (parents.get(0).getAiType().equals("Warrior")) { 
-				newPopulation.add(new Warrior(child1));              //crossover population
-				newPopulation.add(new Warrior(child2));
-			}
-			/*
-			if (parents.get(0).getAiType().equals("Wizard")) { 
-				newPopulation.add(new Wizard(child1));
-				newPopulation.add(new Wizard(child2));  
-			}
-			if (parents.get(0).getAiType().equals("Cleric")) { 
-				newPopulation.add(new Cleric(child1));
-				newPopulation.add(new Cleric(child2)); 
-			}
-				*/
+			newPopulation[i] = child1;
+			newPopulation[i + 1] = child2;
 		}
-		ArrayList<Ai> mutants = choseParents(mutateAmount, ais, scaledFitness, totalFitness);
-		for (Ai ai : mutants) {
-			double[][] mutant = mutate(ai.getWeights(), drasticLikelihood, mutateLikelihood);
-			if (ai.getAiType().equals("Warrior")) { 
-				newPopulation.add(new Warrior(mutant));
-			}
-			/*
-			if (ai.getAiType().equals("Wizard")) { 
-				newPopulation.add(new Wizard(mutant));  
-			}
-			if (ai.getAiType().equals("Cleric")) { 
-			    newPopulation.add(new Cleric(mutant)); 
-			}
-			*/
-		}	
+		
+		for (int i = keepAmount + crossAmount; i < keepAmount + crossAmount + mutateAmount; i++) {
+			double[][][] mutant = choseParents(1, population, scaledFitness, totalFitness);
+			newPopulation[i] = mutate(mutant[0], drasticLikelihood, mutateLikelihood);
+		}
+		
 		return newPopulation;
 	}
 	
-	public ArrayList<Ai> choseParents(int numberOfParents, ArrayList<Ai> ais, ArrayList<Double> fitness, double totalFitness) {
-		ArrayList<Ai> parents = new ArrayList<Ai>();
+	public double[][][] choseParents(int numberOfParents, double[][][] population, ArrayList<Double> fitness, double totalFitness) {
+		double[][][] parents = new double[numberOfParents][choices+1][information];
 		int parentsFound = 0;
 		
 		while(parentsFound < numberOfParents) {
 			double chance = randomGenerator.nextDouble();
 			double summedFitness = 0.0;
-			for (int i = 0; i < ais.size(); i++) {
+			for (int i = 0; i < size; i++) {
 				summedFitness = summedFitness + fitness.get(i);
 				if (chance <= summedFitness / totalFitness) {
-					parents.add(ais.get(i));
+					parents[parentsFound] = population[i];
 					break;
 				}
 			}

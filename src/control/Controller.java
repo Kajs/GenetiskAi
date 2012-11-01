@@ -14,10 +14,11 @@ public class Controller {
 	static double hexSideSize = 40;
 	static int rows = 7;
 	static int columns = 8;
+	public static int roundDelay = 1000;  // in milliseconds
 	static Coordinate startPosition = new Coordinate(Math.sin(Math.toRadians(30)) * hexSideSize, 1);
 	
 	static int maxRounds = 25;
-	static int games = 1000;
+	static int games = 200;
 	
 	static int populationSize = 1000;
 	static int choices = 6;
@@ -38,16 +39,17 @@ public class Controller {
 	public BoardRenderer boardRenderer;
 	public WindowManager window;
 	public GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm();
+	public static double[][][][] bestTeams;
 	
-	public Controller(boolean automatic) {
-		
+	public Controller(boolean automatic, boolean displayAutomatic) {
 		gameState = new GameState(startPosition, rows, columns, hexSideSize);
-		
-        if(!automatic) {            
-            gameState.insertAi(new Warrior(geneticAlgorithm.generateWeights(choices, information)), 1, Color.red, new Coordinate(3, 3));
-    	    gameState.insertAi(new Warrior(geneticAlgorithm.generateWeights(choices, information)), 1, Color.red, new Coordinate(0, 0));
-    		gameState.insertAi(new Warrior(geneticAlgorithm.generateWeights(choices, information)), 2, Color.green, new Coordinate(5, 6));
-    		gameState.insertAi(new Warrior(geneticAlgorithm.generateWeights(choices, information)), 2, Color.green, new Coordinate(4, 4));
+        if(!automatic) {     
+            gameState.insertAi(new Warrior(geneticAlgorithm.generateWeights(choices, information)), 1, Color.red, team1_ai1_startPos);
+    	    gameState.insertAi(new Warrior(geneticAlgorithm.generateWeights(choices, information)), 1, Color.orange, team1_ai2_startPos);
+    	    gameState.insertAi(new Warrior(geneticAlgorithm.generateWeights(choices, information)), 1, Color.yellow, team1_ai3_startPos);
+    		gameState.insertAi(new BaseWarrior(), 2, Color.blue, team2_ai1_startPos);
+    		gameState.insertAi(new BaseWarrior(), 2, Color.blue, team2_ai2_startPos);
+    		gameState.insertAi(new BaseWarrior(), 2, Color.blue, team2_ai3_startPos);
     		
         	boardRenderer = new BoardRenderer(rows, columns, gameState.getHexMatrix());
     		boardRenderer.setBackground(Color.white);
@@ -56,8 +58,31 @@ public class Controller {
     		window = new WindowManager(width, height, boardRenderer, this);
         }
         else {
-        	evolve(maxRounds, games, populationSize);
+        	Launcher.allowActionOutput = false;
+        	
+        	if(displayAutomatic) {
+        		gameState.reset();
+        		boardRenderer = new BoardRenderer(rows, columns, gameState.getHexMatrix());
+        		boardRenderer.setBackground(Color.white);
+        		gameState.addObserver(boardRenderer);
+        		window = new WindowManager(width, height, boardRenderer, this);
+        		bestTeams = evolve(maxRounds, games, populationSize, displayAutomatic);
+        	}
+    		else {
+    			Launcher.allowRoundDelay = false;
+    			bestTeams = evolve(maxRounds, games, populationSize, displayAutomatic);
+    		}
         }
+	}
+	
+public static void newBestTeamGame(int bestTeam) {
+	gameState.reset();
+	gameState.insertAi(new Warrior(bestTeams[0][bestTeam]), 1, Color.red, team1_ai1_startPos);
+    gameState.insertAi(new Warrior(bestTeams[1][bestTeam]), 1, Color.orange, team1_ai2_startPos);
+    gameState.insertAi(new Warrior(bestTeams[2][bestTeam]), 1, Color.yellow, team1_ai3_startPos);
+	gameState.insertAi(new BaseWarrior(), 2, Color.blue, team2_ai1_startPos);
+	gameState.insertAi(new BaseWarrior(), 2, Color.blue, team2_ai2_startPos);
+	gameState.insertAi(new BaseWarrior(), 2, Color.blue, team2_ai3_startPos);
 	}
 	
 	public static int isOccupied(Coordinate coordinate) {
@@ -68,11 +93,11 @@ public class Controller {
 		gameState.colorHex(position, color);
 	}
 	
-	public void evolve(int maxRounds, int games, int populationSize) {
-		ArrayList<ArrayList<Ai>> initialPopulation = geneticAlgorithm.initialPopulation(populationSize, choices, information);
-		ArrayList<Ai> team1Warriors = initialPopulation.get(0);
-		ArrayList<Ai> team1Wizards = initialPopulation.get(1);
-		ArrayList<Ai> team1Clerics = initialPopulation.get(2);
+	public double[][][][] evolve(int maxRounds, int games, int populationSize, boolean displayAutomatic) {
+		double[][][] team1Warriors = geneticAlgorithm.initialPopulation(populationSize, choices, information);
+		double[][][] team1Wizards = geneticAlgorithm.initialPopulation(populationSize, choices, information);
+		double[][][] team1Clerics = geneticAlgorithm.initialPopulation(populationSize, choices, information);
+		double[][][][] bestTeams = new double[3][games][choices+1][information];
 		
 		double tm1FinalAvrFit = 0;
 		double tm2FinalAvrFit = 0;
@@ -82,25 +107,31 @@ public class Controller {
 			double tm1AvrFit = 0;
 			double tm2AvrFit = 0;
 			ArrayList<Double> team1Fitness = new ArrayList<Double>();
+			double bestFitness = (int)Math.pow(-2, 31);
+			int bestTeam = 0;
 			
 			while (lastAi < populationSize) {
 				//System.out.println("Game " + i + ", team number " + lastAi + "_____________________________");
 				
-				gameState = new GameState(startPosition, rows, columns, hexSideSize);
 				gameState.reset();
 				
-				gameState.insertAi(team1Warriors.get(lastAi), 1, Color.red, team1_ai1_startPos);
-			    gameState.insertAi(team1Wizards.get(lastAi), 1, Color.orange, team1_ai2_startPos);
-			    gameState.insertAi(team1Clerics.get(lastAi), 1, Color.yellow, team1_ai3_startPos);
+				gameState.insertAi(new Warrior(team1Warriors[lastAi]), 1, Color.red, team1_ai1_startPos);
+			    gameState.insertAi(new Warrior(team1Wizards[lastAi]), 1, Color.orange, team1_ai2_startPos);
+			    gameState.insertAi(new Warrior(team1Clerics[lastAi]), 1, Color.yellow, team1_ai3_startPos);
 			    
-			    gameState.insertAi(new BaseWarrior2(), 2, Color.blue, team2_ai1_startPos);
-	    		gameState.insertAi(new BaseWarrior2(), 2, Color.blue, team2_ai2_startPos);
-	    		gameState.insertAi(new BaseWarrior2(), 2, Color.blue, team2_ai3_startPos);
+			    gameState.insertAi(new BaseWarrior(), 2, Color.blue, team2_ai1_startPos);
+	    		gameState.insertAi(new BaseWarrior(), 2, Color.blue, team2_ai2_startPos);
+	    		gameState.insertAi(new BaseWarrior(), 2, Color.blue, team2_ai3_startPos);
 
 				double[][] results = gameState.newGame(maxRounds);
 				
 				double tm1FitVal = geneticAlgorithm.fitness(results[0]);
 				double tm2FitVal = geneticAlgorithm.fitness(results[1]);
+				
+				if(tm1FitVal > bestFitness) {
+					bestFitness = tm1FitVal;
+					bestTeam = lastAi;
+				}
 				
 				tm1AvrFit = tm1AvrFit + tm1FitVal;
 				tm2AvrFit = tm2AvrFit + tm2FitVal;
@@ -110,6 +141,13 @@ public class Controller {
 				
 				//System.out.println("Game " + i + ": team1 fitness = " + team1Fitness + ", team2Fitness = " + team2Fitness);
 			}
+			
+			bestTeams[0][i] = team1Warriors[bestTeam];
+			bestTeams[1][i] = team1Wizards[bestTeam];
+			bestTeams[2][i] = team1Clerics[bestTeam];
+			
+			//System.out.println("bestFitness: " + bestFitness + ", team number: " + bestTeam + ", stored Fitness: " + team1Fitness.get(bestTeam));
+			
 			tm1AvrFit = tm1AvrFit / (double) populationSize;
 			tm2AvrFit = tm2AvrFit / (double) populationSize;
 			tm1FinalAvrFit = tm1FinalAvrFit + tm1AvrFit;
@@ -124,6 +162,8 @@ public class Controller {
 		tm2FinalAvrFit = tm2FinalAvrFit/(double)games;
 		
 		System.out.println("Final average fitness team1: " + tm1FinalAvrFit + ", team2: " + tm2FinalAvrFit);
+		
+		return bestTeams;
 	}
 	
 	public static double round(double value, int places) {
@@ -133,5 +173,9 @@ public class Controller {
 	    value = value * factor;
 	    long tmp = Math.round(value);
 	    return (double) tmp / factor;
+	}
+	
+	public double[][][][] getBestTeams() {
+		return bestTeams;
 	}
 }
