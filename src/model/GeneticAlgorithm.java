@@ -56,14 +56,14 @@ public class GeneticAlgorithm {
 		ArrayList<Double> scaledFitness = linearTransformationScaling(fitness, 10.0, 1.0);
 		double totalFitness = 0;
 		double bestFitness = Math.pow(-2, 31);
-		double unscaledBestFitness = Math.pow(-2, 31);
+		//double unscaledBestFitness = Math.pow(-2, 31);
 		int bestFitnessPosition = 0;
 		
 		for (int i = 0; i < scaledFitness.size(); i++) {
 			double fit = scaledFitness.get(i);
 			if(fit > bestFitness) { 
 				bestFitness = fit;
-				unscaledBestFitness = fitness.get(i);
+				//unscaledBestFitness = fitness.get(i);
 				bestFitnessPosition = i;
 			}
 			totalFitness = totalFitness + fit;
@@ -73,7 +73,7 @@ public class GeneticAlgorithm {
 			//System.out.println("Keep i: " + i);
 			if(i == 0 && elitism) {
 				newPopulation[0] = population[bestFitnessPosition];
-				System.out.println("adding fitness " + round(unscaledBestFitness, 2) + " from position " + bestFitnessPosition);
+				//System.out.println("adding fitness " + round(unscaledBestFitness, 2) + " from position " + bestFitnessPosition);
 			}
 			else {
 				newPopulation[i] = choseParents(1, population, scaledFitness, totalFitness)[0];
@@ -99,7 +99,6 @@ public class GeneticAlgorithm {
 			newPopulation[i] = mutate(mutant[0], drasticAmount, mutateLikelihood);
 			drasticAmount = drasticAmount + stepSize;
 		}
-		System.out.println("Weight from bestPos: " + newPopulation[0][0][0]);
 		return newPopulation;
 	}
 	
