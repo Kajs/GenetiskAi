@@ -11,6 +11,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+import model.HeapSort;
+
 import view.BoardRenderer;
 
 import control.Controller;
@@ -50,7 +52,7 @@ public class WindowManager {
 	    	}
 	    });
 	   
-	   JMenuItem newBestTeamGame = new JMenuItem("Chose Best Team");
+	   JMenuItem newBestTeamGame = new JMenuItem("Chose best team");
 	   newBestTeamGame.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		String str = JOptionPane.showInputDialog(null, "Game Number : ", "New Best Team Game", 1);
@@ -58,6 +60,15 @@ public class WindowManager {
 	    			int bestTeam = new Integer(str);
 	    			Controller.newBestTeamGame(bestTeam - 1);
 	    		}
+	    	}
+	    });
+	   
+	   JMenuItem sortBestTeams = new JMenuItem("Sort best teams");
+	   sortBestTeams.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		HeapSort.heapSort(Controller.bestTeams[0], Controller.bestTeamsFitness);
+	    		HeapSort.heapSort(Controller.bestTeams[1], Controller.bestTeamsFitness);
+	    		HeapSort.heapSort(Controller.bestTeams[2], Controller.bestTeamsFitness);
 	    	}
 	    });
 	   
@@ -120,6 +131,7 @@ public class WindowManager {
 	   
 	   JMenu automatic = new JMenu("Automatic");
 	   automatic.add(newBestTeamGame);
+	   automatic.add(sortBestTeams);
 	   
 	   JMenu output = new JMenu("Output");
 	   output.add(toggleActionOutput);

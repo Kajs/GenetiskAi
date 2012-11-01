@@ -23,10 +23,10 @@ public class Controller {
 	static int populationSize = 1000;
 	static int choices = 6;
 	static int information = 15;
-	static double keepPercent = 0.2;
-	static double crossPercent = 0.8;
+	static double keepPercent = 0.20;
+	static double crossPercent = 0.70;
 	static double drasticLikelihood = 0.3;
-	static double mutateLikelihood = 0.1;
+	static double mutateLikelihood = 0.5;
 	
 	static Coordinate team1_ai1_startPos = new Coordinate(3, 3);
 	static Coordinate team1_ai2_startPos = new Coordinate(0, 0);
@@ -40,6 +40,7 @@ public class Controller {
 	public WindowManager window;
 	public GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm();
 	public static double[][][][] bestTeams;
+	public static ArrayList<Double> bestTeamsFitness = new ArrayList<Double>();
 	
 	public Controller(boolean automatic, boolean displayAutomatic) {
 		gameState = new GameState(startPosition, rows, columns, hexSideSize);
@@ -109,6 +110,7 @@ public static void newBestTeamGame(int bestTeam) {
 			ArrayList<Double> team1Fitness = new ArrayList<Double>();
 			double bestFitness = (int)Math.pow(-2, 31);
 			int bestTeam = 0;
+			double elitesAverageFitness = 0.0;
 			
 			while (lastAi < populationSize) {
 				//System.out.println("Game " + i + ", team number " + lastAi + "_____________________________");
@@ -145,6 +147,7 @@ public static void newBestTeamGame(int bestTeam) {
 			bestTeams[0][i] = team1Warriors[bestTeam];
 			bestTeams[1][i] = team1Wizards[bestTeam];
 			bestTeams[2][i] = team1Clerics[bestTeam];
+			bestTeamsFitness.add(bestFitness);
 			
 			//System.out.println("bestFitness: " + bestFitness + ", team number: " + bestTeam + ", stored Fitness: " + team1Fitness.get(bestTeam));
 			
@@ -152,7 +155,20 @@ public static void newBestTeamGame(int bestTeam) {
 			tm2AvrFit = tm2AvrFit / (double) populationSize;
 			tm1FinalAvrFit = tm1FinalAvrFit + tm1AvrFit;
 			tm2FinalAvrFit = tm2FinalAvrFit + tm2AvrFit;
-			System.out.println("Game " + (i + 1) + ": tm1AvrFit = " + round(tm1AvrFit, 2)  + ", tm2AvrFit = " + round(tm2AvrFit, 2));
+			
+			ArrayList<Double> team1FitnessCopy = new ArrayList<Double>();
+			team1FitnessCopy.addAll(team1Fitness);
+			double[][][] team1WarriorsCopy = team1Warriors;
+			
+			HeapSort.heapSort(team1WarriorsCopy, team1FitnessCopy);
+			int keepAmount = (int)Math.floor(populationSize * keepPercent);
+			for (int e = populationSize - keepAmount; e < populationSize; e++) {
+				elitesAverageFitness = elitesAverageFitness + team1FitnessCopy.get(e);
+			}
+			
+			elitesAverageFitness = elitesAverageFitness / keepAmount;
+			
+			System.out.println("Game " + (i + 1) + "bestFit: " + round(bestFitness, 2) + ", elitesAvrFit: " + round(elitesAverageFitness, 2) + ", tm1AvrFit = " + round(tm1AvrFit, 2)  + ", tm2AvrFit = " + round(tm2AvrFit, 2));
 			
 			team1Warriors = geneticAlgorithm.newPopulation(team1Warriors, team1Fitness, keepPercent, crossPercent, drasticLikelihood, mutateLikelihood);
 			team1Wizards = geneticAlgorithm.newPopulation(team1Wizards, team1Fitness, keepPercent, crossPercent, drasticLikelihood, mutateLikelihood);

@@ -53,7 +53,7 @@ public class GeneticAlgorithm {
 		
 		double[][][] newPopulation = new double[size][choices+1][information];
 		
-		ArrayList<Double> scaledFitness = fitness;
+		ArrayList<Double> scaledFitness = exponentialScaling(fitness);
 		double totalFitness = 0;
 		
 		for (int i = 0; i < scaledFitness.size(); i++) {
