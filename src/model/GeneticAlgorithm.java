@@ -45,7 +45,7 @@ public class GeneticAlgorithm {
 		return weights;
 	}
 	
-	public double[][][] newPopulation(double[][][] population, ArrayList<Double> fitness, double keepPercent, double crossPercent, double drasticLikelihood, double mutateLikelihood) {
+	public double[][][] newPopulation(double[][][] population, ArrayList<Double> fitness, double keepPercent, double crossPercent, double drasticLikelihood, double mutateLikelihood, boolean elitism) {
 		int keepAmount = (int)floor(size * keepPercent);
 		int crossAmount = (int)floor(size * crossPercent);
 		crossAmount = crossAmount - (crossAmount % 2);
@@ -55,13 +55,26 @@ public class GeneticAlgorithm {
 		
 		ArrayList<Double> scaledFitness = exponentialScaling(fitness);
 		double totalFitness = 0;
+		double bestFitness = Math.pow(-2, 31);
+		//double unscaledBestFitness = Math.pow(-2, 31);
+		int bestFitnessPosition = 0;
 		
-		for (int i = 0; i < scaledFitness.size(); i++) {
+		for (int i = 0; i < scaledFitness.size(); i++) {			
 			double fit = scaledFitness.get(i);
+			if(fit > bestFitness) { 
+				bestFitness = fit;
+				//unscaledBestFitness = fitness.get(i);
+				bestFitnessPosition = i;
+			}
 			totalFitness = totalFitness + fit;
 		}
 		
 		for (int i = 0; i < keepAmount; i++) {
+			if(i == 0 && elitism) {
+				newPopulation[0] = population[bestFitnessPosition];
+				//System.out.println("adding fitness " + round(unscaledBestFitness, 2) + " from position " + bestFitnessPosition);
+				continue;
+			}
 			newPopulation[i] = choseParents(1, population, scaledFitness, totalFitness)[0];
 		}
 		
@@ -181,5 +194,14 @@ public class GeneticAlgorithm {
 			scaledFitness.add(sqrt(orgFitness.get(i) + 1));
 		}
 		return scaledFitness;
+	}
+	
+	public double round(double value, int places) {
+	    if (places < 0) throw new IllegalArgumentException();
+
+	    long factor = (long) Math.pow(10, places);
+	    value = value * factor;
+	    long tmp = Math.round(value);
+	    return (double) tmp / factor;
 	}
 }

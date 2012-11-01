@@ -61,8 +61,10 @@ public class BaseWarrior extends Ai {
 				if(enemies.size() > 0) {
 					Ai nearestEnemy = nearestAi(enemies);
 					double distance = position.distance(nearestEnemy.getPosition());
-					bestAction = new Action(adjacentPosition, "move", "nearestEnemy");
-					bestWeight = 1.0 / distance;
+					if(1.0/distance > bestWeight) {
+						bestAction = new Action(adjacentPosition, "move", "nearestEnemy");
+						bestWeight = 1.0 / distance;
+					}
 				}
 				else {
 					if (bestAction == null) {

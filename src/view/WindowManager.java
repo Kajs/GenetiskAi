@@ -90,6 +90,27 @@ public class WindowManager {
 	    	}
 	    });
 	   
+	   JMenuItem toggleHpOutput = new JMenuItem("Toggle Hp Output");
+	   toggleHpOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.allowHpOutput = !(Launcher.allowHpOutput);
+	    	}
+	    });
+	   
+	   JMenuItem toggleShieldOutput = new JMenuItem("Toggle Shield Output");
+	   toggleShieldOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.allowShieldOutput = !(Launcher.allowShieldOutput);
+	    	}
+	    });
+	   
+	   JMenuItem toggleStunOutput = new JMenuItem("Toggle Stun Output");
+	   toggleStunOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.allowStunOutput = !(Launcher.allowStunOutput);
+	    	}
+	    });
+	   
 	   JMenuItem toggleRoundDelay = new JMenuItem("Toggle Round Delay");
 	   toggleRoundDelay.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
@@ -135,6 +156,9 @@ public class WindowManager {
 	   
 	   JMenu output = new JMenu("Output");
 	   output.add(toggleActionOutput);
+	   output.add(toggleHpOutput);
+	   output.add(toggleShieldOutput);
+	   output.add(toggleStunOutput);
 	   JMenuBar menuBar = new JMenuBar();
 	   
 	   JMenu speed = new JMenu("Speed");

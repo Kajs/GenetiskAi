@@ -58,7 +58,7 @@ public class Ai {
     
     public void setHp(double newHp) {
 		hp = newHp;
-		if(id != null && !Launcher.isAutomatic) { System.out.println(aiType + ", team " + team + " at (" + position.getX() + ", " + position.getY() + "): hp = " + hp);}
+		if(id != null && Launcher.allowHpOutput) { System.out.println(aiType + ", team " + team + " at (" + position.getX() + ", " + position.getY() + "): hp = " + hp);}
 	}
 
     public double getHp() {
@@ -78,7 +78,7 @@ public class Ai {
     }
 
 	public void setStunned(boolean status) {
-		if(status == false && !Launcher.isAutomatic) {
+		if(status == false && Launcher.allowStunOutput) {
 			System.out.println(id + " is stunned");
 		}
 		stunned = status;
@@ -89,7 +89,7 @@ public class Ai {
 	}
 	
 	public void setShielded(boolean status) {
-		if (!status && !Launcher.isAutomatic) { System.out.println(id + " lost shield"); }
+		if (!status && Launcher.allowShieldOutput) { System.out.println(id + " lost shield"); }
 		shielded = status;
 	}
 	

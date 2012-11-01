@@ -27,6 +27,7 @@ public class Controller {
 	static double crossPercent = 0.70;
 	static double drasticLikelihood = 0.3;
 	static double mutateLikelihood = 0.5;
+	public boolean elitism = true;
 	
 	static Coordinate team1_ai1_startPos = new Coordinate(3, 3);
 	static Coordinate team1_ai2_startPos = new Coordinate(0, 0);
@@ -168,11 +169,11 @@ public static void newBestTeamGame(int bestTeam) {
 			
 			elitesAverageFitness = elitesAverageFitness / keepAmount;
 			
-			System.out.println("Game " + (i + 1) + "bestFit: " + round(bestFitness, 2) + ", elitesAvrFit: " + round(elitesAverageFitness, 2) + ", tm1AvrFit = " + round(tm1AvrFit, 2)  + ", tm2AvrFit = " + round(tm2AvrFit, 2));
+			System.out.println("Game " + (i + 1) + " bestFit: " + round(bestFitness, 2) + ", elitesAvrFit: " + round(elitesAverageFitness, 2) + ", tm1AvrFit = " + round(tm1AvrFit, 2)  + ", tm2AvrFit = " + round(tm2AvrFit, 2));
 			
-			team1Warriors = geneticAlgorithm.newPopulation(team1Warriors, team1Fitness, keepPercent, crossPercent, drasticLikelihood, mutateLikelihood);
-			team1Wizards = geneticAlgorithm.newPopulation(team1Wizards, team1Fitness, keepPercent, crossPercent, drasticLikelihood, mutateLikelihood);
-			team1Clerics = geneticAlgorithm.newPopulation(team1Clerics, team1Fitness, keepPercent, crossPercent, drasticLikelihood, mutateLikelihood);
+			team1Warriors = geneticAlgorithm.newPopulation(team1Warriors, team1Fitness, keepPercent, crossPercent, drasticLikelihood, mutateLikelihood, elitism);
+			team1Wizards = geneticAlgorithm.newPopulation(team1Wizards, team1Fitness, keepPercent, crossPercent, drasticLikelihood, mutateLikelihood, elitism);
+			team1Clerics = geneticAlgorithm.newPopulation(team1Clerics, team1Fitness, keepPercent, crossPercent, drasticLikelihood, mutateLikelihood, elitism);
 		}
 		tm1FinalAvrFit = tm1FinalAvrFit/(double)games;
 		tm2FinalAvrFit = tm2FinalAvrFit/(double)games;
