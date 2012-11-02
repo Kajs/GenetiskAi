@@ -3,10 +3,10 @@ package model;
 import java.util.ArrayList;
 import control.Launcher;
 
-public class BaseWizard extends Ai {
+public class BaseCleric extends Ai {
 	
-	public BaseWizard() {
-		setAiType("Wizard");
+	public BaseCleric() {
+		setAiType("Cleric");
 		setSupportAction("shield");
 		initialHp = 20;
 		hp = initialHp;

@@ -18,6 +18,7 @@ public class Ai {
     public String aiType;
     public double hp;
     public double meleeDamage;
+    public double healAmount;
     public boolean stunned;
     public boolean shielded;
     public int team;
@@ -71,6 +72,10 @@ public class Ai {
     
     public double getMeleeDamage() {
     	return meleeDamage;
+    }
+    
+    public double getHealAmount() {
+    	return healAmount;
     }
     
     public void setMeleeDamage(double damage) {

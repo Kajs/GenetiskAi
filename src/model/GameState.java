@@ -43,9 +43,6 @@ public class GameState extends Observable {
 	
 	public double[][] newGame(int maxRounds) {
 		//format: 0_teamInitialHp, 1_teamHp, 2_teamAlive, 3_teamSize, 4_enemiesInitialHp, 5_enemiesHp, 6_enemiesAlive, 7_enemiesSize, 8_maxRounds, 9_rounds
-		double[][] results = new double[2][10];
-		double[] team1Results = new double[10];
-		double[] team2Results = new double[10];
 		
 		for (int i = 0; i <= maxRounds; i++) {
 			//System.out.println("Starting round " + i);
@@ -66,64 +63,71 @@ public class GameState extends Observable {
 				//if(team2Alive.isEmpty()) {System.out.println("Team 2 died _-_-_-_");}
 				//if(i == maxRounds) {System.out.println("Max rounds reached");}
 				
-				
-				double team1InitialHp = 0;
-				double team1Hp = 0;
-				double team1Survivors = (double) team1Alive.size();
-				double team1Size = team1Alive.size() + team1Dead.size();
-				for (Ai ai : team1Alive) { 
-					team1InitialHp = team1InitialHp + ai.getInitialHp();
-					team1Hp = team1Hp + ai.getHp();
-				}
-				for (Ai ai : team1Dead)  {
-					team1InitialHp = team1InitialHp + ai.getInitialHp();
-				}
-				
-				double team2InitialHp = 0;
-				double team2Hp = 0;
-				double team2Survivors = (double) team2Alive.size();
-				double team2Size = team2Alive.size() + team2Dead.size();
-				for (Ai ai : team2Alive) { 
-					team2InitialHp = team2InitialHp + ai.getInitialHp();
-					team2Hp = team2Hp + ai.getHp();
-				}
-				for (Ai ai : team2Dead)  {
-					team2InitialHp = team2InitialHp + ai.getInitialHp();
-				}
-				
-				team1Results[0] = team1InitialHp;
-				team1Results[1] = team1Hp;
-				team1Results[2] = team1Survivors;
-				team1Results[3] = team1Size;
-				team1Results[4] = team2InitialHp;
-				team1Results[5] = team2Hp;
-				team1Results[6] = team2Survivors;
-				team1Results[7] = team2Size;
-				team1Results[8] = maxRounds;
-				team1Results[9] = i;     //rounds
-				
-				team2Results[0] = team2InitialHp;
-				team2Results[1] = team2Hp;
-				team2Results[2] = team2Survivors;
-				team2Results[3] = team2Size;
-				team2Results[4] = team1InitialHp;
-				team2Results[5] = team1Hp;
-				team2Results[6] = team1Survivors;
-				team2Results[7] = team1Size;
-				team2Results[8] = maxRounds;
-				team2Results[9] = i;     //rounds
-				
-				results[0] = team1Results;
-				results[1] = team2Results;
-				
 				//System.out.println("Team 1 fitnes: " + Controller.round(gA.fitness(results[0]), 2) + ", " + team1InitialHp + ", " + team1Hp + ", " + team1Survivors + ", " + team1Size + ", " + team2InitialHp + ", " + team2Hp + ", " + team2Survivors + ", " + team2Size);
-				
-				return results;
+				return getResults(maxRounds, i);
 			}
 		}
 		
 		System.out.println("Error in GameState.newGame(): did not stop properly");
 		return null;
+	}
+	
+	public double[][] getResults(int maxRounds, int currentRound){
+		double[][] results = new double[2][10];
+		double[] team1Results = new double[10];
+		double[] team2Results = new double[10];
+		
+		double team1InitialHp = 0;
+		double team1Hp = 0;
+		double team1Survivors = (double) team1Alive.size();
+		double team1Size = team1Alive.size() + team1Dead.size();
+		for (Ai ai : team1Alive) { 
+			team1InitialHp = team1InitialHp + ai.getInitialHp();
+			team1Hp = team1Hp + ai.getHp();
+		}
+		for (Ai ai : team1Dead)  {
+			team1InitialHp = team1InitialHp + ai.getInitialHp();
+		}
+		
+		double team2InitialHp = 0;
+		double team2Hp = 0;
+		double team2Survivors = (double) team2Alive.size();
+		double team2Size = team2Alive.size() + team2Dead.size();
+		for (Ai ai : team2Alive) { 
+			team2InitialHp = team2InitialHp + ai.getInitialHp();
+			team2Hp = team2Hp + ai.getHp();
+		}
+		for (Ai ai : team2Dead)  {
+			team2InitialHp = team2InitialHp + ai.getInitialHp();
+		}
+		
+		team1Results[0] = team1InitialHp;
+		team1Results[1] = team1Hp;
+		team1Results[2] = team1Survivors;
+		team1Results[3] = team1Size;
+		team1Results[4] = team2InitialHp;
+		team1Results[5] = team2Hp;
+		team1Results[6] = team2Survivors;
+		team1Results[7] = team2Size;
+		team1Results[8] = maxRounds;
+		team1Results[9] = currentRound;     //rounds
+		
+		team2Results[0] = team2InitialHp;
+		team2Results[1] = team2Hp;
+		team2Results[2] = team2Survivors;
+		team2Results[3] = team2Size;
+		team2Results[4] = team1InitialHp;
+		team2Results[5] = team1Hp;
+		team2Results[6] = team1Survivors;
+		team2Results[7] = team1Size;
+		team2Results[8] = maxRounds;
+		team2Results[9] = currentRound;     //rounds
+		
+		if(team1Hp < 0 || team2Hp < 0) {System.out.println("Error: a teams alive players had total hp < 0"); }
+		
+		results[0] = team1Results;
+		results[1] = team2Results;	
+		return results;
 	}
 	
 	public Hex[][] getHexMatrix() {
@@ -150,6 +154,8 @@ public class GameState extends Observable {
 	}
 	
 	public void newRound() {
+		if(Launcher.toggleRoundSeparator) { System.out.println("New round____________________"); }
+		
 		for (Ai ai : team1Alive) {
 			if (ai.getStunned()) { 
 				ai.setStunned(false);
@@ -174,6 +180,7 @@ public class GameState extends Observable {
 				parseAction(preferredAction, ai, orgHex);
 			}
 		}
+		
 		setChanged();
 		notifyObservers(hexMatrix);
 	}
@@ -434,7 +441,6 @@ System.out.println("north west size: " + Integer.toString(northWest.size()));
 				}
 				else {
 					targetAi.setHp(targetAi.getHp() - ai.getMeleeDamage());
-					if(targetAi.getHp() < 0) {System.out.println("Setting hp = " + targetAi.getHp() + ", isAlive: " + targetAi.isAlive()); }
 					if (targetAi.isAlive() == false) {
 						killAi(newHex);
 						//System.out.println("Killed " + targetAi.getId() + " team1Size: " + team1Alive.size() + ", team2Size: " + team2Alive.size());						
@@ -446,10 +452,26 @@ System.out.println("north west size: " + Integer.toString(northWest.size()));
 			if(extendedType.equals("shield")) {
 				targetAi.setShielded(true);
 			}
+			if(extendedType.equals("heal")) {
+				double currentHp = targetAi.getHp();
+				double initialHp = targetAi.getInitialHp();
+				if(currentHp < initialHp) {
+					targetAi.setHp(min(targetAi.getHp() + ai.getHealAmount(), initialHp));
+				}
+			}
 			break;
 		default:
 			System.out.println("Unknown action type: " + baseType + ", " + extendedType);
 			break;
+		}
+	}
+	
+	public double min(double a, double b) {
+		if(a <= b) {
+			return a;
+		}
+		else{
+			return b;
 		}
 	}
 }

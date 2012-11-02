@@ -1,6 +1,5 @@
 package model;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import control.Launcher;
 
@@ -9,7 +8,6 @@ public class BaseWarrior extends Ai {
 	public BaseWarrior() {
 		setAiType("Warrior");
 		setSupportAction("shield");
-		setColor(Color.red);
 		initialHp = 20;
 		hp = initialHp;
 		standardMeleeDamage = 5;

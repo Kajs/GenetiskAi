@@ -3,14 +3,15 @@ package model;
 import java.util.ArrayList;
 import control.Launcher;
 
-public class Warrior extends Ai {
+public class Cleric extends Ai {
 	
-	public Warrior(double[][] weights) {
-		setAiType("Warrior");
-		setSupportAction("shield");
-		initialHp = 20;
+	public Cleric(double[][] weights) {
+		setAiType("Cleric");
+		setSupportAction("heal");
+		initialHp = 15;
 		hp = initialHp;
-		standardMeleeDamage = 5;
+		standardMeleeDamage = 2.5;
+		healAmount = 10;
 		meleeDamage = standardMeleeDamage;
 		weightMatrix = weights;
     }
@@ -131,10 +132,10 @@ public class Warrior extends Ai {
 				if(adjacentHex.getAi().getTeam() != team) {
 					//attack
 					compareAction(totalWeight(0, information), adjacentPosition, "attack", "normal");    //normalAttack
-					compareAction(totalWeight(1, information), adjacentPosition, "attack", "stun");      //stunAttack
+					//compareAction(totalWeight(1, information), adjacentPosition, "attack", "stun");      //stunAttack
 				}
 				else {
-					compareAction(totalWeight(aActions + 0, information), adjacentPosition, "support", "shield");
+					compareAction(totalWeight(aActions + 0, information), adjacentPosition, "support", "heal");
 					//support
 				}
 			}

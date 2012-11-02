@@ -2,6 +2,8 @@ package model;
 
 import java.util.ArrayList;
 import java.util.Random;
+
+import control.Launcher;
 import static java.lang.Math.floor;
 import static java.lang.Math.sqrt;
 
@@ -16,6 +18,7 @@ public class GeneticAlgorithm {
 	}
 	
 	public double[][][] initialPopulation(int size, int choices, int information) {
+		if(Launcher.allowGenAlgAnnounce) {System.out.println("Generating initialPopulation");}
 		this.size = size;
 		this.choices = choices;
 		this.information = information;
@@ -46,6 +49,8 @@ public class GeneticAlgorithm {
 	}
 	
 	public double[][][] newPopulation(double[][][] population, ArrayList<Double> fitness, double keepPercent, double crossPercent, double drasticLikelihood, double mutateLikelihood, boolean elitism) {
+		if(Launcher.allowGenAlgAnnounce) {System.out.println("Generating new population");}
+		
 		int keepAmount = (int)floor(size * keepPercent);
 		int crossAmount = (int)floor(size * crossPercent);
 		crossAmount = crossAmount - (crossAmount % 2);
@@ -53,12 +58,15 @@ public class GeneticAlgorithm {
 		
 		double[][][] newPopulation = new double[size][choices+1][information];
 		
-		ArrayList<Double> scaledFitness = linearTransformationScaling(fitness, 10.0, 1.0);
+		//ArrayList<Double> scaledFitness = linearTransformationScaling(fitness, 10.0, 1.0);
+		ArrayList<Double> scaledFitness = exponentialScaling(fitness);
 		double totalFitness = 0;
 		double bestFitness = Math.pow(-2, 31);
 		//double unscaledBestFitness = Math.pow(-2, 31);
 		int bestFitnessPosition = 0;
 		
+		
+		if(Launcher.allowGenAlgAnnounce) {System.out.println("scaling fitness");}
 		for (int i = 0; i < scaledFitness.size(); i++) {
 			double fit = scaledFitness.get(i);
 			if(fit > bestFitness) { 
@@ -69,6 +77,8 @@ public class GeneticAlgorithm {
 			totalFitness = totalFitness + fit;
 		}
 		
+		
+		if(Launcher.allowGenAlgAnnounce) {System.out.println("Chosing population to keep");}
 		for (int i = 0; i < keepAmount; i++) {
 			//System.out.println("Keep i: " + i);
 			if(i == 0 && elitism) {
@@ -80,6 +90,8 @@ public class GeneticAlgorithm {
 			}
 		}
 		
+		
+		if(Launcher.allowGenAlgAnnounce) {System.out.println("Chosing crossover population");}
 		for(int i = keepAmount; i < crossAmount + keepAmount; i = i + 2) {
 			//System.out.println("Cross i: " + i);
 			double[][][] parents = choseParents(2, population, scaledFitness, totalFitness);			
@@ -90,15 +102,18 @@ public class GeneticAlgorithm {
 			newPopulation[i + 1] = child2;
 		}
 		
-		double stepSize = 1.0 / mutateAmount;
-		double drasticAmount = 0;
+		if(Launcher.allowGenAlgAnnounce) {System.out.println("Chosing mutate population");}
+		double stepSize = (1.0 - drasticLikelihood) / mutateAmount;
+		double newDrasticLikelihood = drasticLikelihood;
 		
 		for (int i = keepAmount + crossAmount; i < keepAmount + crossAmount + mutateAmount; i++) {
 			//System.out.println("Mutate i: " + i);
 			double[][][] mutant = choseParents(1, population, scaledFitness, totalFitness);
-			newPopulation[i] = mutate(mutant[0], drasticAmount, mutateLikelihood);
-			drasticAmount = drasticAmount + stepSize;
+			newPopulation[i] = mutate(mutant[0], newDrasticLikelihood, mutateLikelihood);
+			newDrasticLikelihood = newDrasticLikelihood + stepSize;
 		}
+		
+		if(Launcher.allowGenAlgAnnounce) {System.out.println("New population finished");}
 		return newPopulation;
 	}
 	

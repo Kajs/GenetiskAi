@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -34,14 +36,14 @@ public class WindowManager {
 	    Container contentPane = frame.getContentPane();
 	    contentPane.add(boardRenderer);	    
 	    
-	   JMenuItem newRound = new JMenuItem("New Round");
+	   JMenuItem newRound = new JMenuItem("New round");
 	   newRound.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		Controller.gameState.newRound();
 	    	}
 	    });
 	   
-	   JMenuItem simulateTen = new JMenuItem("10 Rounds");
+	   JMenuItem simulateTen = new JMenuItem("10 rounds");
 	   simulateTen.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		int x = 0;
@@ -63,12 +65,28 @@ public class WindowManager {
 	    	}
 	    });
 	   
-	   JMenuItem sortBestTeams = new JMenuItem("Sort best teams");
-	   sortBestTeams.addActionListener(new ActionListener() {
+	   JMenuItem runBestTeamGames = new JMenuItem("Run best team games");
+	   runBestTeamGames.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
-	    		HeapSort.heapSort(Controller.bestTeams[0], Controller.bestTeamsFitness);
-	    		HeapSort.heapSort(Controller.bestTeams[1], Controller.bestTeamsFitness);
-	    		HeapSort.heapSort(Controller.bestTeams[2], Controller.bestTeamsFitness);
+	    		Controller.runBestTeamGames = true;
+	    	}
+	    });
+	   
+	   JMenuItem sortBestTeamsLowToHigh = new JMenuItem("Sort best teams (low to high)");
+	   sortBestTeamsLowToHigh.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		HeapSort.heapSortLow(Controller.bestTeams[0], copyArrayList(Controller.bestTeamsFitness));
+	    		HeapSort.heapSortLow(Controller.bestTeams[1], copyArrayList(Controller.bestTeamsFitness));
+	    		HeapSort.heapSortLow(Controller.bestTeams[2], Controller.bestTeamsFitness);
+	    	}
+	    });
+	   
+	   JMenuItem sortBestTeamsHighToLow = new JMenuItem("Sort best teams (high to low)");
+	   sortBestTeamsHighToLow.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		HeapSort.heapSortHigh(Controller.bestTeams[0], copyArrayList(Controller.bestTeamsFitness));
+	    		HeapSort.heapSortHigh(Controller.bestTeams[1], copyArrayList(Controller.bestTeamsFitness));
+	    		HeapSort.heapSortHigh(Controller.bestTeams[2], Controller.bestTeamsFitness);
 	    	}
 	    });
 	   
@@ -83,38 +101,38 @@ public class WindowManager {
 	    	}
 	    });
 	   
-	   JMenuItem toggleActionOutput = new JMenuItem("Toggle Action Output");
+	   JMenuItem toggleActionOutput = new JMenuItem("Toggle action output");
 	   toggleActionOutput.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		Launcher.allowActionOutput = !(Launcher.allowActionOutput);
 	    	}
 	    });
 	   
-	   JMenuItem toggleHpOutput = new JMenuItem("Toggle Hp Output");
+	   JMenuItem toggleBestTeamsFitnessOutput = new JMenuItem("Toggle best teams fitness output");
+	   toggleBestTeamsFitnessOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.allowBestTeamsFitnessOutput = !(Launcher.allowBestTeamsFitnessOutput);
+	    	}
+	    });
+	   
+	   JMenuItem toggleHpOutput = new JMenuItem("Toggle hp output");
 	   toggleHpOutput.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		Launcher.allowHpOutput = !(Launcher.allowHpOutput);
 	    	}
 	    });
 	   
-	   JMenuItem toggleShieldOutput = new JMenuItem("Toggle Shield Output");
+	   JMenuItem toggleShieldOutput = new JMenuItem("Toggle shield output");
 	   toggleShieldOutput.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		Launcher.allowShieldOutput = !(Launcher.allowShieldOutput);
 	    	}
 	    });
 	   
-	   JMenuItem toggleStunOutput = new JMenuItem("Toggle Stun Output");
+	   JMenuItem toggleStunOutput = new JMenuItem("Toggle stun output");
 	   toggleStunOutput.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		Launcher.allowStunOutput = !(Launcher.allowStunOutput);
-	    	}
-	    });
-	   
-	   JMenuItem toggleRoundDelay = new JMenuItem("Toggle Round Delay");
-	   toggleRoundDelay.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) {
-	    		Launcher.allowRoundDelay = !(Launcher.allowRoundDelay);
 	    	}
 	    });
 	   
@@ -122,6 +140,34 @@ public class WindowManager {
 	   pause.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		Launcher.isPaused = !(Launcher.isPaused);
+	    	}
+	    });
+	   
+	   JMenuItem toggleRoundSeparator = new JMenuItem("Toggle round separator");
+	   toggleRoundSeparator.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.toggleRoundSeparator = !(Launcher.toggleRoundSeparator);
+	    	}
+	    });
+	   
+	   JMenuItem printLine = new JMenuItem("Print new line");
+	   printLine.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		System.out.println();
+	    	}
+	    });
+	   
+	   JMenuItem toggleRoundDelay = new JMenuItem("Toggle round delay");
+	   toggleRoundDelay.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.allowRoundDelay = !(Launcher.allowRoundDelay);
+	    	}
+	    });
+	   
+	   JMenuItem stop = new JMenuItem("Stop");
+	   stop.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.stop = true;
 	    	}
 	    });
 	   
@@ -152,13 +198,18 @@ public class WindowManager {
 	   
 	   JMenu automatic = new JMenu("Automatic");
 	   automatic.add(newBestTeamGame);
-	   automatic.add(sortBestTeams);
+	   automatic.add(runBestTeamGames);
+	   automatic.add(sortBestTeamsLowToHigh);
+	   automatic.add(sortBestTeamsHighToLow);
 	   
 	   JMenu output = new JMenu("Output");
 	   output.add(toggleActionOutput);
+	   output.add(toggleBestTeamsFitnessOutput);
 	   output.add(toggleHpOutput);
 	   output.add(toggleShieldOutput);
 	   output.add(toggleStunOutput);
+	   output.add(toggleRoundSeparator);
+	   output.add(printLine);
 	   JMenuBar menuBar = new JMenuBar();
 	   
 	   JMenu speed = new JMenu("Speed");
@@ -166,6 +217,7 @@ public class WindowManager {
 	   speed.add(normal);
 	   speed.add(slow);
 	   speed.add(pause);
+	   speed.add(stop);
 	   speed.add(setSpeed);
 	   speed.add(toggleRoundDelay);
 	   
@@ -179,4 +231,11 @@ public class WindowManager {
 	    frame.setVisible(true);
 	}
 	
+	public ArrayList<Double> copyArrayList(ArrayList<Double> orgArrayList) {
+		ArrayList<Double> copy = new ArrayList<Double>();
+		for (int i = 0; i < orgArrayList.size(); i++) {
+			copy.add(orgArrayList.get(i));
+		}
+		return copy;
+	}
 }
