@@ -11,31 +11,31 @@ public class Controller {
 	
 	static int width = 800;
 	static int height = 600;
-	static double hexSideSize = 40;
-	static int rows = 7;
-	static int columns = 8;
+	static double hexSideSize = 10;
+	static int rows = 40;
+	static int columns = 60;
 	public static int roundDelay = 1000;  // in milliseconds
 	static Coordinate startPosition = new Coordinate(Math.sin(Math.toRadians(30)) * hexSideSize, 1);
 	
-	static int maxRounds = 50;
+	static int maxRounds = 100;
 	static int maxGames = 200;
 	static int gamesCompleted = 0;
 	
-	static int populationSize = 500;
+	static int populationSize = 1000;
 	static int choices = 6;
-	static int information = 15;
+	static int information = 23;
 	static double keepPercent = 0.25;
 	static double crossPercent = 0.25;
 	static double drasticLikelihood = 0.0;
 	static double mutateLikelihood = 1.0;
 	public boolean elitism = true;
 	
-	static Coordinate team1_ai1_startPos = new Coordinate(3, 3);
-	static Coordinate team1_ai2_startPos = new Coordinate(0, 0);
+	static Coordinate team1_ai1_startPos = new Coordinate(2, 1);
+	static Coordinate team1_ai2_startPos = new Coordinate(1, 0);
 	static Coordinate team1_ai3_startPos = new Coordinate(1, 1);
-	static Coordinate team2_ai1_startPos = new Coordinate(5, 6);
-	static Coordinate team2_ai2_startPos = new Coordinate(4, 4);
-	static Coordinate team2_ai3_startPos = new Coordinate(5, 5);
+	static Coordinate team2_ai1_startPos = new Coordinate(35, 35);
+	static Coordinate team2_ai2_startPos = new Coordinate(35, 36);
+	static Coordinate team2_ai3_startPos = new Coordinate(35, 37);
 	static int enemyDifficulty = 0;
 	
 	public static final GameState gameState = new GameState(startPosition, rows, columns, hexSideSize);
@@ -95,7 +95,7 @@ public static void newBestTeamGame(int bestTeam) {
 
 public static void runBestTeamGames() {
 	for (int i = 0; i < gamesCompleted; i++) {
-		if(Launcher.allowBestTeamsFitnessOutput) { System.out.println("Best team " + i + " with fitness " + round(bestTeamsFitness.get(i), 2)); }
+		if(Launcher.allowBestTeamsFitnessOutput) { System.out.println("Best team " + (i + 1) + " with fitness " + round(bestTeamsFitness.get(i), 2)); }
 		gameState.reset();
 		insertGeneticAis(bestTeams[0][i], bestTeams[1][i], bestTeams[2][i]);
 		insertStaticAis();
@@ -199,8 +199,8 @@ public static void runBestTeamGames() {
 	
 	public static void insertGeneticAis(double[][] warrior, double[][] wizard, double[][] cleric) {
 		gameState.insertAi(new Warrior(warrior), 1, Color.red, team1_ai1_startPos);
-	    gameState.insertAi(new Warrior(wizard), 1, Color.orange, team1_ai2_startPos);
-	    gameState.insertAi(new Warrior(cleric), 1, Color.yellow, team1_ai3_startPos);
+	    gameState.insertAi(new Wizard(wizard), 1, Color.orange, team1_ai2_startPos);
+	    gameState.insertAi(new Cleric(cleric), 1, Color.yellow, team1_ai3_startPos);
 	}
 	
 	public static void insertStaticAis() {

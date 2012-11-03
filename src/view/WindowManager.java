@@ -136,6 +136,20 @@ public class WindowManager {
 	    	}
 	    });
 	   
+	   JMenuItem toggleBoostOutput = new JMenuItem("Toggle boost output");
+	   toggleBoostOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.allowBoostOutput = !(Launcher.allowBoostOutput);
+	    	}
+	    });
+	   
+	   JMenuItem toggleAreaDamageOutput = new JMenuItem("Toggle area damage output");
+	   toggleAreaDamageOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.allowAreaDamageOutput = !(Launcher.allowAreaDamageOutput);
+	    	}
+	    });
+	   
 	   JMenuItem pause = new JMenuItem("Pause");
 	   pause.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
@@ -204,7 +218,9 @@ public class WindowManager {
 	   
 	   JMenu output = new JMenu("Output");
 	   output.add(toggleActionOutput);
+	   output.add(toggleAreaDamageOutput);
 	   output.add(toggleBestTeamsFitnessOutput);
+	   output.add(toggleBoostOutput);
 	   output.add(toggleHpOutput);
 	   output.add(toggleShieldOutput);
 	   output.add(toggleStunOutput);

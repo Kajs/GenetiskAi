@@ -432,22 +432,42 @@ System.out.println("north west size: " + Integer.toString(northWest.size()));
 			moveAi(ai, orgHex, newHex);
 			break;
 		case "attack":
-			if(extendedType.equals("stun")) {
+			switch(extendedType) {
+			case "stun":
 				targetAi.setStunned(true);
-			}
-			else {
+				break;
+			case "area":
+				doDamage(targetAi, ai.getAreaDamage(), newHex);
+				double enemyTeam = targetAi.getTeam();
+				Hex[] adjacentHexes = adjacentHexes(preferredAction.getPosition());
+				for(Hex hex : adjacentHexes) {
+					if(hex != null) {
+						if(hex.isOccupied()) {
+							Ai adjacentAi = hex.getAi();
+							if(adjacentAi.getTeam() == enemyTeam) {
+								double newHp = adjacentAi.getHp() - ai.getAreaDamage();
+								if(Launcher.allowAreaDamageOutput) {System.out.println("New hp due to area damage: " + newHp);}
+								doDamage(adjacentAi, ai.getAreaDamage(), hex);
+							}
+						}
+					}					
+				}
+				
+				break;
+			case "normal":
 				if(targetAi.getShielded()) {
 					targetAi.setShielded(false);
+					break;
 				}
 				else {
-					targetAi.setHp(targetAi.getHp() - ai.getMeleeDamage());
-					if (targetAi.isAlive() == false) {
-						killAi(newHex);
-						//System.out.println("Killed " + targetAi.getId() + " team1Size: " + team1Alive.size() + ", team2Size: " + team2Alive.size());						
-					}
+					doDamage(targetAi, ai.getMeleeDamage(), newHex);
+					break;
+				
 				}
+			default:
+				System.out.println("Unknown attack type");
+				break;
 			}
-			break;
 		case "support":
 			if(extendedType.equals("shield")) {
 				targetAi.setShielded(true);
@@ -458,6 +478,9 @@ System.out.println("north west size: " + Integer.toString(northWest.size()));
 				if(currentHp < initialHp) {
 					targetAi.setHp(min(targetAi.getHp() + ai.getHealAmount(), initialHp));
 				}
+			}
+			if(extendedType.equals("boost")) {
+				targetAi.setBoosted(true);
 			}
 			break;
 		default:
@@ -472,6 +495,14 @@ System.out.println("north west size: " + Integer.toString(northWest.size()));
 		}
 		else{
 			return b;
+		}
+	}
+	
+	public void doDamage(Ai targetAi, double damage, Hex targetAiHex) {
+		targetAi.setHp(targetAi.getHp() - damage);
+		if (targetAi.isAlive() == false) {
+			killAi(targetAiHex);
+			//System.out.println("Killed " + targetAi.getId() + " team1Size: " + team1Alive.size() + ", team2Size: " + team2Alive.size());	
 		}
 	}
 }

@@ -11,7 +11,7 @@ public class Cleric extends Ai {
 		initialHp = 15;
 		hp = initialHp;
 		standardMeleeDamage = 2.5;
-		healAmount = 10;
+		healAmount = 7.5;
 		meleeDamage = standardMeleeDamage;
 		weightMatrix = weights;
     }
@@ -50,82 +50,9 @@ public class Cleric extends Ai {
 	}
 	
 	public void weight (Hex adjacentHex, ArrayList<Ai> enemies, ArrayList<Ai> allies, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies) {
-		ArrayList<Double> information = new ArrayList<Double>();
-		double nearestEnemyHp;
-		double nearestEnemyDistance;
-		double nearestEnemyStunned;
-		double nearestEnemyShielded;
-		double nearestAllyHp;
-		double nearestAllyDistance;
-		double nearestAllyStunned;
-		double nearestAllyShielded;
-		Ai nearestEnemy = nearestAi(enemies);
-		Ai nearestAlly = nearestAi(allies);
-		
-		if(nearestEnemy == null) {
-			nearestEnemyHp = 0.0; 
-			nearestEnemyDistance = 0.0;
-			nearestEnemyStunned = 0.0;
-			nearestEnemyShielded = 0.0;
-		} 
-		else {
-			nearestEnemyHp = nearestEnemy.getHp();
-			nearestEnemyDistance = position.distance(nearestEnemy.getPosition());	
-			if(nearestEnemy.getStunned()) {
-				nearestEnemyStunned = 1.0;
-			}
-			else {
-				nearestEnemyStunned = 0.0;
-			}
-			
-			if(nearestEnemy.getShielded()) {
-				nearestEnemyShielded = 1.0;
-			}
-			else{
-				nearestEnemyShielded = 0.0;
-			}
-		}
-		if(nearestAlly == null) { 
-			nearestAllyHp = 0.0;
-			nearestAllyDistance = 0.0;
-			nearestAllyStunned = 0.0;
-			nearestAllyShielded = 0.0;
-		} 
-		else { 
-			nearestAllyHp = nearestAlly.getHp(); 
-			nearestAllyDistance = position.distance(nearestAlly.getPosition());		
-			if(nearestAlly.getStunned()) {
-				nearestAllyStunned = 1.0;
-			}
-			else {
-				nearestAllyStunned = 0.0;
-			}
-			
-			if(nearestAlly.getShielded()) {
-				nearestAllyShielded = 1.0;
-			}
-			else{
-				nearestAllyShielded = 0.0;
-			}
-		}
+		ArrayList<Double> information = getInformation(adjacentHex, enemies, allies, myTeamHp, enemyTeamHp, totalEnemies, totalAllies);
 		
 		Coordinate adjacentPosition = adjacentHex.getPosition();
-		
-		information.add(hp);
-		information.add(myTeamHp);
-		information.add(enemyTeamHp);
-		information.add((double) enemies.size());
-		information.add((double) allies.size());
-		information.add(nearestAllyHp);
-		information.add(nearestAllyDistance);
-		information.add(nearestAllyStunned);
-		information.add(nearestAllyShielded);
-		information.add(nearestEnemyHp);
-		information.add(nearestEnemyDistance);
-		information.add(nearestEnemyStunned);
-		information.add(nearestEnemyShielded);
-		information.add(totalEnemies);
-		information.add(totalAllies);
 		
 		if (adjacentHex != null) {
 			if(adjacentHex.isOccupied()) {

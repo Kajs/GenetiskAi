@@ -9,7 +9,9 @@ public class Launcher {
 	public static boolean allowActionOutput = true;
 	public static boolean allowRoundDelay = true;
 	public static boolean allowShieldOutput = false;
+	public static boolean allowBoostOutput = false;
 	public static boolean allowHpOutput = false;
+	public static boolean allowAreaDamageOutput = false;
 	public static boolean toggleRoundSeparator = false;
 	public static boolean allowStunOutput = false;
 	public static boolean allowRoundFitnessOutput = false;

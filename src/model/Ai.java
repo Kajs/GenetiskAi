@@ -18,9 +18,12 @@ public class Ai {
     public String aiType;
     public double hp;
     public double meleeDamage;
+    public double areaDamage;
     public double healAmount;
     public boolean stunned;
     public boolean shielded;
+    public boolean boosted;
+    public double boostFactor = 0.5;
     public int team;
     public String id;
     public double[][] weightMatrix;
@@ -71,7 +74,24 @@ public class Ai {
     }
     
     public double getMeleeDamage() {
-    	return meleeDamage;
+    	if(boosted) {
+    		if(Launcher.allowBoostOutput) {System.out.println("Doing " + (meleeDamage * (1.0 + boostFactor) + " damage due to boost"));}
+    		boosted = false;
+    		return meleeDamage * (1.0 + boostFactor);
+    	}
+    	else {
+    		return meleeDamage;
+    	}
+    }
+    
+    public double getAreaDamage() {
+    	if(boosted) {
+    		boosted = false;
+    		return areaDamage * (1.0 + boostFactor);
+    	}
+    	else {
+    		return areaDamage;
+    	}
     }
     
     public double getHealAmount() {
@@ -100,6 +120,15 @@ public class Ai {
 	
 	public boolean getShielded() {
 		return shielded;
+	}
+	
+	public void setBoosted(boolean status) {
+		if (!status && Launcher.allowBoostOutput) { System.out.println(id + " lost boost"); }
+		boosted = status;
+	}
+	
+	public boolean getBoosted() {
+		return boosted;
 	}
 	
 	public int getTeam() {
@@ -147,6 +176,98 @@ public class Ai {
 			}
 		}
     	return closest;
+    }
+    
+    public ArrayList<Double> getInformation(Hex adjacentHex, ArrayList<Ai> enemies, ArrayList<Ai> allies, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies) {
+    	ArrayList<Double> information = new ArrayList<Double>();
+		double nearestEnemyHp = 0;
+		double nearestEnemyIsBoosted = 0;
+		double nearestEnemyDistance = 0;
+		double nearestEnemyStunned = 0;
+		double nearestEnemyShielded = 0;
+		double nearestEnemyIsWarrior = 0;
+		double nearestEnemyIsWizard = 0;
+		double nearestEnemyIsCleric = 0;
+		double nearestAllyHp = 0;
+		double nearestAllyIsBoosted = 0;
+		double nearestAllyDistance = 0;
+		double nearestAllyStunned = 0;
+		double nearestAllyShielded = 0;
+		double nearestAllyIsWarrior = 0;
+		double nearestAllyIsWizard = 0;
+		double nearestAllyIsCleric = 0;
+		Ai nearestEnemy = nearestAi(enemies);
+		Ai nearestAlly = nearestAi(allies);
+		
+		if(nearestEnemy != null) {
+			nearestEnemyHp = nearestEnemy.getHp();
+			nearestEnemyDistance = position.distance(nearestEnemy.getPosition());	
+			if(nearestEnemy.getBoosted()) {nearestEnemyIsBoosted = 1;}
+			if(nearestEnemy.getShielded()) {nearestEnemyShielded = 1;}
+			if(nearestEnemy.getStunned()) {nearestEnemyStunned = 1;}
+			
+			switch(nearestEnemy.getAiType()) {
+			case "Warrior":
+				nearestEnemyIsWarrior = 1;
+				break;
+			case "Wizard":
+				nearestEnemyIsWizard = 1;
+				break;
+			case "Cleric":
+				nearestEnemyIsCleric = 1;
+				break;
+			default:
+				System.out.println("Unknown enemy ai type " + nearestEnemy.getAiType());
+			}
+				
+		}
+		if(nearestAlly != null) {
+			nearestAllyHp = nearestAlly.getHp(); 
+			nearestAllyDistance = position.distance(nearestAlly.getPosition());	
+			if(nearestAlly.getBoosted()) {nearestAllyIsBoosted = 1;}
+			if(nearestAlly.getShielded()) {nearestAllyShielded = 1;}
+			if(nearestAlly.getStunned()) {nearestAllyStunned = 1;}
+			
+			switch(nearestAlly.getAiType()) {
+			case "Warrior":
+				nearestAllyIsWarrior = 1;
+				break;
+			case "Wizard":
+				nearestAllyIsWizard = 1;
+				break;
+			case "Cleric":
+				nearestAllyIsCleric = 1;
+				break;
+			default:
+				System.out.println("Unknown ally ai type " + nearestAlly.getAiType());
+			}
+		}
+		
+		information.add(hp);
+		information.add(myTeamHp);
+		information.add(enemyTeamHp);
+		information.add((double) enemies.size());
+		information.add((double) allies.size());
+		information.add(nearestAllyHp);
+		information.add(nearestAllyDistance);
+		information.add(nearestAllyStunned);
+		information.add(nearestAllyShielded);
+		information.add(nearestEnemyHp);
+		information.add(nearestEnemyDistance);
+		information.add(nearestEnemyStunned);
+		information.add(nearestEnemyShielded);
+		information.add(totalEnemies);
+		information.add(totalAllies);
+		information.add(nearestEnemyIsWarrior);
+		information.add(nearestEnemyIsWizard);
+		information.add(nearestEnemyIsCleric);
+		information.add(nearestAllyIsWarrior);
+		information.add(nearestAllyIsWizard);
+		information.add(nearestAllyIsCleric);
+		information.add(nearestAllyIsBoosted);
+		information.add(nearestEnemyIsBoosted);
+    	
+		return information;
     }
     
     public void generateId() {
