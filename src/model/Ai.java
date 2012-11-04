@@ -32,6 +32,7 @@ public class Ai {
 	public String supportAction;
 	public double standardMeleeDamage;
 	public double initialHp;
+	public Ai copy;
     
     public Ai() {
     }
@@ -298,5 +299,10 @@ public class Ai {
     {
     	System.out.println("Ai.Action() should be overwritten by extending classes");
     	return new Action(new Coordinate(0, 0), "standard", "Ai");
+    }
+    
+    public Ai copyAi(Ai copy) {
+    	copy = this;
+    	return null;
     }
 }
