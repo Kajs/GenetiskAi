@@ -299,4 +299,5 @@ public class Ai {
     	System.out.println("Ai.Action() should be overwritten by extending classes");
     	return new Action(new Coordinate(0, 0), "standard", "Ai");
     }
+    
 }
