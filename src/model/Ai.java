@@ -301,8 +301,4 @@ public class Ai {
     	return new Action(new Coordinate(0, 0), "standard", "Ai");
     }
     
-    public Ai copyAi(Ai copy) {
-    	copy = this;
-    	return null;
-    }
 }

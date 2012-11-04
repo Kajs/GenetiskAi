@@ -13,6 +13,7 @@ public class GeneticAlgorithm {
 	private int size;
 	private boolean skipZeroFitnessScaling;
 	private Random randomGenerator = new Random(); 	
+	private int keepAmount;
 	
 	public GeneticAlgorithm () {
 		
@@ -50,11 +51,12 @@ public class GeneticAlgorithm {
 	}
 	
 	public double[][][] newPopulation(double[][][] population, ArrayList<Double> fitness, double keepPercent, double crossPercent, double drasticLikelihood, double mutateLikelihood, boolean elitism, boolean skipZeroFitnessScaling) {
+		HeapSort.heapSortHigh(population, fitness);
 		if(Launcher.allowGenAlgAnnounce) {System.out.println("Generating new population");}
 		this.skipZeroFitnessScaling = skipZeroFitnessScaling;
 		ArrayList<Double> scaledFitness;
 		
-		int keepAmount = (int)floor(size * keepPercent);
+		keepAmount = (int)floor(size * keepPercent);
 		int crossAmount = (int)floor(size * crossPercent);
 		crossAmount = crossAmount - (crossAmount % 2);
 		int mutateAmount = size - keepAmount - crossAmount;
@@ -65,19 +67,19 @@ public class GeneticAlgorithm {
 		//scaledFitness = linearTransformationScaling(fitness, 0.75, 1.0);
 		scaledFitness = exponentialScaling(fitness);
 		double totalFitness = 0;
-		double bestFitness = Math.pow(-2, 31);
+		//double bestFitness = Math.pow(-2, 31);
 		//double unscaledBestFitness = Math.pow(-2, 31);
-		int bestFitnessPosition = 0;
+		//int bestFitnessPosition = 0;
 		
 		
 		if(Launcher.allowGenAlgAnnounce) {System.out.println("scaling fitness");}
-		for (int i = 0; i < scaledFitness.size(); i++) {
+		for (int i = 0; i < keepAmount; i++) {
 			double fit = scaledFitness.get(i);
-			if(fit > bestFitness) { 
-				bestFitness = fit;
+			//if(fit > bestFitness) { 
+				//bestFitness = fit;
 				//unscaledBestFitness = fitness.get(i);
-				bestFitnessPosition = i;
-			}
+				//bestFitnessPosition = i;
+			//}
 			totalFitness = totalFitness + fit;
 		}
 		
@@ -85,13 +87,20 @@ public class GeneticAlgorithm {
 		if(Launcher.allowGenAlgAnnounce) {System.out.println("Chosing population to keep");}
 		for (int i = 0; i < keepAmount; i++) {
 			//System.out.println("Keep i: " + i);
+			/*
 			if(i == 0 && elitism) {
 				newPopulation[0] = population[bestFitnessPosition];
 				//System.out.println("adding fitness " + round(unscaledBestFitness, 2) + " from position " + bestFitnessPosition);
 			}
+			*/
+			
+			newPopulation[i] = population[i];
+			
+			/*
 			else {
 				newPopulation[i] = choseParents(1, population, scaledFitness, totalFitness)[0];
 			}
+			*/
 		}
 		
 		
@@ -128,7 +137,7 @@ public class GeneticAlgorithm {
 		while(parentsFound < numberOfParents) {
 			double chance = randomGenerator.nextDouble();
 			double summedFitness = 0.0;
-			for (int i = 0; i < size; i++) {
+			for (int i = 0; i < keepAmount; i++) {
 				summedFitness = summedFitness + fitness.get(i);
 				if (chance <= summedFitness / totalFitness) {
 					parents[parentsFound] = population[i];

@@ -292,4 +292,10 @@ public static void runBestTeamGames() {
 			return maxHexWidth;
 		}
 	}
+	
+	public static Ai copyAi(Ai ai) {
+		Ai copy = new Ai();
+		copy = ai;
+		return copy;
+	}
 }
