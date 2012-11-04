@@ -20,7 +20,6 @@ public class GameState extends Observable {
 	private final int rows;
 	private final int columns;
 	private Hex[][] hexMatrix;
-	//private GeneticAlgorithm gA = new GeneticAlgorithm(); //for testing purposes
 	
 	public GameState(Coordinate startPosition, int rows, int columns, double hexSideSize) {
 		this.rows = rows;
@@ -29,23 +28,10 @@ public class GameState extends Observable {
 		hexMatrix = board.getHexMatrix();
 	}
 	
-	public void reset() {
-		team1Alive.clear();
-		team1Dead.clear();
-		team2Alive.clear();
-		team2Dead.clear();
-		for (int r = 0; r < rows; r++) {
-			for (int c = 0; c < columns; c++) {
-				hexMatrix[r][c].reset();
-			}
-		}
-	}
-	
 	public double[][] newGame(int maxRounds) {
 		//format: 0_teamInitialHp, 1_teamHp, 2_teamAlive, 3_teamSize, 4_enemiesInitialHp, 5_enemiesHp, 6_enemiesAlive, 7_enemiesSize, 8_maxRounds, 9_rounds
 		
 		for (int i = 0; i <= maxRounds; i++) {
-			//System.out.println("Starting round " + i);
 			newRound();
 			
 			if(Launcher.allowRoundDelay) {
@@ -58,18 +44,47 @@ public class GameState extends Observable {
 				catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
 			}
 			
-			if(team1Alive.isEmpty() || team2Alive.isEmpty() || i == maxRounds) {
-				//if(team1Alive.isEmpty()) {System.out.println("Team 1 died _-_-_-_");}
-				//if(team2Alive.isEmpty()) {System.out.println("Team 2 died _-_-_-_");}
-				//if(i == maxRounds) {System.out.println("Max rounds reached");}
-				
-				//System.out.println("Team 1 fitnes: " + Controller.round(gA.fitness(results[0]), 2) + ", " + team1InitialHp + ", " + team1Hp + ", " + team1Survivors + ", " + team1Size + ", " + team2InitialHp + ", " + team2Hp + ", " + team2Survivors + ", " + team2Size);
-				return getResults(maxRounds, i);
-			}
+			if(team1Alive.isEmpty() || team2Alive.isEmpty() || i == maxRounds) {return getResults(maxRounds, i);}
 		}
 		
 		System.out.println("Error in GameState.newGame(): did not stop properly");
 		return null;
+	}
+	
+	public void newRound() {
+		if(Launcher.toggleRoundSeparator) { System.out.println("_____________________________"); }
+		
+		for (Ai ai : team1Alive) {
+			if (ai.getStunned()) { 
+				ai.setStunned(false);
+				}
+			else {
+				Coordinate orgPos = ai.getPosition();
+				Hex orgHex = hexMatrix[orgPos.getX()][orgPos.getY()];
+				Hex[] adjacentHexes = adjacentHexes(orgPos);
+				double[][] adjacentAis = adjacentAis(adjacentHexes, ai.getTeam());
+				Action preferredAction = ai.action(adjacentHexes, hexCake(orgPos), teamHp(team1Alive), teamHp(team2Alive), (double) team2Alive.size(), (double) team1Alive.size(), adjacentAis);
+				
+				parseAction(preferredAction, ai, orgHex);
+			}			
+		}
+		for (Ai ai : team2Alive) {
+			if (ai.getStunned()) {
+				ai.setStunned(false);
+			}
+			else {
+				Coordinate orgPos = ai.getPosition();
+				Hex orgHex = hexMatrix[orgPos.getX()][orgPos.getY()];
+				Hex[] adjacentHexes = adjacentHexes(orgPos);
+				double[][] adjacentAis = adjacentAis(adjacentHexes, ai.getTeam());
+				Action preferredAction = ai.action(adjacentHexes, hexCake(orgPos), teamHp(team2Alive), teamHp(team1Alive), (double) team1Alive.size(), (double) team2Alive.size(), adjacentAis);
+				
+				parseAction(preferredAction, ai, orgHex);
+			}
+		}
+		
+		setChanged();
+		notifyObservers(hexMatrix);
 	}
 	
 	public double[][] getResults(int maxRounds, int currentRound){
@@ -148,38 +163,6 @@ public class GameState extends Observable {
 		Hex hex = hexMatrix[ai.getPosition().getX()][ai.getPosition().getY()];		
 		hex.setColor(ai.getColor());
 		hex.setAi(ai);
-		
-		setChanged();
-		notifyObservers(hexMatrix);
-	}
-	
-	public void newRound() {
-		if(Launcher.toggleRoundSeparator) { System.out.println("New round____________________"); }
-		
-		for (Ai ai : team1Alive) {
-			if (ai.getStunned()) { 
-				ai.setStunned(false);
-				}
-			else {
-				Coordinate orgPos = ai.getPosition();
-				Hex orgHex = hexMatrix[orgPos.getX()][orgPos.getY()];
-				Action preferredAction = ai.action(adjacentHexes(orgPos), hexCake(orgPos), teamHp(team1Alive), teamHp(team2Alive), (double) team2Alive.size(), (double) team1Alive.size());
-				
-				parseAction(preferredAction, ai, orgHex);
-			}			
-		}
-		for (Ai ai : team2Alive) {
-			if (ai.getStunned()) {
-				ai.setStunned(false);
-			}
-			else {
-				Coordinate orgPos = ai.getPosition();
-				Hex orgHex = hexMatrix[orgPos.getX()][orgPos.getY()];
-				Action preferredAction = ai.action(adjacentHexes(orgPos), hexCake(orgPos), teamHp(team2Alive), teamHp(team1Alive), (double) team1Alive.size(), (double) team2Alive.size());
-				
-				parseAction(preferredAction, ai, orgHex);
-			}
-		}
 		
 		setChanged();
 		notifyObservers(hexMatrix);
@@ -377,14 +360,7 @@ public class GameState extends Observable {
 					x--;
 				}
 			}
-/*
-System.out.println("north size: " + Integer.toString(north.size()));
-System.out.println("north east size: " + Integer.toString(northEast.size()));
-System.out.println("south east size: " + Integer.toString(southEast.size()));
-System.out.println("south size: " + Integer.toString(south.size()));
-System.out.println("south west size: " + Integer.toString(southWest.size()));
-System.out.println("north west size: " + Integer.toString(northWest.size()));
-*/
+
 			hexCake.add(north);
 			hexCake.add(northEast);
 			hexCake.add(southEast);
@@ -406,6 +382,33 @@ System.out.println("north west size: " + Integer.toString(northWest.size()));
 		return adjacentHexes;
 	}
 	
+	public double[][] adjacentAis(Hex[] hexes, int team) {
+		double[][] adjacentAiCount = new double[2][6];
+		int position = 0;
+		
+		for (Hex hex : hexes) {
+			
+			double enemies = 0;
+			double allies = -1;      //it will find itself
+			if(hex != null) {
+				Hex[] adjHexes = adjacentHexes(hex.getPosition());
+				for (Hex adjHex : adjHexes) {
+					if(adjHex != null && adjHex.isOccupied()) {
+						if(adjHex.getAi().getTeam() == team) {	allies++; }
+						else { enemies++; }
+					}
+					
+				}
+			}			
+			
+			adjacentAiCount[0][position] = enemies;
+			adjacentAiCount[1][position++] = allies;
+			
+		}
+		
+		return adjacentAiCount;
+	}
+	
 	public boolean withinBounds(Coordinate coordinate) {
 		int x = coordinate.getX();
 		int y = coordinate.getY();
@@ -418,6 +421,18 @@ System.out.println("north west size: " + Integer.toString(northWest.size()));
 			totalHp = totalHp + ai.getHp();
 		}
 		return totalHp;
+	}
+	
+	public void reset() {
+		team1Alive.clear();
+		team1Dead.clear();
+		team2Alive.clear();
+		team2Dead.clear();
+		for (int r = 0; r < rows; r++) {
+			for (int c = 0; c < columns; c++) {
+				hexMatrix[r][c].reset();
+			}
+		}
 	}
 	
 	public void parseAction(Action preferredAction, Ai ai, Hex orgHex) {

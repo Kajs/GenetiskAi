@@ -68,6 +68,8 @@ public class WindowManager {
 	   JMenuItem runBestTeamGames = new JMenuItem("Run best team games");
 	   runBestTeamGames.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.allowRoundDelay = true;
+	    		Launcher.allowBestTeamsFitnessOutput = true;
 	    		Controller.runBestTeamGames = true;
 	    	}
 	    });
@@ -108,7 +110,14 @@ public class WindowManager {
 	    	}
 	    });
 	   
-	   JMenuItem toggleBestTeamsFitnessOutput = new JMenuItem("Toggle best teams fitness output");
+	   JMenuItem toggleAdjacentAiOutput = new JMenuItem("Toggle adjacent ai output");
+	   toggleAdjacentAiOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.allowAdjacentAiOutput = !(Launcher.allowAdjacentAiOutput);
+	    	}
+	    });
+	   
+	   JMenuItem toggleBestTeamsFitnessOutput = new JMenuItem("Toggle fitness output");
 	   toggleBestTeamsFitnessOutput.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		Launcher.allowBestTeamsFitnessOutput = !(Launcher.allowBestTeamsFitnessOutput);
@@ -218,6 +227,7 @@ public class WindowManager {
 	   
 	   JMenu output = new JMenu("Output");
 	   output.add(toggleActionOutput);
+	   output.add(toggleAdjacentAiOutput);
 	   output.add(toggleAreaDamageOutput);
 	   output.add(toggleBestTeamsFitnessOutput);
 	   output.add(toggleBoostOutput);

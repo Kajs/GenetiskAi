@@ -1,7 +1,9 @@
 package model;
 import java.awt.Color;
 import java.awt.geom.Path2D;
-import java.lang.Math;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+import static java.lang.Math.toRadians;
 
 import model.Coordinate;
 
@@ -24,8 +26,8 @@ public class Hex {
 	    side = sideLength;
 	    x = position.getXD();
 	    y = position.getYD();
-	    h = Math.sin(Math.toRadians(30)) * side;
-	    r = Math.cos(Math.toRadians(30)) * side;
+	    h = sin(toRadians(30)) * side;
+	    r = cos(toRadians(30)) * side;
 	    makeShape();
 	}
 	

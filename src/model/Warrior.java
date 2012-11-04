@@ -15,7 +15,7 @@ public class Warrior extends Ai {
 		weightMatrix = weights;
     }
 	
-	public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies) {
+	public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies, double[][] adjacentAis) {
 		bestAction = null;
 		bestWeight = (int)Math.pow(-2, 31);
 		for (int i = 0; i < hexCake.size(); i++) {
@@ -36,7 +36,7 @@ public class Warrior extends Ai {
 				}
 			}
 			if (totalEnemies > 0 && adjacentHexes[i] != null) {
-				weight(adjacentHexes[i], enemies, allies, myTeamHp, enemyTeamHp, totalEnemies, totalAllies);
+				weight(adjacentHexes[i], enemies, allies, myTeamHp, enemyTeamHp, totalEnemies, totalAllies, adjacentAis[0][i], adjacentAis[1][i]);
 			}	
 		}
 		
@@ -48,8 +48,8 @@ public class Warrior extends Ai {
 		return bestAction;
 	}
 	
-	public void weight (Hex adjacentHex, ArrayList<Ai> enemies, ArrayList<Ai> allies, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies) {
-		ArrayList<Double> information = getInformation(adjacentHex, enemies, allies, myTeamHp, enemyTeamHp, totalEnemies, totalAllies);
+	public void weight (Hex adjacentHex, ArrayList<Ai> enemies, ArrayList<Ai> allies, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies, double adjacentEnemies, double adjacentAllies) {
+		ArrayList<Double> information = getInformation(adjacentHex, enemies, allies, myTeamHp, enemyTeamHp, totalEnemies, totalAllies, adjacentEnemies, adjacentAllies);
 		
 		Coordinate adjacentPosition = adjacentHex.getPosition();
 		

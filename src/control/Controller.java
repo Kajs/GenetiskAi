@@ -2,6 +2,9 @@ package control;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+import static java.lang.Math.toRadians;
 
 import model.*;
 import view.BoardRenderer;
@@ -11,31 +14,29 @@ public class Controller {
 	
 	static int width = 800;
 	static int height = 600;
-	static double hexSideSize = 10;
-	static int rows = 40;
-	static int columns = 60;
+	static int rows = 13;
+	static int columns = 23;
+	static double hexSideSize = scaledHexSideSize();
 	public static int roundDelay = 1000;  // in milliseconds
-	static Coordinate startPosition = new Coordinate(Math.sin(Math.toRadians(30)) * hexSideSize, 1);
+	static Coordinate startPosition = new Coordinate(sin(toRadians(30)) * hexSideSize, 1);
 	
-	static int maxRounds = 100;
-	static int maxGames = 200;
+	static int maxRounds = 50;
+	static int maxGames = 50;
 	static int gamesCompleted = 0;
 	
 	static int populationSize = 1000;
 	static int choices = 6;
-	static int information = 23;
+	static int information = 25;
 	static double keepPercent = 0.25;
 	static double crossPercent = 0.25;
 	static double drasticLikelihood = 0.0;
 	static double mutateLikelihood = 1.0;
-	public boolean elitism = true;
+	public boolean elitism = false;
+	public boolean skipZeroFitnessScaling = true;
 	
-	static Coordinate team1_ai1_startPos = new Coordinate(2, 1);
-	static Coordinate team1_ai2_startPos = new Coordinate(1, 0);
-	static Coordinate team1_ai3_startPos = new Coordinate(1, 1);
-	static Coordinate team2_ai1_startPos = new Coordinate(35, 35);
-	static Coordinate team2_ai2_startPos = new Coordinate(35, 36);
-	static Coordinate team2_ai3_startPos = new Coordinate(35, 37);
+	
+	static Coordinate[][] geneticPositions;
+	static Coordinate[][] staticPositions = new Coordinate[2][3];
 	static int enemyDifficulty = 0;
 	
 	public static final GameState gameState = new GameState(startPosition, rows, columns, hexSideSize);
@@ -47,7 +48,8 @@ public class Controller {
 	public static ArrayList<Double> bestTeamsFitness = new ArrayList<Double>();
 	
 	public Controller(boolean automatic, boolean displayAutomatic) {
-		//gameState = new GameState(startPosition, rows, columns, hexSideSize);
+		setTeamPositions(false);
+		
         if(!automatic) { 
         	insertGeneticAis(geneticAlgorithm.generateWeights(choices, information), geneticAlgorithm.generateWeights(choices, information), geneticAlgorithm.generateWeights(choices, information));
     		insertStaticAis();
@@ -95,7 +97,7 @@ public static void newBestTeamGame(int bestTeam) {
 
 public static void runBestTeamGames() {
 	for (int i = 0; i < gamesCompleted; i++) {
-		if(Launcher.allowBestTeamsFitnessOutput) { System.out.println("Best team " + (i + 1) + " with fitness " + round(bestTeamsFitness.get(i), 2)); }
+		if(Launcher.allowBestTeamsFitnessOutput) {System.out.println("\nBest team " + (i + 1) + " with fitness " + round(bestTeamsFitness.get(i), 2) + "\n");}
 		gameState.reset();
 		insertGeneticAis(bestTeams[0][i], bestTeams[1][i], bestTeams[2][i]);
 		insertStaticAis();
@@ -171,11 +173,10 @@ public static void runBestTeamGames() {
 			
 			System.out.println("Game " + (i + 1) + " bestFit: " + round(bestFitness, 2) + ", tm1AvrFit = " + round(tm1AvrFit, 2)  + ", tm2AvrFit = " + round(tm2AvrFit, 2));
 			
-			team1Warriors = geneticAlgorithm.newPopulation(team1Warriors, copyArrayList(team1Fitness), keepPercent, crossPercent, drasticLikelihood, mutateLikelihood, elitism);  //copying team1Fitness in case Genetic Algorithm uses heapsort
-			team1Wizards = geneticAlgorithm.newPopulation(team1Wizards, copyArrayList(team1Fitness), keepPercent, crossPercent, drasticLikelihood, mutateLikelihood, elitism);
-			team1Clerics = geneticAlgorithm.newPopulation(team1Clerics, team1Fitness, keepPercent, crossPercent, drasticLikelihood, mutateLikelihood, elitism);
+			team1Warriors = geneticAlgorithm.newPopulation(team1Warriors, copyArrayList(team1Fitness), keepPercent, crossPercent, drasticLikelihood, mutateLikelihood, elitism, skipZeroFitnessScaling);  //copying team1Fitness in case Genetic Algorithm uses heapsort
+			team1Wizards = geneticAlgorithm.newPopulation(team1Wizards, copyArrayList(team1Fitness), keepPercent, crossPercent, drasticLikelihood, mutateLikelihood, elitism, skipZeroFitnessScaling);
+			team1Clerics = geneticAlgorithm.newPopulation(team1Clerics, team1Fitness, keepPercent, crossPercent, drasticLikelihood, mutateLikelihood, elitism, skipZeroFitnessScaling);
 		}
-		
 		tm1FinalAvrFit = tm1FinalAvrFit/(lastGame + 1);
 		tm2FinalAvrFit = tm2FinalAvrFit/(lastGame + 1);
 		
@@ -198,15 +199,45 @@ public static void runBestTeamGames() {
 	}
 	
 	public static void insertGeneticAis(double[][] warrior, double[][] wizard, double[][] cleric) {
-		gameState.insertAi(new Warrior(warrior), 1, Color.red, team1_ai1_startPos);
-	    gameState.insertAi(new Wizard(wizard), 1, Color.orange, team1_ai2_startPos);
-	    gameState.insertAi(new Cleric(cleric), 1, Color.yellow, team1_ai3_startPos);
+		for (Coordinate[] geneticCoordinates : geneticPositions) {
+			gameState.insertAi(new Warrior(warrior), 1, Color.red, geneticCoordinates[0]);
+		    gameState.insertAi(new Wizard(wizard), 1, Color.orange, geneticCoordinates[1]);
+		    gameState.insertAi(new Cleric(cleric), 1, Color.yellow, geneticCoordinates[2]);
+		}
 	}
 	
 	public static void insertStaticAis() {
-		gameState.insertAi(newStaticAi(enemyDifficulty, 0), 2, Color.blue, team2_ai1_startPos);
-		gameState.insertAi(newStaticAi(enemyDifficulty, 1), 2, Color.blue, team2_ai2_startPos);
-		gameState.insertAi(newStaticAi(enemyDifficulty, 2), 2, Color.blue, team2_ai3_startPos);
+		for (Coordinate[] staticCoordinates : staticPositions) {
+			gameState.insertAi(newStaticAi(enemyDifficulty, 0), 2, Color.blue, staticCoordinates[0]);
+			gameState.insertAi(newStaticAi(enemyDifficulty, 1), 2, Color.blue, staticCoordinates[1]);
+			gameState.insertAi(newStaticAi(enemyDifficulty, 2), 2, Color.blue, staticCoordinates[2]);
+		}
+	}
+	
+	public void setTeamPositions(boolean random) {
+		if(random) {
+			
+		}
+		else {
+			geneticPositions = new Coordinate[1][3];
+			geneticPositions[0][0] = new Coordinate(5, 0);
+			geneticPositions[0][1] = new Coordinate(0, 0);
+			geneticPositions[0][2] = new Coordinate(1, 1);
+			/*
+			geneticPositions[1][0] = new Coordinate(12, 0);
+			geneticPositions[1][1] = new Coordinate(10, 14);
+			geneticPositions[1][2] = new Coordinate(4, 4);
+			*/
+			staticPositions = new Coordinate[1][3];
+			staticPositions[0][0] = new Coordinate(0, 22);
+			staticPositions[0][1] = new Coordinate(1, 22);
+			staticPositions[0][2] = new Coordinate(12, 12);
+			/*
+			staticPositions[1][0] = new Coordinate(7, 7);
+			staticPositions[1][1] = new Coordinate(7, 10);
+			staticPositions[1][2] = new Coordinate(5, 6);
+			*/
+		}
 	}
 	
 	public static Ai newStaticAi(int difficulty, int type) {
@@ -249,5 +280,16 @@ public static void runBestTeamGames() {
 			copy.add(orgArrayList.get(i));
 		}
 		return copy;
+	}
+	
+	public static double scaledHexSideSize() {
+		double maxHexHeight = (double)height/((double)rows * cos(toRadians(30)) * (2.0 + 1.0/(double)rows)) * 0.8941;
+		double maxHexWidth = (double)width/((sin(toRadians(30)) + (double)columns * (1.0 + sin(toRadians(30))))) * 0.98;
+		if(maxHexHeight <= maxHexWidth) {
+			return maxHexHeight;
+		}
+		else{
+			return maxHexWidth;
+		}
 	}
 }

@@ -178,7 +178,7 @@ public class Ai {
     	return closest;
     }
     
-    public ArrayList<Double> getInformation(Hex adjacentHex, ArrayList<Ai> enemies, ArrayList<Ai> allies, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies) {
+    public ArrayList<Double> getInformation(Hex adjacentHex, ArrayList<Ai> enemies, ArrayList<Ai> allies, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies, double adjacentEnemies, double adjacentAllies) {
     	ArrayList<Double> information = new ArrayList<Double>();
 		double nearestEnemyHp = 0;
 		double nearestEnemyIsBoosted = 0;
@@ -266,6 +266,14 @@ public class Ai {
 		information.add(nearestAllyIsCleric);
 		information.add(nearestAllyIsBoosted);
 		information.add(nearestEnemyIsBoosted);
+		information.add(adjacentEnemies);
+		information.add(adjacentAllies);
+		
+		if(Launcher.allowAdjacentAiOutput) {
+			if(adjacentEnemies > 0) {System.out.println("Team " + team + " " + aiType + " at " + "(" + position.getX() + ", " + position.getY() + "): found " + (int)adjacentEnemies + " enemies"); }
+			if(adjacentAllies > 0) { System.out.println("Team " + team + " " + aiType + " at " + "(" + position.getX() + ", " + position.getY() + "): found " + (int)adjacentAllies + " allies"); }
+		}
+		
     	
 		return information;
     }
@@ -286,7 +294,7 @@ public class Ai {
     	return weightMatrix;
     }
     
-    public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies) 
+    public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies, double[][] adjacentAis) 
     {
     	System.out.println("Ai.Action() should be overwritten by extending classes");
     	return new Action(new Coordinate(0, 0), "standard", "Ai");

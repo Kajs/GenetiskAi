@@ -11,6 +11,7 @@ public class GeneticAlgorithm {
 	private int choices;
 	private int information;
 	private int size;
+	private boolean skipZeroFitnessScaling;
 	private Random randomGenerator = new Random(); 	
 	
 	public GeneticAlgorithm () {
@@ -48,8 +49,10 @@ public class GeneticAlgorithm {
 		return weights;
 	}
 	
-	public double[][][] newPopulation(double[][][] population, ArrayList<Double> fitness, double keepPercent, double crossPercent, double drasticLikelihood, double mutateLikelihood, boolean elitism) {
+	public double[][][] newPopulation(double[][][] population, ArrayList<Double> fitness, double keepPercent, double crossPercent, double drasticLikelihood, double mutateLikelihood, boolean elitism, boolean skipZeroFitnessScaling) {
 		if(Launcher.allowGenAlgAnnounce) {System.out.println("Generating new population");}
+		this.skipZeroFitnessScaling = skipZeroFitnessScaling;
+		ArrayList<Double> scaledFitness;
 		
 		int keepAmount = (int)floor(size * keepPercent);
 		int crossAmount = (int)floor(size * crossPercent);
@@ -58,8 +61,9 @@ public class GeneticAlgorithm {
 		
 		double[][][] newPopulation = new double[size][choices+1][information];
 		
-		ArrayList<Double> scaledFitness = linearTransformationScaling(fitness, 10.0, 1.0);
-		//ArrayList<Double> scaledFitness = exponentialScaling(fitness);
+		//scaledFitness = fitness;
+		//scaledFitness = linearTransformationScaling(fitness, 0.75, 1.0);
+		scaledFitness = exponentialScaling(fitness);
 		double totalFitness = 0;
 		double bestFitness = Math.pow(-2, 31);
 		//double unscaledBestFitness = Math.pow(-2, 31);
@@ -204,8 +208,8 @@ public class GeneticAlgorithm {
 		double rounds = results[9];
 		
 		double fitness = (teamHp/teamInitialHp) * (teamAlive * 2);
-		fitness = fitness + ((enemiesInitialHp-enemiesHp)/enemiesInitialHp)*((enemiesSize-enemiesAlive) * 2); 
-		fitness = fitness + fitness * (maxRounds - rounds)/maxRounds;
+		fitness = fitness + ((enemiesInitialHp-enemiesHp)/enemiesInitialHp)*((enemiesSize-enemiesAlive) * 2);
+		fitness = fitness + fitness * 0.25 * (maxRounds - rounds)/maxRounds;
 		if(teamHp < 0 || enemiesHp < 0) {System.out.println("Fitness: " + fitness +", " + teamInitialHp + ", " + teamHp + ", " + teamAlive + ", " + teamSize + ", " + enemiesInitialHp + ", " + enemiesHp + ", " + enemiesAlive + ", " + enemiesSize + ", " + maxRounds + ", " + rounds);}
 		return fitness;
 	}
@@ -213,7 +217,10 @@ public class GeneticAlgorithm {
 	public ArrayList<Double> exponentialScaling(ArrayList<Double> orgFitness) {
 		ArrayList<Double> scaledFitness = new ArrayList<Double>();
 		for (int i = 0; i < orgFitness.size(); i++) {
-			scaledFitness.add(sqrt(orgFitness.get(i) + 1));
+			double fitValue = orgFitness.get(i);
+			
+			if(skipZeroFitnessScaling && fitValue == 0) { scaledFitness.add(0.0); }
+			else { scaledFitness.add(sqrt(fitValue + 1)); }
 		}
 		return scaledFitness;
 	}
@@ -221,7 +228,10 @@ public class GeneticAlgorithm {
 	public ArrayList<Double> linearTransformationScaling(ArrayList<Double> orgFitness, double a, double b) {
 		ArrayList<Double> scaledFitness = new ArrayList<Double>();
 		for (int i = 0; i < orgFitness.size(); i++) {
-			scaledFitness.add(orgFitness.get(i) * a + b);
+			double fitValue = orgFitness.get(i);
+			
+			if(skipZeroFitnessScaling && fitValue == 0) { scaledFitness.add(0.0); }			
+			else { scaledFitness.add(fitValue * a + b); }
 		}
 		return scaledFitness;
 	}

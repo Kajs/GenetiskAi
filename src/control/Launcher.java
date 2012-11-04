@@ -7,6 +7,7 @@ public class Launcher {
 	public static boolean isAutomatic = true;
 	public static boolean displayAutomatic = true;
 	public static boolean allowActionOutput = true;
+	public static boolean allowAdjacentAiOutput = false;
 	public static boolean allowRoundDelay = true;
 	public static boolean allowShieldOutput = false;
 	public static boolean allowBoostOutput = false;
