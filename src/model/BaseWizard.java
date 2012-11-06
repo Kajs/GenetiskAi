@@ -7,10 +7,11 @@ public class BaseWizard extends Ai {
 	
 	public BaseWizard() {
 		setAiType("Wizard");
-		setSupportAction("shield");
-		initialHp = 20;
+		setSupportAction("boost");
+		initialHp = 10;
 		hp = initialHp;
-		standardMeleeDamage = 5;
+		standardMeleeDamage = 4;
+		areaDamage = standardMeleeDamage / 2 + 0.5;
 		meleeDamage = standardMeleeDamage;
     }
 	
@@ -47,16 +48,23 @@ public class BaseWizard extends Ai {
 		
 		Coordinate adjacentPosition = adjacentHex.getPosition();
 		
-		if (adjacentHex != null && bestWeight < 2) {
+		if (adjacentHex != null) {
 			if(adjacentHex.isOccupied()) {
-				if(adjacentHex.getAi().getTeam() != team) {
+				Ai adjacentAi = adjacentHex.getAi();
+				if(adjacentAi.getTeam() != team && bestWeight < 3) {
 					//attack
-					bestAction = new Action(adjacentPosition, "attack", "normal");
-					bestWeight = 2;
+					bestAction = new Action(adjacentPosition, "attack", "area");
+					bestWeight = 3;
+				}
+				else{
+					if(bestWeight < 2 && !adjacentAi.getBoosted()) {
+						bestAction = new Action(adjacentPosition, "support", "boost");
+						bestWeight = -1;
+					}					
 				}
 			}
 			else {
-				if(enemies.size() > 0) {
+				if(enemies.size() > 0 && bestWeight < 2) {
 					Ai nearestEnemy = nearestAi(enemies);
 					double distance = position.distance(nearestEnemy.getPosition());
 					if(1.0/distance > bestWeight) {

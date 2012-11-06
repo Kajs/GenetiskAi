@@ -3,14 +3,15 @@ package model;
 import java.util.ArrayList;
 import control.Launcher;
 
-public class BaseWarrior extends Ai {
+public class MediumCleric extends Ai {
 	
-	public BaseWarrior() {
-		setAiType("Warrior");
+	public MediumCleric() {
+		setAiType("Cleric");
 		setSupportAction("shield");
-		initialHp = 20;
+		initialHp = 15;
 		hp = initialHp;
-		standardMeleeDamage = 5;
+		standardMeleeDamage = 2.5;
+		healAmount = 5.0;
 		meleeDamage = standardMeleeDamage;
     }
 	
@@ -47,23 +48,26 @@ public class BaseWarrior extends Ai {
 		
 		Coordinate adjacentPosition = adjacentHex.getPosition();
 		
-		if (adjacentHex != null) {
+		if (adjacentHex != null && bestWeight < 3) {
 			if(adjacentHex.isOccupied()) {
 				Ai adjacentAi = adjacentHex.getAi();
-				if(adjacentAi.getTeam() != team && bestWeight < 3) {
+				if(adjacentAi.getTeam() != team && bestWeight < 2) {
 					//attack
 					bestAction = new Action(adjacentPosition, "attack", "normal");
-					bestWeight = 3;
+					bestWeight = 2;
 				}
 				else {
-					if(!adjacentAi.getShielded() && bestWeight < 2) {
-						bestAction = new Action(adjacentPosition, "support", "shield");
-						bestWeight = -1;
-					}					
+					double currentHp = adjacentAi.getHp();
+					double initialHp = adjacentAi.getInitialHp();
+					double healPotential = (initialHp - currentHp) / initialHp;
+					if(healPotential > 0 && 2 + healPotential > bestWeight) {
+						bestAction = new Action(adjacentPosition, "support", "heal");
+						bestWeight = 2 + healPotential;
+					}
 				}
 			}
 			else {
-				if(enemies.size() > 0 && bestWeight < 2) {
+				if(enemies.size() > 0) {
 					Ai nearestEnemy = nearestAi(enemies);
 					double distance = position.distance(nearestEnemy.getPosition());
 					if(1.0/distance > bestWeight) {

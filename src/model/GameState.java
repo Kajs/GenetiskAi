@@ -153,7 +153,7 @@ public class GameState extends Observable {
 		ai.setTeam(team);
 		ai.setColor(color);
 		ai.setPosition(startPosition);
-		ai.generateId();
+		ai.newStartId();
 		
 		if (team == 1) { team1Alive.add(ai); }
 		else { if (team == 2) {team2Alive.add(ai); }
@@ -461,7 +461,7 @@ public class GameState extends Observable {
 							Ai adjacentAi = hex.getAi();
 							if(adjacentAi.getTeam() == enemyTeam) {
 								double newHp = adjacentAi.getHp() - ai.getAreaDamage();
-								if(Launcher.allowAreaDamageOutput) {System.out.println("New hp due to area damage: " + newHp);}
+								if(Launcher.allowAreaDamageOutput) {System.out.println(adjacentAi.getId() + " lost " + ai.getAreaDamage() + " hp to area damage, hp = " + newHp);}
 								doDamage(adjacentAi, ai.getAreaDamage(), hex);
 							}
 						}
@@ -475,6 +475,7 @@ public class GameState extends Observable {
 					break;
 				}
 				else {
+					if(Launcher.allowNormalDamageOutput) {System.out.println(targetAi.getId() + " took " + ai.getMeleeDamage() + " damage, hp = " + (targetAi.getHp() - ai.getMeleeDamage()));}
 					doDamage(targetAi, ai.getMeleeDamage(), newHex);
 					break;
 				
@@ -485,13 +486,16 @@ public class GameState extends Observable {
 			}
 		case "support":
 			if(extendedType.equals("shield")) {
+				if(Launcher.allowShieldOutput) {System.out.println(targetAi.getId() + " is shielded");}
 				targetAi.setShielded(true);
 			}
 			if(extendedType.equals("heal")) {
 				double currentHp = targetAi.getHp();
 				double initialHp = targetAi.getInitialHp();
 				if(currentHp < initialHp) {
-					targetAi.setHp(min(targetAi.getHp() + ai.getHealAmount(), initialHp));
+					double healAmount = min(currentHp + ai.getHealAmount(), initialHp) - currentHp;
+					if(Launcher.allowHealOutput) {System.out.println(targetAi.getId() + " healed " + healAmount + " hp");}
+					targetAi.setHp(currentHp + healAmount);
 				}
 			}
 			if(extendedType.equals("boost")) {

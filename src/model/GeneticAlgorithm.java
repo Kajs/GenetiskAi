@@ -1,6 +1,5 @@
 package model;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import control.Launcher;
@@ -13,11 +12,16 @@ public class GeneticAlgorithm {
 	private int size;
 	private boolean skipZeroFitnessScaling;
 	private Random randomGenerator = new Random(); 	
-	private int keepAmount;
+	//private int keepAmount;
 	
 	public GeneticAlgorithm () {
 		
 	}
+	
+	
+	//------------------------- initial population
+	
+	
 	
 	public double[][][] initialPopulation(int size, int choices, int information) {
 		if(Launcher.allowGenAlgAnnounce) {System.out.println("Generating initialPopulation");}
@@ -50,64 +54,51 @@ public class GeneticAlgorithm {
 		return weights;
 	}
 	
-	public double[][][] newPopulation(double[][][] population, ArrayList<Double> fitness, double keepPercent, double crossPercent, double drasticLikelihood, double mutateLikelihood, boolean elitism, boolean skipZeroFitnessScaling) {
-		HeapSort.heapSortHigh(population, fitness);
-		if(Launcher.allowGenAlgAnnounce) {System.out.println("Generating new population");}
+	
+	
+	
+	//------------------------- new population
+	
+	
+	
+	
+	public double[][][] newPopulation(double[][][] population, double[] fitness, double keepPercent, double crossPercent, double drasticLikelihood, double mutateLikelihood, boolean elitism, int bestTeam, double totalFitness, boolean skipZeroFitnessScaling, boolean alwaysKeepBest) {
 		this.skipZeroFitnessScaling = skipZeroFitnessScaling;
-		ArrayList<Double> scaledFitness;
+		double[] scaledFitness;
+		int populationLimit;
 		
-		keepAmount = (int)floor(size * keepPercent);
+		int keepAmount = (int)floor(size * keepPercent);
 		int crossAmount = (int)floor(size * crossPercent);
 		crossAmount = crossAmount - (crossAmount % 2);
 		int mutateAmount = size - keepAmount - crossAmount;
 		
+		if(alwaysKeepBest) {
+			populationLimit = keepAmount;
+			HeapSort.heapSortHigh(population, fitness, size);
+		}
+		else { 
+			populationLimit = size; 
+		}
+		
 		double[][][] newPopulation = new double[size][choices+1][information];
 		
 		//scaledFitness = fitness;
-		//scaledFitness = linearTransformationScaling(fitness, 0.75, 1.0);
-		scaledFitness = exponentialScaling(fitness);
-		double totalFitness = 0;
-		//double bestFitness = Math.pow(-2, 31);
-		//double unscaledBestFitness = Math.pow(-2, 31);
-		//int bestFitnessPosition = 0;
+		scaledFitness = linearTransformationScaling(fitness, 0.9, 1.0);
+		//scaledFitness = exponentialScaling(fitness);
+		totalFitness = getTotalFitness(scaledFitness, populationLimit);
 		
-		
-		if(Launcher.allowGenAlgAnnounce) {System.out.println("scaling fitness");}
 		for (int i = 0; i < keepAmount; i++) {
-			double fit = scaledFitness.get(i);
-			//if(fit > bestFitness) { 
-				//bestFitness = fit;
-				//unscaledBestFitness = fitness.get(i);
-				//bestFitnessPosition = i;
-			//}
-			totalFitness = totalFitness + fit;
-		}
-		
-		
-		if(Launcher.allowGenAlgAnnounce) {System.out.println("Chosing population to keep");}
-		for (int i = 0; i < keepAmount; i++) {
-			//System.out.println("Keep i: " + i);
-			/*
-			if(i == 0 && elitism) {
-				newPopulation[0] = population[bestFitnessPosition];
-				//System.out.println("adding fitness " + round(unscaledBestFitness, 2) + " from position " + bestFitnessPosition);
-			}
-			*/
-			
-			newPopulation[i] = population[i];
-			
-			/*
+			if(alwaysKeepBest) {newPopulation[i] = population[i];}
 			else {
-				newPopulation[i] = choseParents(1, population, scaledFitness, totalFitness)[0];
+				if(i == 0 && elitism) {	newPopulation[0] = population[bestTeam];	}					
+				else { newPopulation[i] = choseParents(1, population, scaledFitness, totalFitness, populationLimit)[0]; }
 			}
-			*/
 		}
 		
 		
-		if(Launcher.allowGenAlgAnnounce) {System.out.println("Chosing crossover population");}
 		for(int i = keepAmount; i < crossAmount + keepAmount; i = i + 2) {
 			//System.out.println("Cross i: " + i);
-			double[][][] parents = choseParents(2, population, scaledFitness, totalFitness);			
+			double[][][] parents = choseParents(2, population, scaledFitness, totalFitness, populationLimit);			
 			double[][] child1 = crossover(parents[0], parents[1]);
 			double[][] child2 = crossover(parents[1], parents[0]);
 			
@@ -115,30 +106,38 @@ public class GeneticAlgorithm {
 			newPopulation[i + 1] = child2;
 		}
 		
-		if(Launcher.allowGenAlgAnnounce) {System.out.println("Chosing mutate population");}
 		double stepSize = (1.0 - drasticLikelihood) / mutateAmount;
 		double newDrasticLikelihood = drasticLikelihood;
 		
 		for (int i = keepAmount + crossAmount; i < keepAmount + crossAmount + mutateAmount; i++) {
 			//System.out.println("Mutate i: " + i);
-			double[][][] mutant = choseParents(1, population, scaledFitness, totalFitness);
+			double[][][] mutant = choseParents(1, population, scaledFitness, totalFitness, populationLimit);
 			newPopulation[i] = mutate(mutant[0], newDrasticLikelihood, mutateLikelihood);
 			newDrasticLikelihood = newDrasticLikelihood + stepSize;
 		}
 		
-		if(Launcher.allowGenAlgAnnounce) {System.out.println("New population finished");}
 		return newPopulation;
 	}
 	
-	public double[][][] choseParents(int numberOfParents, double[][][] population, ArrayList<Double> fitness, double totalFitness) {
+	
+	
+	
+	
+	//------------------------- crossover, mutate and selection functions
+	
+	
+	
+	
+	
+	public double[][][] choseParents(int numberOfParents, double[][][] population, double[] fitness, double totalFitness, int populationLimit) {
 		double[][][] parents = new double[numberOfParents][choices+1][information];
 		int parentsFound = 0;
 		
 		while(parentsFound < numberOfParents) {
 			double chance = randomGenerator.nextDouble();
 			double summedFitness = 0.0;
-			for (int i = 0; i < keepAmount; i++) {
-				summedFitness = summedFitness + fitness.get(i);
+			for (int i = 0; i < populationLimit; i++) {
+				summedFitness = summedFitness + fitness[i];
 				if (chance <= summedFitness / totalFitness) {
 					parents[parentsFound] = population[i];
 					break;
@@ -204,6 +203,15 @@ public class GeneticAlgorithm {
 		return mutant;
 	}
 	
+	
+	
+	
+	//------------------------- fitness function
+	
+	
+	
+	
+	
 	public double fitness (double[] results) {
 		double teamInitialHp = results[0];
 		double teamHp = results[1];
@@ -218,32 +226,51 @@ public class GeneticAlgorithm {
 		
 		double fitness = (teamHp/teamInitialHp) * (teamAlive * 2);
 		fitness = fitness + ((enemiesInitialHp-enemiesHp)/enemiesInitialHp)*((enemiesSize-enemiesAlive) * 2);
-		fitness = fitness + fitness * 0.25 * (maxRounds - rounds)/maxRounds;
+		//fitness = fitness + fitness * 0.25 * (maxRounds - rounds)/maxRounds;
 		if(teamHp < 0 || enemiesHp < 0) {System.out.println("Fitness: " + fitness +", " + teamInitialHp + ", " + teamHp + ", " + teamAlive + ", " + teamSize + ", " + enemiesInitialHp + ", " + enemiesHp + ", " + enemiesAlive + ", " + enemiesSize + ", " + maxRounds + ", " + rounds);}
 		return fitness;
 	}
 	
-	public ArrayList<Double> exponentialScaling(ArrayList<Double> orgFitness) {
-		ArrayList<Double> scaledFitness = new ArrayList<Double>();
-		for (int i = 0; i < orgFitness.size(); i++) {
-			double fitValue = orgFitness.get(i);
+	
+	
+	
+	
+	//------------------------- scaling functions
+	
+	
+	
+	
+	
+	public double[] exponentialScaling(double[] orgFitness) {
+		int length = orgFitness.length;
+		double[] scaledFitness = new double[length];
+		for (int i = 0; i < length; i++) {
+			double fitValue = orgFitness[i];
 			
-			if(skipZeroFitnessScaling && fitValue == 0) { scaledFitness.add(0.0); }
-			else { scaledFitness.add(sqrt(fitValue + 1)); }
+			if(skipZeroFitnessScaling && fitValue == 0) { scaledFitness[i] = 0.0; }
+			else { scaledFitness[i] = sqrt(fitValue + 1); }
 		}
 		return scaledFitness;
 	}
 	
-	public ArrayList<Double> linearTransformationScaling(ArrayList<Double> orgFitness, double a, double b) {
-		ArrayList<Double> scaledFitness = new ArrayList<Double>();
-		for (int i = 0; i < orgFitness.size(); i++) {
-			double fitValue = orgFitness.get(i);
+	public double[] linearTransformationScaling(double[] orgFitness, double a, double b) {
+		int length = orgFitness.length;
+		double[] scaledFitness = new double[length];
+		for (int i = 0; i < length; i++) {
+			double fitValue = orgFitness[i];
 			
-			if(skipZeroFitnessScaling && fitValue == 0) { scaledFitness.add(0.0); }			
-			else { scaledFitness.add(fitValue * a + b); }
+			if(skipZeroFitnessScaling && fitValue == 0) { scaledFitness[i] = 0.0; }			
+			else { scaledFitness[i] = fitValue * a + b; }
 		}
 		return scaledFitness;
 	}
+	
+	
+	
+	
+	//------------------------- misc functions
+	
+	
 	
 	public double round(double value, int places) {
 	    if (places < 0) throw new IllegalArgumentException();
@@ -252,5 +279,13 @@ public class GeneticAlgorithm {
 	    value = value * factor;
 	    long tmp = Math.round(value);
 	    return (double) tmp / factor;
+	}
+	
+	public double getTotalFitness(double[] fitness, int limit) {
+		double totalFitness = 0;
+		for (int i = 0; i < limit; i++) {
+			totalFitness = totalFitness + fitness[i];
+		}
+		return totalFitness;
 	}
 }
