@@ -29,9 +29,9 @@ public class Controller {
 	static double keepPercent = 0.25;
 	static double crossPercent = 0.25;
 	static double drasticLikelihood = 0.0;
-	static double mutateLikelihood = 1.0;
+	static double mutateLikelihood = 0.95;
 	public boolean elitism = false;
-	public boolean skipZeroFitnessScaling = false;
+	public boolean skipZeroFitnessScaling = true;
 	public boolean alwaysKeepBest = true;
 	
 	
@@ -125,7 +125,7 @@ public class Controller {
 				double tm2FitVal = geneticAlgorithm.fitness(results[1]);
 				totalFitness = totalFitness + tm1FitVal;
 				
-				if(tm1FitVal > bestFitness) {
+				if(tm1FitVal >= bestFitness) {
 					bestFitness = tm1FitVal;
 					bestTeam = team;
 				}
@@ -317,11 +317,11 @@ public class Controller {
 				geneticPositions[1][1] = new Coordinate(10, 14);
 				geneticPositions[1][2] = new Coordinate(4, 4);
 				*/
-				staticPositions = new Coordinate[3][3];
+				staticPositions = new Coordinate[3][4];
 				staticPositions[0][0] = new Coordinate(0, 21);
 				staticPositions[1][0] = new Coordinate(1, 22);
 				staticPositions[2][0] = new Coordinate(0, 22);
-				//staticPositions[1][0] = new Coordinate(12, 0);
+				staticPositions[0][1] = new Coordinate(1, 21);
 				//staticPositions[1][1] = new Coordinate(0, 4);
 				//staticPositions[1][2] = new Coordinate(0, 5);
 				//staticPositions[2][0] = new Coordinate(12, 18);

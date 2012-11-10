@@ -74,7 +74,7 @@ public class Ai {
     
     public double getMeleeDamage() {
     	if(boosted) {
-    		if(Launcher.allowBoostOutput) {System.out.println(getId() + " doing " + (meleeDamage * (1.0 + boostFactor) + " damage due to boost"));}
+    		if(Launcher.allowBoostOutput) {System.out.println(getId() + ":  doing " + (meleeDamage * (1.0 + boostFactor) + " damage due to boost"));}
     		boosted = false;
     		return meleeDamage * (1.0 + boostFactor);
     	}
@@ -118,7 +118,7 @@ public class Ai {
     }
     
     public void setBoosted(boolean status) {
-		if (!status && Launcher.allowBoostOutput) { System.out.println(getId() + " lost boost"); }
+		if (status && Launcher.allowBoostOutput) { System.out.println(getId() + ":  boosted"); }
 		boosted = status;
 	}
     
@@ -126,8 +126,7 @@ public class Ai {
     	String sign;
     	if (newHp < hp) { sign = "-"; }
     	else { sign = "+"; }
-    	
-    	if(startId != null && Launcher.allowHpOutput) { System.out.println(getId() + " hp = " + hp + " " + sign + " " + abs(newHp - hp) + " = " + newHp);}
+    	if(startId != null && Launcher.allowHpOutput) { System.out.println(getId() + ":  hp = " + newHp + " (" + sign + abs(newHp - hp) + ")");}
 		hp = newHp;
 	} 
     
@@ -140,13 +139,14 @@ public class Ai {
     }
     
     public void setShielded(boolean status) {
-		if (!status && Launcher.allowShieldOutput) { System.out.println(getId() + " lost shield"); }
+		if (!status && Launcher.allowShieldOutput) { System.out.println(getId() + ":  lost shield"); }
+		if(status && Launcher.allowShieldOutput) {System.out.println(getId() + ":  shielded");}
 		shielded = status;
 	}
 
 	public void setStunned(boolean status) {
 		if(status == false && Launcher.allowStunOutput) {
-			System.out.println(getId() + " is stunned");
+			System.out.println(getId() + ":  stunned");
 		}
 		stunned = status;
 	}

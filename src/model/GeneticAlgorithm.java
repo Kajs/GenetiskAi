@@ -83,8 +83,8 @@ public class GeneticAlgorithm {
 		double[][][] newPopulation = new double[size][choices+1][information];
 		
 		//scaledFitness = fitness;
-		scaledFitness = linearTransformationScaling(fitness, 0.9, 1.0);
-		//scaledFitness = exponentialScaling(fitness);
+		//scaledFitness = linearTransformationScaling(fitness, 0.9, 1.0);
+		scaledFitness = exponentialScaling(fitness);
 		totalFitness = getTotalFitness(scaledFitness, populationLimit);
 		
 		for (int i = 0; i < keepAmount; i++) {

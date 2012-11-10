@@ -452,6 +452,7 @@ public class GameState extends Observable {
 				targetAi.setStunned(true);
 				break;
 			case "area":
+				if(Launcher.allowAreaDamageOutput) {System.out.println(targetAi.getId() + ":  lost " + ai.getAreaDamage() + " hp to area damage, hp = " + (targetAi.getHp() - ai.getAreaDamage() + " (t)"));}
 				doDamage(targetAi, ai.getAreaDamage(), newHex);
 				double enemyTeam = targetAi.getTeam();
 				Hex[] adjacentHexes = adjacentHexes(preferredAction.getPosition());
@@ -461,7 +462,7 @@ public class GameState extends Observable {
 							Ai adjacentAi = hex.getAi();
 							if(adjacentAi.getTeam() == enemyTeam) {
 								double newHp = adjacentAi.getHp() - ai.getAreaDamage();
-								if(Launcher.allowAreaDamageOutput) {System.out.println(adjacentAi.getId() + " lost " + ai.getAreaDamage() + " hp to area damage, hp = " + newHp);}
+								if(Launcher.allowAreaDamageOutput) {System.out.println(adjacentAi.getId() + ":  lost " + ai.getAreaDamage() + " hp to area damage, hp = " + newHp);}
 								doDamage(adjacentAi, ai.getAreaDamage(), hex);
 							}
 						}
@@ -475,7 +476,7 @@ public class GameState extends Observable {
 					break;
 				}
 				else {
-					if(Launcher.allowNormalDamageOutput) {System.out.println(targetAi.getId() + " took " + ai.getMeleeDamage() + " damage, hp = " + (targetAi.getHp() - ai.getMeleeDamage()));}
+					if(Launcher.allowNormalDamageOutput) {System.out.println(targetAi.getId() + ":  took " + ai.getMeleeDamage() + " damage, hp = " + (targetAi.getHp() - ai.getMeleeDamage()));}
 					doDamage(targetAi, ai.getMeleeDamage(), newHex);
 					break;
 				
@@ -485,16 +486,13 @@ public class GameState extends Observable {
 				break;
 			}
 		case "support":
-			if(extendedType.equals("shield")) {
-				if(Launcher.allowShieldOutput) {System.out.println(targetAi.getId() + " is shielded");}
-				targetAi.setShielded(true);
-			}
+			if(extendedType.equals("shield")) { targetAi.setShielded(true); }
 			if(extendedType.equals("heal")) {
 				double currentHp = targetAi.getHp();
 				double initialHp = targetAi.getInitialHp();
 				if(currentHp < initialHp) {
 					double healAmount = min(currentHp + ai.getHealAmount(), initialHp) - currentHp;
-					if(Launcher.allowHealOutput) {System.out.println(targetAi.getId() + " healed " + healAmount + " hp");}
+					if(Launcher.allowHealOutput) {System.out.println(targetAi.getId() + ":  healed " + healAmount + " hp");}
 					targetAi.setHp(currentHp + healAmount);
 				}
 			}
