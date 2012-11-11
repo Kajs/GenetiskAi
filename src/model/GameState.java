@@ -6,6 +6,7 @@ import java.util.Observable;
 
 import control.Controller;
 import control.Launcher;
+import static java.lang.Math.abs;
 import model.Ai;
 import model.Board;
 import model.Coordinate;
@@ -203,6 +204,23 @@ public class GameState extends Observable {
 		notifyObservers(hexMatrix);
 	}
 	
+	private ArrayList<ArrayList<Hex>> hexCakeOptimised(Coordinate origin) {
+		ArrayList<ArrayList<Hex>> hexCake = new ArrayList<ArrayList<Hex>>();
+		ArrayList<Hex> north = new ArrayList<Hex>();
+		ArrayList<Hex> northEast = new ArrayList<Hex>();
+		ArrayList<Hex> southEast = new ArrayList<Hex>();
+		ArrayList<Hex> south = new ArrayList<Hex>();
+		ArrayList<Hex> southWest = new ArrayList<Hex>();
+		ArrayList<Hex> northWest = new ArrayList<Hex>();
+		
+		for (Ai ai : team1Alive) {
+			Coordinate aiPos = ai.getPosition();
+			int dx = abs(aiPos.getX() - origin.getX());
+			int dy = abs(aiPos.getY() - origin.getY());
+		}
+		return hexCake;
+	}
+	
 	private ArrayList<ArrayList<Hex>> hexCake(Coordinate origin) {
 		ArrayList<ArrayList<Hex>> hexCake = new ArrayList<ArrayList<Hex>>();
 		ArrayList<Hex> north = new ArrayList<Hex>();
@@ -243,7 +261,7 @@ public class GameState extends Observable {
 				if(x < 0 || y < 0 || x >= rows || y >= columns) { break; }
 				
 				for (int row = x; row >= 0; row--) {
-					//hexMatrix[row][col].setColor(Color.yellow);
+					//hexMatrix[row][col].setColor(Color.blue);
 					north.add(hexMatrix[row][col]);
 				}
 				
