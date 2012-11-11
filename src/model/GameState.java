@@ -3,6 +3,7 @@ package model;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Observable;
+import java.math.*;
 
 import control.Controller;
 import control.Launcher;
@@ -64,7 +65,7 @@ public class GameState extends Observable {
 				Hex orgHex = hexMatrix[orgPos.getX()][orgPos.getY()];
 				Hex[] adjacentHexes = adjacentHexes(orgPos);
 				double[][] adjacentAis = adjacentAis(adjacentHexes, ai.getTeam());
-				Action preferredAction = ai.action(adjacentHexes, hexCake(orgPos), teamHp(team1Alive), teamHp(team2Alive), (double) team2Alive.size(), (double) team1Alive.size(), adjacentAis);
+				Action preferredAction = ai.action(adjacentHexes, hexCakeOptimised(orgPos), teamHp(team1Alive), teamHp(team2Alive), (double) team2Alive.size(), (double) team1Alive.size(), adjacentAis);
 				
 				parseAction(preferredAction, ai, orgHex);
 			}			
@@ -78,7 +79,7 @@ public class GameState extends Observable {
 				Hex orgHex = hexMatrix[orgPos.getX()][orgPos.getY()];
 				Hex[] adjacentHexes = adjacentHexes(orgPos);
 				double[][] adjacentAis = adjacentAis(adjacentHexes, ai.getTeam());
-				Action preferredAction = ai.action(adjacentHexes, hexCake(orgPos), teamHp(team2Alive), teamHp(team1Alive), (double) team1Alive.size(), (double) team2Alive.size(), adjacentAis);
+				Action preferredAction = ai.action(adjacentHexes, hexCakeOptimised(orgPos), teamHp(team2Alive), teamHp(team1Alive), (double) team1Alive.size(), (double) team2Alive.size(), adjacentAis);
 				
 				parseAction(preferredAction, ai, orgHex);
 			}
@@ -213,11 +214,126 @@ public class GameState extends Observable {
 		ArrayList<Hex> southWest = new ArrayList<Hex>();
 		ArrayList<Hex> northWest = new ArrayList<Hex>();
 		
+		/* northVector = (0,-1)
+		 * calcVector = (startPos.x-ai.getPos.x, startpos.y-ai.getPos.y)
+		 * signedAngle = (atan2(calcVector.y,nortVector.x) - atan2(calcVector.y,northVector.x))
+		 * If -45<signedAngle<45 then add Hex to list
+		 */
+		Coordinate northVector = new Coordinate(-1.0,0.0);
+		Coordinate southVector = new Coordinate(1.0,0.0);
+		Coordinate northEastVector = new Coordinate (1.0,0.0);
+		Coordinate testHexPosition = hexMatrix[5][6].getStartPosition();
+		Coordinate testVector = new Coordinate(testHexPosition.getX()-origin.getX(), testHexPosition.getY()-origin.getY());
+		//System.out.println("North(-1,0) and test=[5][6]: " + (Math.atan2(testVector.getY(),testVector.getX())-Math.atan2(northVector.getY(),northVector.getX())));
+		//System.out.println("South(1,0) and test=[5][6]: " + (Math.atan2(testVector.getY(),testVector.getX())-Math.atan2(southVector.getY(),southVector.getX())));
+		
+		//Coordinate comparisonVector = new Coordinate(origin.getXD(),origin.getYD());
+		Coordinate originPosition = hexMatrix[origin.getX()][origin.getY()].getStartPosition();
+		Coordinate comparisonVector = new Coordinate(1.0,0.0);
+				
 		for (Ai ai : team1Alive) {
 			Coordinate aiPos = ai.getPosition();
-			int dx = abs(aiPos.getX() - origin.getX());
-			int dy = abs(aiPos.getY() - origin.getY());
+			if (aiPos.getX() == origin.getX() && aiPos.getY() == origin.getY()) { continue; }
+			
+			Hex targetHex = hexMatrix[aiPos.getX()][aiPos.getY()];
+			Coordinate hexPosition = targetHex.getStartPosition();
+			Coordinate hexVector = new Coordinate(hexPosition.getXD()-originPosition.getXD(), hexPosition.getYD()-originPosition.getYD());
+			//System.out.println("HexPosition: " + hexPosition.getXD() + ", " + hexPosition.getYD());
+			double angleToHex = Math.toDegrees((Math.atan2(hexVector.getYD(),hexVector.getXD())) - (Math.atan2(comparisonVector.getYD(),comparisonVector.getXD())));
+			//System.out.println("Team1 Angle calculated: " + Controller.round(angleToHex, 2));
+			
+			// SouthEast
+			if (angleToHex>=0 && angleToHex<60) {
+				if(Launcher.allowAngleOutput) {System.out.println("SE: " + Controller.round(angleToHex, 2) + " (" + origin.getX() + ", " + origin.getY() + ")");}
+				southEast.add(targetHex);
+				continue;
+			}
+			//South
+			if (angleToHex>=60 && angleToHex<120) {
+				if(Launcher.allowAngleOutput) {System.out.println("S: " + Controller.round(angleToHex, 2) + " (" + origin.getX() + ", " + origin.getY() + ")");}
+				south.add(targetHex);
+				continue;
+			}
+			//SouthWest
+			if (angleToHex>=120 && angleToHex<=180) {
+				if(Launcher.allowAngleOutput) {System.out.println("SW: " + Controller.round(angleToHex, 2) + " (" + origin.getX() + ", " + origin.getY() + ")");}
+				southWest.add(targetHex);
+				continue;
+			}
+			//NortEast
+			if (angleToHex<0 && angleToHex>=-60) {
+				if(Launcher.allowAngleOutput) {System.out.println("NE: " + Controller.round(angleToHex, 2) + " (" + origin.getX() + ", " + origin.getY() + ")");}
+				northEast.add(targetHex);
+				continue;
+			}
+			//North
+			if (angleToHex<-60 && angleToHex>=-120) {
+				if(Launcher.allowAngleOutput) {System.out.println("N: " + Controller.round(angleToHex, 2) + " (" + origin.getX() + ", " + origin.getY() + ")");}
+				north.add(targetHex);
+				continue;
+			}
+			//NortWest
+			if (angleToHex<-120 && angleToHex>=-180) {
+				if(Launcher.allowAngleOutput) {System.out.println("NW: " + Controller.round(angleToHex, 2) + " (" + origin.getX() + ", " + origin.getY() + ")");}
+				northWest.add(targetHex);
+				continue;
+			}
+			
 		}
+		for (Ai ai : team2Alive) {
+			Coordinate aiPos = ai.getPosition();
+			if (aiPos.getX() == origin.getX() && aiPos.getY() == origin.getY()) { continue; }
+			
+			Hex targetHex = hexMatrix[aiPos.getX()][aiPos.getY()];
+			Coordinate hexPosition = targetHex.getStartPosition();
+			Coordinate hexVector = new Coordinate(hexPosition.getXD()-originPosition.getXD(), hexPosition.getYD()-originPosition.getYD());
+			double angleToHex = Math.toDegrees((Math.atan2(hexVector.getYD(),hexVector.getXD())) - (Math.atan2(comparisonVector.getYD(),comparisonVector.getXD())));
+			//System.out.println("Team2 Angle calculated: " + Controller.round(angleToHex, 2));
+			
+			// SouthEast
+			if (angleToHex>=0 && angleToHex<60) {
+				if(Launcher.allowAngleOutput) {System.out.println("SE: " + Controller.round(angleToHex, 2) + " (" + origin.getX() + ", " + origin.getY() + ")");}
+				southEast.add(targetHex);
+				continue;
+			}
+			//South
+			if (angleToHex>=60 && angleToHex<120) {
+				if(Launcher.allowAngleOutput) {System.out.println("S: " + Controller.round(angleToHex, 2) + " (" + origin.getX() + ", " + origin.getY() + ")");}
+				south.add(targetHex);
+				continue;
+			}
+			//SouthWest
+			if (angleToHex>=120 && angleToHex<=180) {
+				if(Launcher.allowAngleOutput) {System.out.println("SW: " + Controller.round(angleToHex, 2) + " (" + origin.getX() + ", " + origin.getY() + ")");}
+				southWest.add(targetHex);
+				continue;
+			}
+			//NortEast
+			if (angleToHex<0 && angleToHex>=-60) {
+				if(Launcher.allowAngleOutput) {System.out.println("NE: " + Controller.round(angleToHex, 2) + " (" + origin.getX() + ", " + origin.getY() + ")");}
+				northEast.add(targetHex);
+				continue;
+			}
+			//North
+			if (angleToHex<-60 && angleToHex>=-120) {
+				if(Launcher.allowAngleOutput) {System.out.println("N: " + Controller.round(angleToHex, 2) + " (" + origin.getX() + ", " + origin.getY() + ")");}
+				north.add(targetHex);
+				continue;
+			}
+			//NortWest
+			if (angleToHex<-120 && angleToHex>=-180) {
+				if(Launcher.allowAngleOutput) {System.out.println("NW: " + Controller.round(angleToHex, 2) + " (" + origin.getX() + ", " + origin.getY() + ")");}
+				northWest.add(targetHex);
+				continue;
+			}
+		}
+		
+		hexCake.add(north);
+		hexCake.add(northEast);
+		hexCake.add(southEast);
+		hexCake.add(south);
+		hexCake.add(southWest);
+		hexCake.add(northWest);
 		return hexCake;
 	}
 	
@@ -229,6 +345,7 @@ public class GameState extends Observable {
 		ArrayList<Hex> south = new ArrayList<Hex>();
 		ArrayList<Hex> southWest = new ArrayList<Hex>();
 		ArrayList<Hex> northWest = new ArrayList<Hex>();
+		
 		
 		int x = origin.getX() - 1;
 		int y = origin.getY();
@@ -494,8 +611,9 @@ public class GameState extends Observable {
 					break;
 				}
 				else {
-					if(Launcher.allowNormalDamageOutput) {System.out.println(targetAi.getId() + ":  took " + ai.getMeleeDamage() + " damage, hp = " + (targetAi.getHp() - ai.getMeleeDamage()));}
-					doDamage(targetAi, ai.getMeleeDamage(), newHex);
+					double damage = ai.getMeleeDamage();
+					if(Launcher.allowNormalDamageOutput) {System.out.println(targetAi.getId() + ":  took " + damage + " damage, hp = " + (targetAi.getHp() - damage));}
+					doDamage(targetAi, damage, newHex);
 					break;
 				
 				}

@@ -59,7 +59,7 @@ public class Coordinate {
 		return (double) largest;
 	}
 	
-	public Coordinate  adjacentPosition(int direction) {
+	public Coordinate adjacentPosition(int direction) {
 		boolean isEven = (y % 2 == 0);
 		if (direction == 0) { return new Coordinate(x - 1, y); }        //North
 		if (direction == 1) {                                           //North East

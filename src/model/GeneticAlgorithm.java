@@ -224,7 +224,7 @@ public class GeneticAlgorithm {
 		double maxRounds = results[8];
 		double rounds = results[9];
 		
-		double speedBonus = 0.25 * (maxRounds - rounds)/maxRounds;
+		double speedBonus = 0.0 * (maxRounds - rounds)/maxRounds;
 		double fitness = (teamHp/teamInitialHp) * (teamAlive * 2);
 		fitness = fitness + ((enemiesInitialHp-enemiesHp)/enemiesInitialHp)*((enemiesSize-enemiesAlive) * 2);
 		fitness = fitness * (1 + speedBonus);

@@ -309,22 +309,22 @@ public class Controller {
 			}
 			else {
 				geneticPositions = new Coordinate[3][1];            //format: [aiType][aiNumber]
-				geneticPositions[0][0] = new Coordinate(5, 5);
-				//geneticPositions[1][0] = new Coordinate(2, 19);
-				//geneticPositions[2][0] = new Coordinate(4, 1);
+				geneticPositions[0][0] = new Coordinate(2, 2);
+				geneticPositions[1][0] = new Coordinate(1, 2);
+				geneticPositions[2][0] = new Coordinate(2, 1);
 				/*
 				geneticPositions[1][0] = new Coordinate(12, 0);
 				geneticPositions[1][1] = new Coordinate(10, 14);
 				geneticPositions[1][2] = new Coordinate(4, 4);
 				*/
-				staticPositions = new Coordinate[3][4];
-				//staticPositions[0][0] = new Coordinate(0, 21);
-				//staticPositions[1][0] = new Coordinate(1, 22);
-				//staticPositions[2][0] = new Coordinate(0, 22);
-				//staticPositions[0][1] = new Coordinate(1, 21);
-				//staticPositions[1][1] = new Coordinate(0, 4);
-				//staticPositions[1][2] = new Coordinate(0, 5);
-				//staticPositions[2][0] = new Coordinate(12, 18);
+				staticPositions = new Coordinate[3][7];
+				staticPositions[0][0] = new Coordinate(12, 22);
+				staticPositions[1][0] = new Coordinate(11, 22);
+				staticPositions[2][0] = new Coordinate(12, 21);
+				staticPositions[0][1] = new Coordinate(0, 22);
+				staticPositions[1][1] = new Coordinate(1, 22);
+				staticPositions[2][1] = new Coordinate(0, 21);
+				//staticPositions[0][5] = new Coordinate(6, 4);
 			}
 		}
 	
