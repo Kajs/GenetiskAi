@@ -10,7 +10,7 @@ public class Wizard extends Ai {
 		setSupportAction("boost");
 		initialHp = 10;
 		hp = initialHp;
-		standardMeleeDamage = 4.0;
+		standardMeleeDamage = 4;
 		areaDamage = standardMeleeDamage / 2 + 0.5;
 		meleeDamage = standardMeleeDamage;
 		weightMatrix = weights;

@@ -8,9 +8,10 @@ public class BaseCleric extends Ai {
 	public BaseCleric() {
 		setAiType("Cleric");
 		setSupportAction("shield");
-		initialHp = 20;
+		initialHp = 15;
 		hp = initialHp;
-		standardMeleeDamage = 5;
+		standardMeleeDamage = 2.5;
+		healAmount = 5.0;
 		meleeDamage = standardMeleeDamage;
     }
 	
@@ -47,12 +48,22 @@ public class BaseCleric extends Ai {
 		
 		Coordinate adjacentPosition = adjacentHex.getPosition();
 		
-		if (adjacentHex != null && bestWeight < 2) {
+		if (adjacentHex != null && bestWeight < 3) {
 			if(adjacentHex.isOccupied()) {
-				if(adjacentHex.getAi().getTeam() != team) {
+				Ai adjacentAi = adjacentHex.getAi();
+				if(adjacentAi.getTeam() != team && bestWeight < 2) {
 					//attack
 					bestAction = new Action(adjacentPosition, "attack", "normal");
 					bestWeight = 2;
+				}
+				else {
+					double currentHp = adjacentAi.getHp();
+					double initialHp = adjacentAi.getInitialHp();
+					double healPotential = (initialHp - currentHp) / initialHp;
+					if(healPotential > 0 && 2 + healPotential > bestWeight) {
+						bestAction = new Action(adjacentPosition, "support", "heal");
+						bestWeight = 2 + healPotential;
+					}
 				}
 			}
 			else {

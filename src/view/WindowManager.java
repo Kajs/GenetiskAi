@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -77,18 +76,18 @@ public class WindowManager {
 	   JMenuItem sortBestTeamsLowToHigh = new JMenuItem("Sort best teams (low to high)");
 	   sortBestTeamsLowToHigh.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
-	    		HeapSort.heapSortLow(Controller.bestTeams[0], copyArrayList(Controller.bestTeamsFitness));
-	    		HeapSort.heapSortLow(Controller.bestTeams[1], copyArrayList(Controller.bestTeamsFitness));
-	    		HeapSort.heapSortLow(Controller.bestTeams[2], Controller.bestTeamsFitness);
+	    		HeapSort.heapSortLow(Controller.bestTeams[0], copyArray(Controller.bestTeamsFitness), Controller.gamesCompleted);
+	    		HeapSort.heapSortLow(Controller.bestTeams[1], copyArray(Controller.bestTeamsFitness), Controller.gamesCompleted);
+	    		HeapSort.heapSortLow(Controller.bestTeams[2], Controller.bestTeamsFitness, Controller.gamesCompleted);
 	    	}
 	    });
 	   
 	   JMenuItem sortBestTeamsHighToLow = new JMenuItem("Sort best teams (high to low)");
 	   sortBestTeamsHighToLow.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
-	    		HeapSort.heapSortHigh(Controller.bestTeams[0], copyArrayList(Controller.bestTeamsFitness));
-	    		HeapSort.heapSortHigh(Controller.bestTeams[1], copyArrayList(Controller.bestTeamsFitness));
-	    		HeapSort.heapSortHigh(Controller.bestTeams[2], Controller.bestTeamsFitness);
+	    		HeapSort.heapSortHigh(Controller.bestTeams[0], copyArray(Controller.bestTeamsFitness), Controller.gamesCompleted);
+	    		HeapSort.heapSortHigh(Controller.bestTeams[1], copyArray(Controller.bestTeamsFitness), Controller.gamesCompleted);
+	    		HeapSort.heapSortHigh(Controller.bestTeams[2], Controller.bestTeamsFitness, Controller.gamesCompleted);
 	    	}
 	    });
 	   
@@ -124,10 +123,24 @@ public class WindowManager {
 	    	}
 	    });
 	   
+	   JMenuItem toggleHealOutput = new JMenuItem("Toggle heal output");
+	   toggleHealOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.allowHealOutput = !(Launcher.allowHealOutput);
+	    	}
+	    });
+	   
 	   JMenuItem toggleHpOutput = new JMenuItem("Toggle hp output");
 	   toggleHpOutput.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		Launcher.allowHpOutput = !(Launcher.allowHpOutput);
+	    	}
+	    });
+	   
+	   JMenuItem toggleNormalDamageOutput = new JMenuItem("Toggle normal damage output");
+	   toggleNormalDamageOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.allowNormalDamageOutput = !(Launcher.allowNormalDamageOutput);
 	    	}
 	    });
 	   
@@ -231,7 +244,9 @@ public class WindowManager {
 	   output.add(toggleAreaDamageOutput);
 	   output.add(toggleBestTeamsFitnessOutput);
 	   output.add(toggleBoostOutput);
+	   output.add(toggleHealOutput);
 	   output.add(toggleHpOutput);
+	   output.add(toggleNormalDamageOutput);
 	   output.add(toggleShieldOutput);
 	   output.add(toggleStunOutput);
 	   output.add(toggleRoundSeparator);
@@ -257,10 +272,11 @@ public class WindowManager {
 	    frame.setVisible(true);
 	}
 	
-	public ArrayList<Double> copyArrayList(ArrayList<Double> orgArrayList) {
-		ArrayList<Double> copy = new ArrayList<Double>();
-		for (int i = 0; i < orgArrayList.size(); i++) {
-			copy.add(orgArrayList.get(i));
+	public double[] copyArray(double[] orgArray) {
+		int length = orgArray.length;
+		double[] copy = new double[length];
+		for (int i = 0; i < length; i++) {
+			copy[i] = orgArray[i];
 		}
 		return copy;
 	}

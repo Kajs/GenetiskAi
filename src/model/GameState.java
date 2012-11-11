@@ -6,6 +6,7 @@ import java.util.Observable;
 
 import control.Controller;
 import control.Launcher;
+import static java.lang.Math.abs;
 import model.Ai;
 import model.Board;
 import model.Coordinate;
@@ -153,7 +154,7 @@ public class GameState extends Observable {
 		ai.setTeam(team);
 		ai.setColor(color);
 		ai.setPosition(startPosition);
-		ai.generateId();
+		ai.newStartId();
 		
 		if (team == 1) { team1Alive.add(ai); }
 		else { if (team == 2) {team2Alive.add(ai); }
@@ -203,6 +204,23 @@ public class GameState extends Observable {
 		notifyObservers(hexMatrix);
 	}
 	
+	private ArrayList<ArrayList<Hex>> hexCakeOptimised(Coordinate origin) {
+		ArrayList<ArrayList<Hex>> hexCake = new ArrayList<ArrayList<Hex>>();
+		ArrayList<Hex> north = new ArrayList<Hex>();
+		ArrayList<Hex> northEast = new ArrayList<Hex>();
+		ArrayList<Hex> southEast = new ArrayList<Hex>();
+		ArrayList<Hex> south = new ArrayList<Hex>();
+		ArrayList<Hex> southWest = new ArrayList<Hex>();
+		ArrayList<Hex> northWest = new ArrayList<Hex>();
+		
+		for (Ai ai : team1Alive) {
+			Coordinate aiPos = ai.getPosition();
+			int dx = abs(aiPos.getX() - origin.getX());
+			int dy = abs(aiPos.getY() - origin.getY());
+		}
+		return hexCake;
+	}
+	
 	private ArrayList<ArrayList<Hex>> hexCake(Coordinate origin) {
 		ArrayList<ArrayList<Hex>> hexCake = new ArrayList<ArrayList<Hex>>();
 		ArrayList<Hex> north = new ArrayList<Hex>();
@@ -243,7 +261,7 @@ public class GameState extends Observable {
 				if(x < 0 || y < 0 || x >= rows || y >= columns) { break; }
 				
 				for (int row = x; row >= 0; row--) {
-					//hexMatrix[row][col].setColor(Color.yellow);
+					//hexMatrix[row][col].setColor(Color.blue);
 					north.add(hexMatrix[row][col]);
 				}
 				
@@ -452,6 +470,7 @@ public class GameState extends Observable {
 				targetAi.setStunned(true);
 				break;
 			case "area":
+				if(Launcher.allowAreaDamageOutput) {System.out.println(targetAi.getId() + ":  lost " + ai.getAreaDamage() + " hp to area damage, hp = " + (targetAi.getHp() - ai.getAreaDamage() + " (t)"));}
 				doDamage(targetAi, ai.getAreaDamage(), newHex);
 				double enemyTeam = targetAi.getTeam();
 				Hex[] adjacentHexes = adjacentHexes(preferredAction.getPosition());
@@ -461,7 +480,7 @@ public class GameState extends Observable {
 							Ai adjacentAi = hex.getAi();
 							if(adjacentAi.getTeam() == enemyTeam) {
 								double newHp = adjacentAi.getHp() - ai.getAreaDamage();
-								if(Launcher.allowAreaDamageOutput) {System.out.println("New hp due to area damage: " + newHp);}
+								if(Launcher.allowAreaDamageOutput) {System.out.println(adjacentAi.getId() + ":  lost " + ai.getAreaDamage() + " hp to area damage, hp = " + newHp);}
 								doDamage(adjacentAi, ai.getAreaDamage(), hex);
 							}
 						}
@@ -475,6 +494,7 @@ public class GameState extends Observable {
 					break;
 				}
 				else {
+					if(Launcher.allowNormalDamageOutput) {System.out.println(targetAi.getId() + ":  took " + ai.getMeleeDamage() + " damage, hp = " + (targetAi.getHp() - ai.getMeleeDamage()));}
 					doDamage(targetAi, ai.getMeleeDamage(), newHex);
 					break;
 				
@@ -484,14 +504,14 @@ public class GameState extends Observable {
 				break;
 			}
 		case "support":
-			if(extendedType.equals("shield")) {
-				targetAi.setShielded(true);
-			}
+			if(extendedType.equals("shield")) { targetAi.setShielded(true); }
 			if(extendedType.equals("heal")) {
 				double currentHp = targetAi.getHp();
 				double initialHp = targetAi.getInitialHp();
 				if(currentHp < initialHp) {
-					targetAi.setHp(min(targetAi.getHp() + ai.getHealAmount(), initialHp));
+					double healAmount = min(currentHp + ai.getHealAmount(), initialHp) - currentHp;
+					if(Launcher.allowHealOutput) {System.out.println(targetAi.getId() + ":  healed " + healAmount + " hp");}
+					targetAi.setHp(currentHp + healAmount);
 				}
 			}
 			if(extendedType.equals("boost")) {

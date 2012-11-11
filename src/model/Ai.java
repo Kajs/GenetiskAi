@@ -25,7 +25,7 @@ public class Ai {
     public boolean boosted;
     public double boostFactor = 0.5;
     public int team;
-    public String id;
+    public String startId;
     public double[][] weightMatrix;
     public Action bestAction;
 	public double bestWeight;
@@ -37,53 +37,23 @@ public class Ai {
     public Ai() {
     }
     
-    public Coordinate getPosition() {
-		return position;
-	}
-    
-    public void setPosition(Coordinate newPos) {
-    	position = newPos;
+    public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies, double[][] adjacentAis) 
+    {
+    	System.out.println("Ai.Action() should be overwritten by extending classes");
+    	return new Action(new Coordinate(0, 0), "standard", "Ai");
     }
     
-    public Color getColor() {
-		return color;
-	}
+    public void newStartId() { startId = aiType + ", " + "team " + getTeam() + " from (" + position.getX() + "," + position.getY() + ")"; }
     
-    public void setColor(Color color) {
-    	this.color = color;
-    }
+    public boolean getBoosted() { return boosted; }
     
-    public void setAiType(String type) {
-    	aiType = type;
-    }
+    public Color getColor() { return color; }
     
-    public String getAiType() {
-    	return aiType;
-    }    
+    public void setColor(Color color) { this.color = color; }
     
-    public void setHp(double newHp) {
-		hp = newHp;
-		if(id != null && Launcher.allowHpOutput) { System.out.println(aiType + ", team " + team + " at (" + position.getX() + ", " + position.getY() + "): hp = " + hp);}
-	}
-
-    public double getHp() {
-    	return hp;
-    }
+    public void setAiType(String type) { aiType = type; }
     
-    public boolean isAlive() {
-    	return hp > 0;
-    }
-    
-    public double getMeleeDamage() {
-    	if(boosted) {
-    		if(Launcher.allowBoostOutput) {System.out.println("Doing " + (meleeDamage * (1.0 + boostFactor) + " damage due to boost"));}
-    		boosted = false;
-    		return meleeDamage * (1.0 + boostFactor);
-    	}
-    	else {
-    		return meleeDamage;
-    	}
-    }
+    public String getAiType() { return aiType; } 
     
     public double getAreaDamage() {
     	if(boosted) {
@@ -95,62 +65,104 @@ public class Ai {
     	}
     }
     
-    public double getHealAmount() {
-    	return healAmount;
+    public double getHealAmount() { return healAmount; }
+
+    public double getHp() { return hp; }
+    
+    public String getId() { return aiType + ", tm" + team + " at " + getPositionAsString(); }
+    
+    public double getInitialHp() { return initialHp; }
+    
+    public double getMeleeDamage() {
+    	if(boosted) {
+    		if(Launcher.allowBoostOutput) {System.out.println(getId() + ":  doing " + (meleeDamage * (1.0 + boostFactor) + " damage due to boost"));}
+    		boosted = false;
+    		return meleeDamage * (1.0 + boostFactor);
+    	}
+    	else {
+    		return meleeDamage;
+    	}
     }
+    
+    public Coordinate getPosition() {
+		return position;
+	}
+    
+    public String getPositionAsString() {return "(" + position.getX() + "," + position.getY() + ")";}
+    
+    public boolean getShielded() {
+		return shielded;
+	}
+    
+    public String getStartId() {
+    	return startId;
+    }
+    
+    public boolean getStunned() {
+		return stunned;
+	}
+    
+    public String getSupportAction() {
+		return supportAction;
+	}
+    
+    public int getTeam() {
+		return team;
+	}
+    
+    public double[][] getWeights() {
+    	return weightMatrix;
+    }
+    
+    public boolean isAlive() {
+    	return hp > 0;
+    }
+    
+    public void setBoosted(boolean status) {
+		if (status && Launcher.allowBoostOutput) { System.out.println(getId() + ":  boosted"); }
+		boosted = status;
+	}
+    
+    public void setHp(double newHp) {
+    	String sign;
+    	if (newHp < hp) { sign = "-"; }
+    	else { sign = "+"; }
+    	if(startId != null && Launcher.allowHpOutput) { System.out.println(getId() + ":  hp = " + newHp + " (" + sign + abs(newHp - hp) + ")");}
+		hp = newHp;
+	} 
     
     public void setMeleeDamage(double damage) {
     	meleeDamage = damage;
     }
+    
+    public void setPosition(Coordinate newPos) {
+    	position = newPos;
+    }
+    
+    public void setShielded(boolean status) {
+		if (!status && Launcher.allowShieldOutput) { System.out.println(getId() + ":  lost shield"); }
+		if(status && Launcher.allowShieldOutput) {System.out.println(getId() + ":  shielded");}
+		shielded = status;
+	}
 
 	public void setStunned(boolean status) {
 		if(status == false && Launcher.allowStunOutput) {
-			System.out.println(id + " is stunned");
+			System.out.println(getId() + ":  stunned");
 		}
 		stunned = status;
 	}
-
-	public boolean getStunned() {
-		return stunned;
-	}
 	
-	public void setShielded(boolean status) {
-		if (!status && Launcher.allowShieldOutput) { System.out.println(id + " lost shield"); }
-		shielded = status;
-	}
-	
-	public boolean getShielded() {
-		return shielded;
-	}
-	
-	public void setBoosted(boolean status) {
-		if (!status && Launcher.allowBoostOutput) { System.out.println(id + " lost boost"); }
-		boosted = status;
-	}
-	
-	public boolean getBoosted() {
-		return boosted;
-	}
-	
-	public int getTeam() {
-		return team;
-	}
-	
-	public void setTeam(int team) {
-		this.team = team;
-	}
-    
 	public void setSupportAction(String action) {
 		supportAction = action;
 	}
 	
-	public String getSupportAction() {
-		return supportAction;
-	}
+	public void setTeam(int team) {
+		this.team = team;
+	}	
 	
-	public double getInitialHp() {
-		return initialHp;
-	}
+	public void setWeights(double[][] weights) {
+    	weightMatrix = weights;
+    }
 	
     public Ai nearestAi(ArrayList<Ai> ais) {
     	int size = ais.size();
@@ -277,28 +289,5 @@ public class Ai {
 		
     	
 		return information;
-    }
-    
-    public void generateId() {
-    	id = aiType + ", " + "team " + getTeam() + " from (" + position.getX() + "," + position.getY() + ")";
-    }
-    
-    public String getId() {
-    	return id;
-    }
-    
-    public void setWeights(double[][] weights) {
-    	weightMatrix = weights;
-    }
-    
-    public double[][] getWeights() {
-    	return weightMatrix;
-    }
-    
-    public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies, double[][] adjacentAis) 
-    {
-    	System.out.println("Ai.Action() should be overwritten by extending classes");
-    	return new Action(new Coordinate(0, 0), "standard", "Ai");
-    }
-    
+    }    
 }

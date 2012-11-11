@@ -3,14 +3,15 @@ package model;
 import java.util.ArrayList;
 import control.Launcher;
 
-public class BaseWarrior extends Ai {
+public class MediumWizard extends Ai {
 	
-	public BaseWarrior() {
-		setAiType("Warrior");
-		setSupportAction("shield");
-		initialHp = 20;
+	public MediumWizard() {
+		setAiType("Wizard");
+		setSupportAction("boost");
+		initialHp = 10;
 		hp = initialHp;
-		standardMeleeDamage = 5;
+		standardMeleeDamage = 4;
+		areaDamage = standardMeleeDamage / 2 + 0.5;
 		meleeDamage = standardMeleeDamage;
     }
 	
@@ -52,13 +53,13 @@ public class BaseWarrior extends Ai {
 				Ai adjacentAi = adjacentHex.getAi();
 				if(adjacentAi.getTeam() != team && bestWeight < 3) {
 					//attack
-					bestAction = new Action(adjacentPosition, "attack", "normal");
+					bestAction = new Action(adjacentPosition, "attack", "area");
 					bestWeight = 3;
 				}
-				else {
-					if(!adjacentAi.getShielded() && bestWeight < 2) {
-						bestAction = new Action(adjacentPosition, "support", "shield");
-						bestWeight = -1;
+				else{
+					if(bestWeight < 2 && !adjacentAi.getBoosted()) {
+						bestAction = new Action(adjacentPosition, "support", "boost");
+						bestWeight = 2;
 					}					
 				}
 			}
