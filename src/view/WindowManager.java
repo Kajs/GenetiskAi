@@ -59,7 +59,10 @@ public class WindowManager {
 	    		String str = JOptionPane.showInputDialog(null, "Game Number : ", "New Best Team Game", 1);
 	    		if(str != null) {
 	    			int bestTeam = new Integer(str);
-	    			Controller.newBestTeamGame(bestTeam - 1);
+	    			Launcher.allowRoundDelay = true;
+		    		Launcher.allowBestTeamsFitnessOutput = true;
+	    			Controller.singleBestTeamNumber = bestTeam - 1;
+	    			Controller.runSingleBestTeamGame = true;
 	    		}
 	    	}
 	    });

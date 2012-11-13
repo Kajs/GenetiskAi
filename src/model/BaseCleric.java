@@ -51,10 +51,13 @@ public class BaseCleric extends Ai {
 		if (adjacentHex != null && bestWeight < 3) {
 			if(adjacentHex.isOccupied()) {
 				Ai adjacentAi = adjacentHex.getAi();
-				if(adjacentAi.getTeam() != team && bestWeight < 2) {
-					//attack
-					bestAction = new Action(adjacentPosition, "attack", "normal");
-					bestWeight = 2;
+				
+				if(adjacentAi.getTeam() != team) {
+					if(bestWeight < 2) {
+						//attack
+						bestAction = new Action(adjacentPosition, "attack", "normal");
+						bestWeight = 2;
+					}
 				}
 				else {
 					double currentHp = adjacentAi.getHp();

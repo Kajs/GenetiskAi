@@ -3,11 +3,9 @@ package model;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Observable;
-import java.math.*;
 
 import control.Controller;
 import control.Launcher;
-import static java.lang.Math.abs;
 import model.Ai;
 import model.Board;
 import model.Coordinate;
@@ -214,75 +212,73 @@ public class GameState extends Observable {
 		ArrayList<Hex> southWest = new ArrayList<Hex>();
 		ArrayList<Hex> northWest = new ArrayList<Hex>();
 		
-		/* northVector = (0,-1)
-		 * calcVector = (startPos.x-ai.getPos.x, startpos.y-ai.getPos.y)
-		 * signedAngle = (atan2(calcVector.y,nortVector.x) - atan2(calcVector.y,northVector.x))
-		 * If -45<signedAngle<45 then add Hex to list
-		 */
-		Coordinate northVector = new Coordinate(-1.0,0.0);
-		Coordinate southVector = new Coordinate(1.0,0.0);
-		Coordinate northEastVector = new Coordinate (1.0,0.0);
-		Coordinate testHexPosition = hexMatrix[5][6].getStartPosition();
-		Coordinate testVector = new Coordinate(testHexPosition.getX()-origin.getX(), testHexPosition.getY()-origin.getY());
-		//System.out.println("North(-1,0) and test=[5][6]: " + (Math.atan2(testVector.getY(),testVector.getX())-Math.atan2(northVector.getY(),northVector.getX())));
-		//System.out.println("South(1,0) and test=[5][6]: " + (Math.atan2(testVector.getY(),testVector.getX())-Math.atan2(southVector.getY(),southVector.getX())));
-		
-		//Coordinate comparisonVector = new Coordinate(origin.getXD(),origin.getYD());
 		Coordinate originPosition = hexMatrix[origin.getX()][origin.getY()].getStartPosition();
 		Coordinate comparisonVector = new Coordinate(1.0,0.0);
+		
+		Ai originAi = hexMatrix[origin.getX()][origin.getY()].getAi();
+		
+		String id = originAi.getId();
+		double team = originAi.getTeam();
+		String targetAiType = "";
+		
 				
 		for (Ai ai : team1Alive) {
 			Coordinate aiPos = ai.getPosition();
 			if (aiPos.getX() == origin.getX() && aiPos.getY() == origin.getY()) { continue; }
 			
+			if(ai.getTeam() == team) { targetAiType = "ally"; } else {targetAiType = "enemy"; }
+			
+			
 			Hex targetHex = hexMatrix[aiPos.getX()][aiPos.getY()];
 			Coordinate hexPosition = targetHex.getStartPosition();
 			Coordinate hexVector = new Coordinate(hexPosition.getXD()-originPosition.getXD(), hexPosition.getYD()-originPosition.getYD());
-			//System.out.println("HexPosition: " + hexPosition.getXD() + ", " + hexPosition.getYD());
 			double angleToHex = Math.toDegrees((Math.atan2(hexVector.getYD(),hexVector.getXD())) - (Math.atan2(comparisonVector.getYD(),comparisonVector.getXD())));
 			//System.out.println("Team1 Angle calculated: " + Controller.round(angleToHex, 2));
 			
 			// SouthEast
 			if (angleToHex>=0 && angleToHex<60) {
-				if(Launcher.allowAngleOutput) {System.out.println("SE: " + Controller.round(angleToHex, 2) + " (" + origin.getX() + ", " + origin.getY() + ")");}
+				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at SE: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				southEast.add(targetHex);
 				continue;
 			}
 			//South
 			if (angleToHex>=60 && angleToHex<120) {
-				if(Launcher.allowAngleOutput) {System.out.println("S: " + Controller.round(angleToHex, 2) + " (" + origin.getX() + ", " + origin.getY() + ")");}
+				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at S: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				south.add(targetHex);
 				continue;
 			}
 			//SouthWest
 			if (angleToHex>=120 && angleToHex<=180) {
-				if(Launcher.allowAngleOutput) {System.out.println("SW: " + Controller.round(angleToHex, 2) + " (" + origin.getX() + ", " + origin.getY() + ")");}
+				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at SW: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				southWest.add(targetHex);
 				continue;
 			}
 			//NortEast
 			if (angleToHex<0 && angleToHex>=-60) {
-				if(Launcher.allowAngleOutput) {System.out.println("NE: " + Controller.round(angleToHex, 2) + " (" + origin.getX() + ", " + origin.getY() + ")");}
+				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at NE: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				northEast.add(targetHex);
 				continue;
 			}
 			//North
 			if (angleToHex<-60 && angleToHex>=-120) {
-				if(Launcher.allowAngleOutput) {System.out.println("N: " + Controller.round(angleToHex, 2) + " (" + origin.getX() + ", " + origin.getY() + ")");}
+				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at N: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				north.add(targetHex);
 				continue;
 			}
 			//NortWest
 			if (angleToHex<-120 && angleToHex>=-180) {
-				if(Launcher.allowAngleOutput) {System.out.println("NW: " + Controller.round(angleToHex, 2) + " (" + origin.getX() + ", " + origin.getY() + ")");}
+				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at NW: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				northWest.add(targetHex);
 				continue;
 			}
 			
 		}
+		
 		for (Ai ai : team2Alive) {
 			Coordinate aiPos = ai.getPosition();
 			if (aiPos.getX() == origin.getX() && aiPos.getY() == origin.getY()) { continue; }
+			
+			if(ai.getTeam() == team) { targetAiType = "ally"; } else {targetAiType = "enemy"; }
 			
 			Hex targetHex = hexMatrix[aiPos.getX()][aiPos.getY()];
 			Coordinate hexPosition = targetHex.getStartPosition();
@@ -292,37 +288,37 @@ public class GameState extends Observable {
 			
 			// SouthEast
 			if (angleToHex>=0 && angleToHex<60) {
-				if(Launcher.allowAngleOutput) {System.out.println("SE: " + Controller.round(angleToHex, 2) + " (" + origin.getX() + ", " + origin.getY() + ")");}
+				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at SE: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				southEast.add(targetHex);
 				continue;
 			}
 			//South
 			if (angleToHex>=60 && angleToHex<120) {
-				if(Launcher.allowAngleOutput) {System.out.println("S: " + Controller.round(angleToHex, 2) + " (" + origin.getX() + ", " + origin.getY() + ")");}
+				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at S: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				south.add(targetHex);
 				continue;
 			}
 			//SouthWest
 			if (angleToHex>=120 && angleToHex<=180) {
-				if(Launcher.allowAngleOutput) {System.out.println("SW: " + Controller.round(angleToHex, 2) + " (" + origin.getX() + ", " + origin.getY() + ")");}
+				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at SW: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				southWest.add(targetHex);
 				continue;
 			}
 			//NortEast
 			if (angleToHex<0 && angleToHex>=-60) {
-				if(Launcher.allowAngleOutput) {System.out.println("NE: " + Controller.round(angleToHex, 2) + " (" + origin.getX() + ", " + origin.getY() + ")");}
+				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at NE: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				northEast.add(targetHex);
 				continue;
 			}
 			//North
 			if (angleToHex<-60 && angleToHex>=-120) {
-				if(Launcher.allowAngleOutput) {System.out.println("N: " + Controller.round(angleToHex, 2) + " (" + origin.getX() + ", " + origin.getY() + ")");}
+				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at N: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				north.add(targetHex);
 				continue;
 			}
 			//NortWest
 			if (angleToHex<-120 && angleToHex>=-180) {
-				if(Launcher.allowAngleOutput) {System.out.println("NW: " + Controller.round(angleToHex, 2) + " (" + origin.getX() + ", " + origin.getY() + ")");}
+				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at NW: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				northWest.add(targetHex);
 				continue;
 			}
@@ -337,6 +333,7 @@ public class GameState extends Observable {
 		return hexCake;
 	}
 	
+	@SuppressWarnings("unused")
 	private ArrayList<ArrayList<Hex>> hexCake(Coordinate origin) {
 		ArrayList<ArrayList<Hex>> hexCake = new ArrayList<ArrayList<Hex>>();
 		ArrayList<Hex> north = new ArrayList<Hex>();
