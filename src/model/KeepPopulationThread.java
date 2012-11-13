@@ -28,7 +28,7 @@ public class KeepPopulationThread implements Runnable {
 	
 	public void run() {
 		for (int i = start; i < end; i++) {
-			//System.out.println("Keep i: " + i + "__________________, end: " + end);
+			//System.out.println("Keep i: " + i + "__________________, (" + start + "," + end + ")");
 			if(alwaysKeepBest) {newPopulation[i] = population[i];}
 			else { newPopulation[i] = choseParents(1, population, scaledFitness, totalFitness, populationLimit)[0]; }
 		}	

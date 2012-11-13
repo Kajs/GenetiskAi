@@ -53,7 +53,7 @@ public class Controller {
 	
 	
 	//_______________Thread Section________
-	private static int numThreads = 4;
+	private static int numThreads = 33;
 	private Thread[] threads;
 	private GameThread[] gameThreads;
 	
@@ -67,13 +67,14 @@ public class Controller {
 		gameThreads = new GameThread[numThreads];
 		
 		int stepSize = populationSize/numThreads;
-		int firstTeam = 0;
-		int lastTeam = stepSize;
+		if(stepSize < 1) {stepSize = 1;}
+		int start = 0;
+		int end = stepSize;
 		for (int i = 0; i < numThreads; i++) {
-			gameThreads[i] = new GameThread(new GameState(startPosition, rows, columns, hexSideSize), firstTeam, lastTeam, enemyDifficulty, maxRounds, geneticPositions, staticPositions, geneticAlgorithm, choices, information, Launcher.allowBestTeamsFitnessOutput);
-			if(i == numThreads - 1) {lastTeam = populationSize; }
-			firstTeam = lastTeam;
-			lastTeam += stepSize;
+			if(i == numThreads - 1 || end > populationSize) {end = populationSize;}
+			gameThreads[i] = new GameThread(new GameState(startPosition, rows, columns, hexSideSize), start, end, enemyDifficulty, maxRounds, geneticPositions, staticPositions, geneticAlgorithm, choices, information, Launcher.allowBestTeamsFitnessOutput);
+			start = end;
+			end += stepSize;
 		}
     	
     	if(displayAutomatic) {

@@ -48,11 +48,12 @@ public class GeneticAlgorithm {
 		mutatePopulationThreads = new MutatePopulationThread[numThreads];
 		
 		int stepSize = keepAmount/numThreads;
+		if(stepSize < 1) {stepSize = 1;}
 		int start = 0;
 		int end = start + stepSize;
 		
 		for (int i = 0; i < numThreads; i++) {
-			if(i == numThreads - 1) { end = keepAmount; }
+			if(i == numThreads - 1 || end > keepAmount) { end = keepAmount; }
 			keepPopulationThreads[i] = new KeepPopulationThread(start, end, allwaysKeepBest, populationLimit, choices, information);
 			start = end;
 			end += stepSize;
@@ -60,6 +61,7 @@ public class GeneticAlgorithm {
 		
 		stepSize = crossAmount/numThreads;
 		stepSize = stepSize + (stepSize % 2);
+		if(stepSize < 2) {stepSize = 2;}
 		start = keepAmount;
 		end = start + stepSize;
 		
@@ -71,6 +73,7 @@ public class GeneticAlgorithm {
 		}
 		
 		stepSize = mutateAmount/numThreads;
+		if(stepSize < 1) {stepSize = 1;}
 		start = keepAmount + crossAmount;
 		end = start + stepSize;
 		double drasticStepSize = 1.0/numThreads;
@@ -78,7 +81,7 @@ public class GeneticAlgorithm {
 		double drasticEnd = drasticStepSize;
 		
 		for (int i = 0; i < numThreads; i++) {
-			if(i == numThreads - 1) { end = populationSize; drasticEnd = 1.0;}
+			if(i == numThreads - 1 || end > populationSize) { end = populationSize; drasticEnd = 1.0;}
 			mutatePopulationThreads[i] = new MutatePopulationThread(start, end, populationLimit, choices, information, drasticStart, drasticEnd, mutateLikelihood);
 			start = end;
 			drasticStart = drasticEnd;
