@@ -17,7 +17,7 @@ public class GeneticAlgorithm {
 	private int mutateAmount;
 	
 	private int numThreads;
-	private boolean allwaysKeepBest;
+	//private boolean allwaysKeepBest;
 	private boolean skipZeroFitnessScaling;
 	private Random randomGenerator = new Random(); 	
 	private KeepPopulationThread[] keepPopulationThreads;
@@ -32,7 +32,7 @@ public class GeneticAlgorithm {
 		this.choices = choices;
 		this.information = information;
 		this.numThreads = numThreads;
-		this.allwaysKeepBest = allwaysKeepBest;
+		//this.allwaysKeepBest = allwaysKeepBest;
 		this.skipZeroFitnessScaling = skipZeroFitnessScaling;
 		
 		keepAmount = (int)floor(populationSize * keepPercent);
@@ -141,7 +141,7 @@ public class GeneticAlgorithm {
 			bestAiFitness = fitness[bestTeam];
 		}
 		
-        if(allwaysKeepBest) { HeapSort.heapSortHigh(population, fitness, populationSize); }
+        //if(allwaysKeepBest) { HeapSort.heapSortHigh(population, fitness, populationSize); }
 		
 		double[][][] newPopulation = new double[populationSize][choices+1][information];
 		double[] scaledFitness;
