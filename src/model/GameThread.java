@@ -15,6 +15,8 @@ public class GameThread implements Runnable {
 	private final GeneticAlgorithm geneticAlgorithm;
 	private double[] team1Fitness;
 	private boolean fitnessOutput;
+	private int choices;
+	private int information;
 	
 	private double totalFitness;
 	private double bestFitness;
@@ -22,17 +24,20 @@ public class GameThread implements Runnable {
 	private double tm1AvrFit;
 	private double tm2AvrFit;
 	
-	public GameThread(GameState gameState, int firstTeam, int lastTeam, int enemyDifficulty, int maxRounds, Coordinate[][] geneticPositions, Coordinate[][] staticPositions, GeneticAlgorithm geneticAlgorithm, int choices, int information, boolean fitnessOutput) {
+	private Scenario[] scenarios;
+	
+	public GameThread(GameState gameState, int firstTeam, int lastTeam, int enemyDifficulty, int maxRounds, GeneticAlgorithm geneticAlgorithm, int choices, int information, boolean fitnessOutput, Scenario[] scenarios) {
 		this.gameState = gameState;
-		currentTeam = new double[3][1][choices+1][information];
 		this.firstTeam = firstTeam;
 		this.lastTeam = lastTeam;
 		this.enemyDifficulty = enemyDifficulty;
 		this.maxRounds = maxRounds;
-		this.geneticPositions = geneticPositions;
-		this.staticPositions = staticPositions;
 		this.geneticAlgorithm = geneticAlgorithm;
 		this.fitnessOutput = fitnessOutput;
+		this.choices = choices;
+		this.information = information;
+		
+		this.scenarios = scenarios;
 	}
 	
 	public void run() {
@@ -45,20 +50,34 @@ public class GameThread implements Runnable {
 		
 		for (int team = firstTeam; team < lastTeam; team++) {
 			//System.out.println("Game " + i + ", team number " + lastAi + "_____________________________");
+			double tm1FitVal = 0;
+			double tm2FitVal = 0;
 			
-			gameState.reset();
 			
-			currentTeam[0][0] = team1[0][team];
-			currentTeam[1][0] = team1[1][team];
-			currentTeam[2][0] = team1[2][team];
+			for (int i = 0; i < scenarios.length; i++) {
+				gameState.reset();
+				this.geneticPositions = scenarios[i].geneticPositions;
+				this.staticPositions = scenarios[i].staticPositions;
+				currentTeam = new double[geneticPositions.length][geneticPositions[0].length][choices+1][information];
+				
+				for (int aiType = 0; aiType < geneticPositions.length; aiType++) {
+					for (int aiPos = 0; aiPos < geneticPositions[aiType].length; aiPos++) {
+						currentTeam[aiType][aiPos] = team1[aiType][team];
+					}
+				}
+				
+				insertGeneticAis(currentTeam, geneticPositions);			    
+			    insertStaticAis(enemyDifficulty, staticPositions);
+			    
+			    double[][] results = gameState.newGame(maxRounds);
+			    
+			    tm1FitVal += geneticAlgorithm.fitness(results[0]);
+				tm2FitVal += geneticAlgorithm.fitness(results[1]);
+			}
 			
-			insertGeneticAis(currentTeam, geneticPositions);			    
-		    insertStaticAis(enemyDifficulty, staticPositions);
-
-			double[][] results = gameState.newGame(maxRounds);
+			tm1FitVal = tm1FitVal/scenarios.length;
+			tm2FitVal = tm2FitVal/scenarios.length;
 			
-			double tm1FitVal = geneticAlgorithm.fitness(results[0]);
-			double tm2FitVal = geneticAlgorithm.fitness(results[1]);
 			totalFitness = totalFitness + tm1FitVal;
 			
 			if(tm1FitVal >= bestFitness) {

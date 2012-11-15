@@ -2,16 +2,14 @@ package model;
 
 public class Scenario {
 
-	Coordinate[] geneticPositions;
-	Coordinate[] staticPositions;
-	Ai[] staticAis;
-	Ai[] geneticAis;
+	Coordinate[][] geneticPositions;
+	Coordinate[][] staticPositions;
+	//int[] aiTypes;
 	
-	public Scenario (Ai[] staticAis, Coordinate[] staticPositions, Ai[] geneticAis, Coordinate[] geneticPositions) {
-		this.staticAis = staticAis;
-		this.staticPositions = staticPositions;
+	public Scenario (Coordinate[][] geneticPositions, Coordinate[][] staticPositions) {
+		//this.aiTypes = aiTypes;
 		this.geneticPositions = geneticPositions;
-		this.geneticAis = geneticAis;		
+		this.staticPositions = staticPositions;
 	}
 
 }

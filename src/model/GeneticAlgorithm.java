@@ -132,7 +132,15 @@ public class GeneticAlgorithm {
 	
 	
 	
-	public double[][][] newPopulation(double[][][] population, double[] fitness) {
+	public double[][][] newPopulation(double[][][] population, double[] fitness, boolean elitism, int bestTeam) {
+		double[][] bestAi = null;
+		double bestAiFitness = 0;
+		
+		if(elitism) {
+			bestAi = population[bestTeam];
+			bestAiFitness = fitness[bestTeam];
+		}
+		
         if(allwaysKeepBest) { HeapSort.heapSortHigh(population, fitness, populationSize); }
 		
 		double[][][] newPopulation = new double[populationSize][choices+1][information];
@@ -168,6 +176,11 @@ public class GeneticAlgorithm {
 					if (threads[i][j].isAlive()) { activeThreads = true; continue; }
 				}
 			}
+		}
+		
+		if(elitism) {
+			newPopulation[0] = bestAi;
+			fitness[0] = bestAiFitness;
 		}
 		
 		return newPopulation;
@@ -221,7 +234,7 @@ public class GeneticAlgorithm {
 			double fitValue = orgFitness[i];
 			
 			if(skipZeroFitnessScaling && fitValue == 0) { scaledFitness[i] = 0.0; }
-			else { scaledFitness[i] = sqrt(fitValue + 1); }
+			else { scaledFitness[i] = sqrt(fitValue + 1.0/populationSize); }
 		}
 		return scaledFitness;
 	}
