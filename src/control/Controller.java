@@ -53,7 +53,7 @@ public class Controller {
 	
 	
 	//_______________Thread Section________
-	private static int numThreads = 33;
+	private static int numThreads = 4;
 	private Thread[] threads;
 	private GameThread[] gameThreads;
 	
@@ -141,16 +141,7 @@ public class Controller {
 				threads[i].start();
 			}
 			
-			boolean activeThreads = true;
-			
-			while(activeThreads) {
-				try { Thread.sleep(1); } 
-				catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
-				activeThreads = false;
-				for (Thread thread : threads) {
-					if(thread.isAlive()) {activeThreads = true; continue;}
-				}
-			}
+			sync(threads);
 			
 			for (int i = 0; i < numThreads; i++) {
 				totalFitness = totalFitness + gameThreads[i].getTotalFitness();
@@ -180,10 +171,19 @@ public class Controller {
 			tm1FinalAvrFit = tm1FinalAvrFit + tm1AvrFit;
 			tm2FinalAvrFit = tm2FinalAvrFit + tm2AvrFit;
 			
-			System.out.println("Game " + (game + 1) + " bestFit: " + round(bestFitness, 2) + ", tm1AvrFit = " + round(tm1AvrFit, 2)  + ", tm2AvrFit = " + round(tm2AvrFit, 2));
+		    System.out.println("Game " + (game + 1) + " bestFit: " + round(bestFitness, 2) + ", tm1AvrFit = " + round(tm1AvrFit, 2)  + ", tm2AvrFit = " + round(tm2AvrFit, 2));
 			
-			team1[0] = geneticAlgorithm.newPopulation(team1[0], copyArray(team1Fitness));  //copying team1Fitness in case Genetic Algorithm uses heapsort
-			team1[1] = geneticAlgorithm.newPopulation(team1[1], copyArray(team1Fitness));
+			if(alwaysKeepBest) {
+				Thread[] heapSortThreads = new Thread[3];
+				heapSortThreads[0] = new Thread(new HeapSortThread(team1[0], copyArrayMultiThreading(team1Fitness), populationSize, true));
+				heapSortThreads[1] = new Thread(new HeapSortThread(team1[1], copyArrayMultiThreading(team1Fitness), populationSize, true));
+				heapSortThreads[2] = new Thread(new HeapSortThread(team1[2], team1Fitness, populationSize, true));
+				for (Thread thread : heapSortThreads) { thread.start();}
+				sync(heapSortThreads);
+			}
+			
+			team1[0] = geneticAlgorithm.newPopulation(team1[0], team1Fitness);  //copying team1Fitness in case Genetic Algorithm uses heapsort
+			team1[1] = geneticAlgorithm.newPopulation(team1[1], team1Fitness);
 			team1[2] = geneticAlgorithm.newPopulation(team1[2], team1Fitness);
 		}
 		tm1FinalAvrFit = tm1FinalAvrFit/(lastGame + 1);
@@ -274,9 +274,33 @@ public class Controller {
 	public double[] copyArray(double[] orgArray) {
 		int length = orgArray.length;
 		double[] copy = new double[length];
+		
 		for (int i = 0; i < length; i++) {
 			copy[i] = orgArray[i];
 		}
+		
+		return copy;
+	}
+	
+	// DG: copyArrayMultiThreading: Unused currently
+	public double[] copyArrayMultiThreading(double[] orgArray) {
+		int length = orgArray.length;
+		double[] copy = new double[length];
+		CopyArrayThread[] copyArrayThreads = new CopyArrayThread[numThreads];
+		int stepSize = length/numThreads;
+		
+		for (int i = 0; i < numThreads; i++) {
+			int start = stepSize*i;
+			int end = start+stepSize;
+			if(i == numThreads - 1 || end > length) { end = length;}
+			
+			copyArrayThreads[i] = new CopyArrayThread(orgArray, copy, start, end); 
+			threads[i] = new Thread(copyArrayThreads[i]);
+			threads[i].start();
+		}
+		
+		sync(threads);
+		
 		return copy;
 	}
 	
@@ -291,5 +315,12 @@ public class Controller {
 	
 	public double[][][][] getBestTeams() {
 		return bestTeams;
+	}
+	
+	public void sync(Thread[] threads) {
+		for (int i = 0; i < threads.length; i++) {
+			try { threads[i].join(); } 
+			catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
+		}
 	}
 }
