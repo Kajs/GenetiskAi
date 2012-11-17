@@ -17,13 +17,14 @@ public class GeneticAlgorithm {
 	private int mutateAmount;
 	
 	private int numThreads;
-	//private boolean allwaysKeepBest;
+	private boolean allwaysKeepBest;
 	private boolean skipZeroFitnessScaling;
 	private Random randomGenerator = new Random(); 	
 	private KeepPopulationThread[] keepPopulationThreads;
 	private CrossPopulationThread[] crossPopulationThreads;
 	private MutatePopulationThread[] mutatePopulationThreads;
-	//private int keepAmount;
+	
+	private Thread[][] threads;
 	
 	
 	
@@ -32,8 +33,10 @@ public class GeneticAlgorithm {
 		this.choices = choices;
 		this.information = information;
 		this.numThreads = numThreads;
-		//this.allwaysKeepBest = allwaysKeepBest;
+		this.allwaysKeepBest = allwaysKeepBest;
 		this.skipZeroFitnessScaling = skipZeroFitnessScaling;
+		
+		threads = new Thread[3][numThreads];
 		
 		keepAmount = (int)floor(populationSize * keepPercent);
 		crossAmount = (int)floor(populationSize * crossPercent);
@@ -141,7 +144,7 @@ public class GeneticAlgorithm {
 			bestAiFitness = fitness[bestTeam];
 		}
 		
-        //if(allwaysKeepBest) { HeapSort.heapSortHigh(population, fitness, populationSize); }
+        if(allwaysKeepBest) { HeapSort.heapSortHigh(population, fitness, populationSize); }
 		
 		double[][][] newPopulation = new double[populationSize][choices+1][information];
 		double[] scaledFitness;
@@ -150,8 +153,6 @@ public class GeneticAlgorithm {
 		//scaledFitness = linearTransformationScaling(fitness, 0.9, 1.0);
 		scaledFitness = exponentialScaling(fitness);
 		double totalFitness = getTotalFitness(scaledFitness, populationLimit);
-		
-		Thread[][] threads = new Thread[3][numThreads];
 		
 		for (int i = 0; i < numThreads; i++) {
 			keepPopulationThreads[i].setVariables(population, newPopulation, scaledFitness, totalFitness);
@@ -165,18 +166,7 @@ public class GeneticAlgorithm {
 			threads[2][i].start();
 		}
 		
-		boolean activeThreads = true;
-		while(activeThreads) {
-			activeThreads = false;
-			try { Thread.sleep(1); } 
-			catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
-			
-			for (int i = 0; i < 3; i++) {
-				for (int j = 0; j < numThreads; j++) {
-					if (threads[i][j].isAlive()) { activeThreads = true; continue; }
-				}
-			}
-		}
+		for (int i = 0; i < 3; i++) { sync(threads[i]); }
 		
 		if(elitism) {
 			newPopulation[0] = bestAi;
@@ -273,5 +263,12 @@ public class GeneticAlgorithm {
 			totalFitness = totalFitness + fitness[i];
 		}
 		return totalFitness;
+	}
+	
+	public void sync(Thread[] threads) {
+		for (int i = 0; i < threads.length; i++) {
+			try { threads[i].join(); } 
+			catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
+		}
 	}
 }

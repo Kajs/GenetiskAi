@@ -66,8 +66,9 @@ public class GameThread implements Runnable {
 					}
 				}
 				
-				insertGeneticAis(currentTeam, geneticPositions);			    
-			    insertStaticAis(enemyDifficulty, staticPositions);
+				//insertGeneticAis(currentTeam, geneticPositions);	
+				insertStaticAis(1, geneticPositions, 1);
+			    insertStaticAis(enemyDifficulty, staticPositions, 2);
 			    
 			    double[][] results = gameState.newGame(maxRounds);
 			    
@@ -110,10 +111,10 @@ public class GameThread implements Runnable {
 		}
 	}
 	
-	private void insertStaticAis(int difficulty, Coordinate[][] staticPositions) {
+	private void insertStaticAis(int difficulty, Coordinate[][] staticPositions, int team) {
 		for (int aiType = 0; aiType < 3; aiType++) {
 			for (int i = 0; i < staticPositions[aiType].length && staticPositions[aiType][i] != null; i++) {
-				gameState.insertAi(newStaticAi(difficulty, aiType), 2, staticColors(aiType), staticPositions[aiType][i]);
+				gameState.insertAi(newStaticAi(difficulty, aiType), team, staticColors(aiType), staticPositions[aiType][i]);
 			}
 		}
 	}

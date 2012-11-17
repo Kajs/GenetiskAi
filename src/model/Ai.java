@@ -256,31 +256,31 @@ public class Ai {
 			}
 		}
 		
-		information.add(hp);
-		information.add(myTeamHp);
-		information.add(enemyTeamHp);
-		information.add((double) enemies.size());
-		information.add((double) allies.size());
-		information.add(nearestAllyHp);
-		information.add(nearestAllyDistance);
-		information.add(nearestAllyStunned);
-		information.add(nearestAllyShielded);
-		information.add(nearestEnemyHp);
-		information.add(nearestEnemyDistance);
-		information.add(nearestEnemyStunned);
-		information.add(nearestEnemyShielded);
-		information.add(totalEnemies);
-		information.add(totalAllies);
-		information.add(nearestEnemyIsWarrior);
-		information.add(nearestEnemyIsWizard);
-		information.add(nearestEnemyIsCleric);
-		information.add(nearestAllyIsWarrior);
-		information.add(nearestAllyIsWizard);
-		information.add(nearestAllyIsCleric);
-		information.add(nearestAllyIsBoosted);
-		information.add(nearestEnemyIsBoosted);
-		information.add(adjacentEnemies);
-		information.add(adjacentAllies);
+		information.add(hp);                        // 00
+		information.add(myTeamHp);                  // 01
+		information.add(enemyTeamHp);               // 02
+		information.add((double) enemies.size());   // 03
+		information.add((double) allies.size());    // 04
+		information.add(nearestAllyHp);             // 05
+		information.add(nearestAllyDistance);       // 06
+		information.add(nearestAllyStunned);        // 07
+		information.add(nearestAllyShielded);       // 08
+		information.add(nearestEnemyHp);            // 09
+		information.add(nearestEnemyDistance);      // 10
+		information.add(nearestEnemyStunned);       // 11
+		information.add(nearestEnemyShielded);      // 12
+		information.add(totalEnemies);              // 13
+		information.add(totalAllies);               // 14
+		information.add(nearestEnemyIsWarrior);     // 15
+		information.add(nearestEnemyIsWizard);      // 16
+		information.add(nearestEnemyIsCleric);      // 17
+		information.add(nearestAllyIsWarrior);      // 18
+		information.add(nearestAllyIsWizard);       // 19
+		information.add(nearestAllyIsCleric);       // 20
+		information.add(nearestAllyIsBoosted);      // 21
+		information.add(nearestEnemyIsBoosted);     // 22
+		information.add(adjacentEnemies);           // 23
+		information.add(adjacentAllies);            // 24
 		
 		if(Launcher.allowAdjacentAiOutput) {
 			if(adjacentEnemies > 0) {System.out.println("Team " + team + " " + aiType + " at " + "(" + position.getX() + ", " + position.getY() + "): found " + (int)adjacentEnemies + " enemies"); }

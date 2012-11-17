@@ -11,16 +11,16 @@ import view.WindowManager;
 
 public class Controller {
 	
-	static int width = 800;
+	static int width = 930;
 	static int height = 600;
-	static int rows = 13;
-	static int columns = 23;
+	static int rows = 20;
+	static int columns = 40;
 	static double hexSideSize = scaledHexSideSize();
 	public static int roundDelay = 1000;  // in milliseconds
 	static Coordinate startPosition = new Coordinate(sin(toRadians(30)) * hexSideSize, 1);
 	
-	static int maxRounds = 70;
-	static int maxGames = 100;
+	static int maxRounds = 100;
+	static int maxGames = 1000;
 	public static int gamesCompleted = 0;
 	
 	static int populationSize = 1000;
@@ -178,17 +178,8 @@ public class Controller {
 			
 		    System.out.println("Game " + (game + 1) + " bestFit: " + round(bestFitness, 2) + ", tm1AvrFit = " + round(tm1AvrFit, 2)  + ", tm2AvrFit = " + round(tm2AvrFit, 2));
 			
-			if(alwaysKeepBest) {
-				Thread[] heapSortThreads = new Thread[3];
-				heapSortThreads[0] = new Thread(new HeapSortThread(team1[0], copyArrayMultiThreading(team1Fitness), populationSize, true));
-				heapSortThreads[1] = new Thread(new HeapSortThread(team1[1], copyArrayMultiThreading(team1Fitness), populationSize, true));
-				heapSortThreads[2] = new Thread(new HeapSortThread(team1[2], team1Fitness, populationSize, true));
-				for (Thread thread : heapSortThreads) { thread.start();}
-				sync(heapSortThreads);
-			}
-			
-			team1[0] = geneticAlgorithm.newPopulation(team1[0], team1Fitness, elitism, bestTeam);  //copying team1Fitness in case Genetic Algorithm uses heapsort
-			team1[1] = geneticAlgorithm.newPopulation(team1[1], team1Fitness, elitism, bestTeam);
+			team1[0] = geneticAlgorithm.newPopulation(team1[0], copyArrayMultiThreading(team1Fitness), elitism, bestTeam);  //copying team1Fitness in case Genetic Algorithm uses heapsort
+			team1[1] = geneticAlgorithm.newPopulation(team1[1], copyArrayMultiThreading(team1Fitness), elitism, bestTeam);
 			team1[2] = geneticAlgorithm.newPopulation(team1[2], team1Fitness, elitism, bestTeam);
 		}
 		
@@ -226,37 +217,14 @@ public class Controller {
 			Thread lastThread = new Thread(bestGameThread);
 			lastThread.start();
 		}
-	
-	
-	
-	//------------------------- team positions
-	
-	/*
-	
-		public void setTeamPositions(boolean random) {
-			if(random) {
-				
-			}
-			else {
-				geneticPositions = new Coordinate[3][1];            //format: [aiType][aiNumber]
-				geneticPositions[0][0] = new Coordinate(6, 2);
-				geneticPositions[1][0] = new Coordinate(7, 2);
-				geneticPositions[2][0] = new Coordinate(5, 2);
 
-				staticPositions = new Coordinate[3][1];
-				staticPositions[0][0] = new Coordinate(6, 20);
-				staticPositions[1][0] = new Coordinate(5, 20);
-				staticPositions[2][0] = new Coordinate(7, 20);
-			}
-		}
-		*/
 		
 	public void setupScenarios() {
 		
-		scenarios = new Scenario[1];
+		scenarios = new Scenario[5];
 		
 		//Scenario 0 positions 3v3
-		/*
+		
 		geneticPositions = new Coordinate[3][1];            //format: [aiType][aiNumber]
 		geneticPositions[0][0] = new Coordinate(6, 2);
 		geneticPositions[1][0] = new Coordinate(7, 2);
@@ -269,8 +237,7 @@ public class Controller {
 		
 		
 		scenarios[0] = new Scenario(geneticPositions, staticPositions);
-		*/
-	/*	
+		
 		//Scenario 1 positions: warrior 1v1
 		
 		geneticPositions = new Coordinate[3][1];            //format: [aiType][aiNumber]
@@ -301,24 +268,22 @@ public class Controller {
 		
 		scenarios[3] = new Scenario(geneticPositions, staticPositions);
 		
-		*/
-		
 		//Scenario 4 surrounded
 		
 		geneticPositions = new Coordinate[3][1];            //format: [aiType][aiNumber]
-		geneticPositions[0][0] = new Coordinate(5, 13);
-		geneticPositions[1][0] = new Coordinate(7, 13);
-		geneticPositions[2][0] = new Coordinate(9, 13);
+		geneticPositions[0][0] = new Coordinate(7, 20);
+		geneticPositions[1][0] = new Coordinate(9, 20);
+		geneticPositions[2][0] = new Coordinate(11, 20);
 
 		staticPositions = new Coordinate[3][2];
-		staticPositions[0][0] = new Coordinate(6, 20);
-		staticPositions[1][0] = new Coordinate(5, 20);
-		staticPositions[2][0] = new Coordinate(7, 20);
-		staticPositions[0][1] = new Coordinate(6, 0);
-		staticPositions[1][1] = new Coordinate(5, 0);
-		staticPositions[2][1] = new Coordinate(7, 0);
+		staticPositions[0][0] = new Coordinate(7, 38);
+		staticPositions[1][0] = new Coordinate(9, 38);
+		staticPositions[2][0] = new Coordinate(11, 38);
+		staticPositions[0][1] = new Coordinate(7, 1);
+		staticPositions[1][1] = new Coordinate(9, 1);
+		staticPositions[2][1] = new Coordinate(11, 1);
 		
-		scenarios[0] = new Scenario(geneticPositions, staticPositions);
+		scenarios[4] = new Scenario(geneticPositions, staticPositions);
 	}
 	
 	
@@ -350,8 +315,7 @@ public class Controller {
 		
 		return copy;
 	}
-	
-	// DG: copyArrayMultiThreading: Unused currently
+
 	public double[] copyArrayMultiThreading(double[] orgArray) {
 		int length = orgArray.length;
 		double[] copy = new double[length];

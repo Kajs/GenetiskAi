@@ -625,7 +625,7 @@ public class GameState extends Observable {
 				double initialHp = targetAi.getInitialHp();
 				if(currentHp < initialHp) {
 					double healAmount = min(currentHp + ai.getHealAmount(), initialHp) - currentHp;
-					if(Launcher.allowHealOutput) {System.out.println(targetAi.getId() + ":  healed " + healAmount + " hp");}
+					if(Launcher.allowHealOutput) {System.out.println(targetAi.getId() + ":  healed " + healAmount + ", hp = " + (currentHp + healAmount));}
 					targetAi.setHp(currentHp + healAmount);
 				}
 			}
