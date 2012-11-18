@@ -63,7 +63,7 @@ public class GameState extends Observable {
 				Hex orgHex = hexMatrix[orgPos.getX()][orgPos.getY()];
 				Hex[] adjacentHexes = adjacentHexes(orgPos);
 				double[][] adjacentAis = adjacentAis(adjacentHexes, ai.getTeam());
-				Action preferredAction = ai.action(adjacentHexes, hexCakeOptimised(orgPos), teamHp(team1Alive), teamHp(team2Alive), (double) team2Alive.size(), (double) team1Alive.size(), adjacentAis);
+				Action preferredAction = ai.action(adjacentHexes, hexCakeOptimised(orgPos), teamHp(team1Alive), teamHp(team2Alive), (double) team2Alive.size(), (double) team1Alive.size(), adjacentAis, nearestAiDistances(adjacentHexes, 1));
 				
 				parseAction(preferredAction, ai, orgHex);
 			}			
@@ -77,7 +77,7 @@ public class GameState extends Observable {
 				Hex orgHex = hexMatrix[orgPos.getX()][orgPos.getY()];
 				Hex[] adjacentHexes = adjacentHexes(orgPos);
 				double[][] adjacentAis = adjacentAis(adjacentHexes, ai.getTeam());
-				Action preferredAction = ai.action(adjacentHexes, hexCakeOptimised(orgPos), teamHp(team2Alive), teamHp(team1Alive), (double) team1Alive.size(), (double) team2Alive.size(), adjacentAis);
+				Action preferredAction = ai.action(adjacentHexes, hexCakeOptimised(orgPos), teamHp(team2Alive), teamHp(team1Alive), (double) team1Alive.size(), (double) team2Alive.size(), adjacentAis, nearestAiDistances(adjacentHexes, 2));
 				
 				parseAction(preferredAction, ai, orgHex);
 			}
@@ -512,6 +512,34 @@ public class GameState extends Observable {
 			}
 		}
 		return adjacentHexes;
+	}
+	
+	public double[][] nearestAiDistances(Hex[] hexes, int team) {     //will add 0 ally distance if only 1 is left on team
+		double[][] distances = new double[6][1];
+		
+		for (int h = 0; h < 6; h++) {
+			double team1Distance = Double.MAX_VALUE;
+			double team2Distance = Double.MAX_VALUE;
+			
+			for (Ai team1: team1Alive) {
+				double aiDistance = hexes[h].getPosition().distance(team1.getPosition());
+				if(aiDistance < team1Distance) { team1Distance = aiDistance; }
+			}
+			for (Ai team2: team1Alive) {
+				double aiDistance = hexes[h].getPosition().distance(team2.getPosition());
+				if(aiDistance < team2Distance) { team2Distance = aiDistance; }
+			}
+			if(team == 1) {
+				distances[h][2] = team1Distance; //enemies
+				distances[h][1] = team2Distance; //allies
+			}
+			else {
+				distances[h][1] = team1Distance; //enemies
+				distances[h][2] = team2Distance; //allies
+				}
+		}
+		return distances;
+		
 	}
 	
 	public double[][] adjacentAis(Hex[] hexes, int team) {

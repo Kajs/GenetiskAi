@@ -37,11 +37,40 @@ public class Ai {
     public Ai() {
     }
     
-    public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies, double[][] adjacentAis) 
-    {
-    	System.out.println("Ai.Action() should be overwritten by extending classes");
-    	return new Action(new Coordinate(0, 0), "standard", "Ai");
-    }
+    public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies, double[][] adjacentAis) {
+		bestAction = null;
+		bestWeight = (int)Math.pow(-2, 31);
+		for (int i = 0; i < hexCake.size(); i++) {
+			ArrayList<Hex> slice = hexCake.get(i);
+			ArrayList<Ai> enemies = new ArrayList<Ai>();
+			ArrayList<Ai> allies = new ArrayList<Ai>();
+			
+			for (Hex hex : slice) {
+				if (hex.isOccupied()) {
+					Ai foundAi = hex.getAi();
+					if(foundAi.getTeam() == getTeam()) {
+						allies.add(foundAi);
+					}
+					else {
+						//System.out.println("I found an enemy during loop " + i);
+						enemies.add(foundAi);
+					}
+				}
+			}
+			if (totalEnemies > 0 && adjacentHexes[i] != null) {
+				weight(adjacentHexes[i], enemies, allies, myTeamHp, enemyTeamHp, totalEnemies, totalAllies, adjacentAis[0][i], adjacentAis[1][0]);
+			}	
+		}
+		
+		if(bestAction == null) {
+			bestAction = new Action(position, "move", "stay");
+		}
+		if(Launcher.allowActionOutput) {System.out.println(aiType + ", team " + team + " at (" + position.getX() + ", " + position.getY() + ") chose " + bestAction.getBaseType() + ", " + bestAction.getExtendedType() + " on (" + bestAction.getPosition().getX() + ", " + bestAction.getPosition().getY() + ")");}
+		
+		return bestAction;
+	}
+    
+    public void weight (Hex adjacentHex, ArrayList<Ai> enemies, ArrayList<Ai> allies, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies, double adjacentEnemies, double adjacentAllies) { System.out.println("Ai.weight must be overwritten by extending classes"); }
     
     public void newStartId() { startId = aiType + ", " + "team " + getTeam() + " from (" + position.getX() + "," + position.getY() + ")"; }
     

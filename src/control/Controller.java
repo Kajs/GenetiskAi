@@ -20,10 +20,10 @@ public class Controller {
 	static Coordinate startPosition = new Coordinate(sin(toRadians(30)) * hexSideSize, 1);
 	
 	static int maxRounds = 100;
-	static int maxGames = 1000;
+	static int maxGames = 10;
 	public static int gamesCompleted = 0;
 	
-	static int populationSize = 1000;
+	static int populationSize = 10;
 	static int choices = 6;
 	static int information = 25;
 	static double keepPercent = 0.25;
@@ -221,12 +221,12 @@ public class Controller {
 		
 	public void setupScenarios() {
 		
-		scenarios = new Scenario[5];
+		scenarios = new Scenario[2];
 		
 		//Scenario 0 positions 3v3
 		
 		geneticPositions = new Coordinate[3][1];            //format: [aiType][aiNumber]
-		geneticPositions[0][0] = new Coordinate(6, 2);
+		geneticPositions[0][0] = new Coordinate(9, 11);
 		geneticPositions[1][0] = new Coordinate(7, 2);
 		geneticPositions[2][0] = new Coordinate(5, 2);
 
@@ -237,9 +237,10 @@ public class Controller {
 		
 		
 		scenarios[0] = new Scenario(geneticPositions, staticPositions);
+		scenarios[1] = new Scenario(staticPositions, geneticPositions);
 		
 		//Scenario 1 positions: warrior 1v1
-		
+		/*
 		geneticPositions = new Coordinate[3][1];            //format: [aiType][aiNumber]
 		geneticPositions[0][0] = new Coordinate(6, 2);
 
@@ -284,6 +285,7 @@ public class Controller {
 		staticPositions[2][1] = new Coordinate(11, 1);
 		
 		scenarios[4] = new Scenario(geneticPositions, staticPositions);
+		*/
 	}
 	
 	

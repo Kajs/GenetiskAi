@@ -14,7 +14,7 @@ public class BaseWarrior extends Ai {
 		meleeDamage = standardMeleeDamage;
     }
 	
-	public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies, double[][] adjacentAis) {
+	public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies, double[][] adjacentAis, double[][] nearestAiDistances) {
 		bestAction = null;
 		bestWeight = (int)Math.pow(-2, 31);
 		

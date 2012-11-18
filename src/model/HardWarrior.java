@@ -14,7 +14,7 @@ public class HardWarrior extends Ai {
 		meleeDamage = standardMeleeDamage;
     }
 	
-	public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies, double[][] adjacentAis) {
+	public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies, double[][] adjacentAis, double[][] nearestAiDistances) {
 		bestAction = null;
 		bestWeight = (int)Math.pow(-2, 31);
 		for (int i = 0; i < hexCake.size(); i++) {
@@ -54,51 +54,73 @@ public class HardWarrior extends Ai {
 		double weight=0; 
 		
 		if (adjacentHex != null) {
+			//double hp = information.get(0);                        // 00
+			//double myTeamHp = information.get(1);                  // 01
+			//double enemyTeamHp = information.get(2);               // 02
+			double enemiesSize = information.get(3);   // 03
+			double alliesSize = information.get(4);    // 04
+			double nearestAllyHp = information.get(5);             // 05
+			double nearestAllyDistance = information.get(6);       // 06
+			double nearestALlyStunned = information.get(7);        // 07
+			double nearestAllyShielded = information.get(8);       // 08
+			double nearestEnemyHp = information.get(9);            // 09
+			double nearestEnemyDistance = information.get(10);      // 10
+			double nearestEnemyStunned = information.get(11);       // 11
+			double nearestEnemyShielded = information.get(12);      // 12
+			//double totalEnemies = information.get(13);              // 13
+			//double totalAllies = information.get(14);               // 14
+			double nearestEnemyIsWarrior = information.get(15);     // 15
+			double nearestEnemyIsWizard = information.get(16);      // 16
+			double nearestEnemyIsCleric = information.get(17);      // 17
+			double nearestAllyIsWarrior = information.get(18);      // 18
+			double nearestAllyIsWizard = information.get(19);       // 19
+			double nearestAllyIsCleric = information.get(20);       // 20
+			double nearestAllyIsBoosted = information.get(21);      // 21
+			double nearestEnemyIsBoosted = information.get(22);     // 22
+			//double adjacentEnemies = information.get(23);           // 23
+			//double adjacentAllies = information.get(24);            // 24
+			
 			if(adjacentHex.isOccupied()) {
 				if(adjacentHex.getAi().getTeam() != team) {
 					//attack
 					
 					// Always attack unshielded enemy with less or equal hp to attack dmg, prefer clerics
-					if (information.get(9) <= meleeDamage && information.get(12) == 0 ) {
-						weight = 100;
-						if (information.get(16) == 1) {
+					if (nearestEnemyHp <= meleeDamage && nearestEnemyShielded == 0 ) {
+						weight = 1000;
+						if (nearestEnemyIsWizard == 1) {
 							weight+=1;
 						}
-						if (information.get(17) == 1) {
+						if (nearestEnemyIsCleric == 1) {
 							weight+=2;
 						}
 						compareAction(weight, adjacentPosition, "attack", "normal");
 					}
 					
-					// Stun boosted enemy if warrior, HP is low and we are not shielded
-					if (information.get(22) == 1 && information.get(15) == 1 && information.get(0) < 8 && this.getShielded() == false) {
-						weight = 60;
+					// Stun when outnumbering enemies
+					if (totalAllies > totalEnemies) {
+						weight = 800;
+						weight += nearestEnemyHp;
 						compareAction(weight, adjacentPosition, "attack", "stun");
+						
+					} else {
+						weight = 800;
+						weight += 1.0/nearestEnemyHp;
+						compareAction(weight, adjacentPosition, "attack", "normal");
 					}
-					
-					// Prefer normal attack on isolated enemies, preferring clerics, then wizards, last warriors
-					weight = 40 - information.get(23);
-					if (information.get(16) == 1) {
-						weight+=1;
-					}
-					if (information.get(17) == 1) {
-						weight+=2;
-					}
-					compareAction(weight, adjacentPosition, "attack", "normal");
 					
 				}
 				else {
 					//support
 					
 					// Shield ally if HP is low, modified by number of enemies next to him and type
-					if (information.get(5) < 8 && information.get(8) == 0) {
-						weight = 80;
-						weight += information.get(23);
-						if (information.get(19) == 1) {
-							weight+=1;
+					if (nearestAllyHp < 8 && nearestAllyShielded == 0) {
+						weight = 900;
+						weight += adjacentEnemies;
+						if (nearestAllyIsWizard == 1) {
+							weight+=0.5;
 						}
-						if (information.get(20) == 1) {
-							weight+=2;
+						if (nearestAllyIsCleric == 1) {
+							weight+=1;
 						}
 						compareAction(weight, adjacentPosition, "support", "shield");
 					}
@@ -108,10 +130,17 @@ public class HardWarrior extends Ai {
 				//move
 				
 				// Move towards enemies, but try to stay close to allies
-				weight = 20;
-				weight += information.get(3) +1;
-				weight += information.get(4) * (information.get(6)-1);
-				compareAction(weight, adjacentPosition, "move", "move");
+				weight = 200;
+				if(nearestEnemyDistance > 0) {weight += 10 + 1.0/nearestEnemyDistance;}
+				if(nearestAllyDistance > 0) {weight += 5 + 1.0/nearestAllyDistance;}
+				weight += adjacentEnemies;
+				weight += adjacentAllies/10.0;
+				System.out.println("weight " + weight + ", nearestEnemyDistance " + nearestEnemyDistance + " at (" + adjacentHex.getPosition().getX() + "," + adjacentHex.getPosition().getY() + ")");
+
+				
+				//if(nearestAllyDistance != 0) { result += 0.1/nearestAllyDistance;}
+				//System.out.println(result + ", nearestEnemyDistance " + nearestEnemyDistance);
+				compareAction(weight, adjacentPosition, "move", "move1");      //move1
 			}
 		}
 	}

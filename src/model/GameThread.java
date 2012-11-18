@@ -17,6 +17,7 @@ public class GameThread implements Runnable {
 	private boolean fitnessOutput;
 	private int choices;
 	private int information;
+	private int testDifficulty = 2;
 	
 	private double totalFitness;
 	private double bestFitness;
@@ -67,7 +68,7 @@ public class GameThread implements Runnable {
 				}
 				
 				//insertGeneticAis(currentTeam, geneticPositions);	
-				insertStaticAis(1, geneticPositions, 1);
+				insertStaticAis(testDifficulty, geneticPositions, 1);
 			    insertStaticAis(enemyDifficulty, staticPositions, 2);
 			    
 			    double[][] results = gameState.newGame(maxRounds);
@@ -114,7 +115,7 @@ public class GameThread implements Runnable {
 	private void insertStaticAis(int difficulty, Coordinate[][] staticPositions, int team) {
 		for (int aiType = 0; aiType < 3; aiType++) {
 			for (int i = 0; i < staticPositions[aiType].length && staticPositions[aiType][i] != null; i++) {
-				gameState.insertAi(newStaticAi(difficulty, aiType), team, staticColors(aiType), staticPositions[aiType][i]);
+				gameState.insertAi(newStaticAi(difficulty, aiType), team, staticColors(aiType, difficulty), staticPositions[aiType][i]);
 			}
 		}
 	}
@@ -151,11 +152,11 @@ public class GameThread implements Runnable {
 		case 2:
 			switch(type) {
 			case 0:
-				//return new HardWarrior();  to be implemented
+				return new HardWarrior();
 			case 1:
-				//return new HardWizard();   to be implemented
+				return new HardWizard();
 			case 2:
-				//return new HardCleric();   to be implemented
+				return new HardCleric();
 			}
 		}
 		System.out.println("newEnemy did not return correctly");
@@ -174,16 +175,39 @@ public class GameThread implements Runnable {
 		return null;
 	}
 	
-	private Color staticColors(int aiType) {
-		switch(aiType) {
+	private Color staticColors(int aiType, int difficulty) {
+		switch(difficulty) {
 		case 0:
-			return Color.BLACK;
+			switch(aiType) {
+			case 0:
+				return Color.LIGHT_GRAY;
+			case 1:
+				return Color.CYAN;
+			case 2:
+				return Color.PINK;
+			}
 		case 1:
-			return Color.GRAY;
+			switch(aiType) {
+			case 0:
+				return Color.DARK_GRAY;
+			case 1:
+				return Color.BLUE;
+			case 2:
+				return Color.GREEN;
+			}
 		case 2:
-			return Color.LIGHT_GRAY;
+			switch(aiType) {
+			case 0:
+				return Color.BLACK;
+			case 1:
+				return Color.MAGENTA;
+			case 2:
+				return Color.BLUE;
+			}
+		default:
+			return null;
 		}
-		return null;
+		
 	}
 	
 	public static double round(double value, int places) {
