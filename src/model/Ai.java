@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import model.Ai;
 import model.Coordinate;
+import control.Controller;
 import control.Launcher;
 
 public class Ai {
@@ -33,32 +34,78 @@ public class Ai {
 	public double standardMeleeDamage;
 	public double initialHp;
 	public Ai copy;
+	
+	//__________________ weight variables section
+	public Hex adjacentHex;
+	public ArrayList<Ai> enemies = new ArrayList<Ai>();
+	public ArrayList<Ai> allies = new ArrayList<Ai>();
+	public double myTeamHp;
+	public double enemyTeamHp;
+	double totalEnemies;
+	double totalAllies;
+	double adjacentEnemies;
+	double adjacentAllies;
+	double nearestEnemyDistanceGlobal;
+	double nearestAllyDistanceGlobal;
+	
+	//__________________ weight variables section
     
+	//__________________ information variables section
+	public double[] information = new double[Controller.information];
+	public double nearestEnemyHp;
+	public double nearestEnemyIsBoosted;
+	public double nearestEnemyDistance;
+	public double nearestEnemyStunned;
+	public double nearestEnemyShielded;
+	public double nearestEnemyIsWarrior;
+	public double nearestEnemyIsWizard;
+	public double nearestEnemyIsCleric;
+	public double nearestAllyHp;
+	public double nearestAllyIsBoosted;
+	public double nearestAllyDistance;
+	public double nearestAllyStunned;
+	public double nearestAllyShielded;
+	public double nearestAllyIsWarrior;
+	public double nearestAllyIsWizard;
+	public double nearestAllyIsCleric;
+	public Ai nearestEnemy;
+	public Ai nearestAlly;
+	//__________________ information variables section
+	
     public Ai() {
     }
     
-    public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies, double[][] adjacentAis) {
+    public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies, double[][] adjacentAis, double[][] nearestAiDistances) {   	
+    	
 		bestAction = null;
 		bestWeight = (int)Math.pow(-2, 31);
+		
 		for (int i = 0; i < hexCake.size(); i++) {
 			ArrayList<Hex> slice = hexCake.get(i);
-			ArrayList<Ai> enemies = new ArrayList<Ai>();
-			ArrayList<Ai> allies = new ArrayList<Ai>();
+			enemies.clear();
+			allies.clear();
 			
 			for (Hex hex : slice) {
 				if (hex.isOccupied()) {
 					Ai foundAi = hex.getAi();
-					if(foundAi.getTeam() == getTeam()) {
-						allies.add(foundAi);
-					}
-					else {
-						//System.out.println("I found an enemy during loop " + i);
-						enemies.add(foundAi);
-					}
+					if(foundAi.getTeam() == team) { allies.add(foundAi); }
+					    else { enemies.add(foundAi); }
 				}
 			}
+			
 			if (totalEnemies > 0 && adjacentHexes[i] != null) {
-				weight(adjacentHexes[i], enemies, allies, myTeamHp, enemyTeamHp, totalEnemies, totalAllies, adjacentAis[0][i], adjacentAis[1][0]);
+				this.adjacentHex = adjacentHexes[i];
+				this.myTeamHp = myTeamHp;
+				this.enemyTeamHp = enemyTeamHp;
+				this.totalEnemies = totalEnemies;
+				this.totalAllies = totalAllies;
+				this.adjacentEnemies = adjacentAis[0][i];
+				this.adjacentAllies = adjacentAis[1][i];
+				this.nearestEnemyDistanceGlobal = nearestAiDistances[0][i];
+				this.nearestAllyDistanceGlobal = nearestAiDistances[1][i];
+				
+				weight();
+				//weight(adjacentHexes[i], enemies, allies, myTeamHp, enemyTeamHp, totalEnemies, totalAllies, adjacentAis[0][i], adjacentAis[1][i]);
 			}	
 		}
 		
@@ -70,7 +117,7 @@ public class Ai {
 		return bestAction;
 	}
     
-    public void weight (Hex adjacentHex, ArrayList<Ai> enemies, ArrayList<Ai> allies, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies, double adjacentEnemies, double adjacentAllies) { System.out.println("Ai.weight must be overwritten by extending classes"); }
+    public void weight() { System.out.println("Ai.weight must be overwritten by extending classes"); }
     
     public void newStartId() { startId = aiType + ", " + "team " + getTeam() + " from (" + position.getX() + "," + position.getY() + ")"; }
     
@@ -220,26 +267,25 @@ public class Ai {
     	return closest;
     }
     
-    public ArrayList<Double> getInformation(Hex adjacentHex, ArrayList<Ai> enemies, ArrayList<Ai> allies, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies, double adjacentEnemies, double adjacentAllies) {
-    	ArrayList<Double> information = new ArrayList<Double>();
-		double nearestEnemyHp = 0;
-		double nearestEnemyIsBoosted = 0;
-		double nearestEnemyDistance = 0;
-		double nearestEnemyStunned = 0;
-		double nearestEnemyShielded = 0;
-		double nearestEnemyIsWarrior = 0;
-		double nearestEnemyIsWizard = 0;
-		double nearestEnemyIsCleric = 0;
-		double nearestAllyHp = 0;
-		double nearestAllyIsBoosted = 0;
-		double nearestAllyDistance = 0;
-		double nearestAllyStunned = 0;
-		double nearestAllyShielded = 0;
-		double nearestAllyIsWarrior = 0;
-		double nearestAllyIsWizard = 0;
-		double nearestAllyIsCleric = 0;
-		Ai nearestEnemy = nearestAi(enemies);
-		Ai nearestAlly = nearestAi(allies);
+    public void getInformation() {
+		nearestEnemyHp = 0;
+		nearestEnemyIsBoosted = 0;
+		nearestEnemyDistance = 0;
+		nearestEnemyStunned = 0;
+		nearestEnemyShielded = 0;
+		nearestEnemyIsWarrior = 0;
+		nearestEnemyIsWizard = 0;
+		nearestEnemyIsCleric = 0;
+		nearestAllyHp = 0;
+		nearestAllyIsBoosted = 0;
+		nearestAllyDistance = 0;
+		nearestAllyStunned = 0;
+		nearestAllyShielded = 0;
+		nearestAllyIsWarrior = 0;
+		nearestAllyIsWizard = 0;
+		nearestAllyIsCleric = 0;
+		nearestEnemy = nearestAi(enemies);
+		nearestAlly = nearestAi(allies);
 		
 		if(nearestEnemy != null) {
 			nearestEnemyHp = nearestEnemy.getHp();
@@ -285,38 +331,37 @@ public class Ai {
 			}
 		}
 		
-		information.add(hp);                        // 00
-		information.add(myTeamHp);                  // 01
-		information.add(enemyTeamHp);               // 02
-		information.add((double) enemies.size());   // 03
-		information.add((double) allies.size());    // 04
-		information.add(nearestAllyHp);             // 05
-		information.add(nearestAllyDistance);       // 06
-		information.add(nearestAllyStunned);        // 07
-		information.add(nearestAllyShielded);       // 08
-		information.add(nearestEnemyHp);            // 09
-		information.add(nearestEnemyDistance);      // 10
-		information.add(nearestEnemyStunned);       // 11
-		information.add(nearestEnemyShielded);      // 12
-		information.add(totalEnemies);              // 13
-		information.add(totalAllies);               // 14
-		information.add(nearestEnemyIsWarrior);     // 15
-		information.add(nearestEnemyIsWizard);      // 16
-		information.add(nearestEnemyIsCleric);      // 17
-		information.add(nearestAllyIsWarrior);      // 18
-		information.add(nearestAllyIsWizard);       // 19
-		information.add(nearestAllyIsCleric);       // 20
-		information.add(nearestAllyIsBoosted);      // 21
-		information.add(nearestEnemyIsBoosted);     // 22
-		information.add(adjacentEnemies);           // 23
-		information.add(adjacentAllies);            // 24
+		information[0] = hp;
+		information[1] = myTeamHp;
+		information[2] = enemyTeamHp;
+		information[3] = (double) enemies.size();
+		information[4] = (double) allies.size();
+		information[5] = nearestAllyHp;
+		information[6] = nearestAllyDistance;
+		information[7] = nearestAllyStunned;
+		information[8] = nearestAllyShielded;
+		information[9] = nearestEnemyHp;
+		information[10] = nearestEnemyDistance;
+		information[11] = nearestEnemyStunned;
+		information[12] = nearestEnemyShielded;
+		information[13] = totalEnemies;
+		information[14] = totalAllies;
+		information[15] = nearestEnemyIsWarrior;
+		information[16] = nearestEnemyIsWizard;
+		information[17] = nearestEnemyIsCleric;
+		information[18] = nearestAllyIsWarrior;
+		information[19] = nearestAllyIsWizard;
+		information[20] = nearestAllyIsCleric;
+		information[21] = nearestAllyIsBoosted;
+		information[22] = nearestEnemyIsBoosted;
+		information[23] = adjacentEnemies;
+		information[24] = adjacentAllies;
+		information[25] = nearestEnemyDistanceGlobal;
+		information[26] = nearestAllyDistanceGlobal;
 		
 		if(Launcher.allowAdjacentAiOutput) {
 			if(adjacentEnemies > 0) {System.out.println("Team " + team + " " + aiType + " at " + "(" + position.getX() + ", " + position.getY() + "): found " + (int)adjacentEnemies + " enemies"); }
 			if(adjacentAllies > 0) { System.out.println("Team " + team + " " + aiType + " at " + "(" + position.getX() + ", " + position.getY() + "): found " + (int)adjacentAllies + " allies"); }
 		}
-		
-    	
-		return information;
     }    
 }

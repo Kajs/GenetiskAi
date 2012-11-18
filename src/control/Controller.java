@@ -20,24 +20,24 @@ public class Controller {
 	static Coordinate startPosition = new Coordinate(sin(toRadians(30)) * hexSideSize, 1);
 	
 	static int maxRounds = 100;
-	static int maxGames = 10;
+	static int maxGames = 100;
 	public static int gamesCompleted = 0;
 	
-	static int populationSize = 10;
+	static int populationSize = 1000;
 	static int choices = 6;
-	static int information = 25;
+	public static int information = 27;
 	static double keepPercent = 0.25;
 	static double crossPercent = 0.25;
 	static double drasticLikelihood = 0.0;
 	static double mutateLikelihood = 0.95;
 	public boolean elitism = true;
 	public boolean skipZeroFitnessScaling = true;
-	public boolean alwaysKeepBest = false;
+	public boolean alwaysKeepBest = true;
 	
 	
 	static Coordinate[][] geneticPositions;
 	static Coordinate[][] staticPositions = new Coordinate[2][3];
-	static int enemyDifficulty = 0;
+	static int enemyDifficulty = 2;
 	
 	public static final GameState gameState = new GameState(startPosition, rows, columns, hexSideSize);
 	public BoardRenderer boardRenderer;

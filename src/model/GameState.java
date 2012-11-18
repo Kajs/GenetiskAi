@@ -515,27 +515,34 @@ public class GameState extends Observable {
 	}
 	
 	public double[][] nearestAiDistances(Hex[] hexes, int team) {     //will add 0 ally distance if only 1 is left on team
-		double[][] distances = new double[6][1];
+		double[][] distances = new double[2][6];
 		
 		for (int h = 0; h < 6; h++) {
 			double team1Distance = Double.MAX_VALUE;
 			double team2Distance = Double.MAX_VALUE;
 			
-			for (Ai team1: team1Alive) {
-				double aiDistance = hexes[h].getPosition().distance(team1.getPosition());
-				if(aiDistance < team1Distance) { team1Distance = aiDistance; }
+			if(hexes[h] != null){
+				for (Ai team1: team1Alive) {
+					double aiDistance = hexes[h].getPosition().distance(team1.getPosition());
+					if(aiDistance < team1Distance) { team1Distance = aiDistance; }
+				}
+				for (Ai team2: team1Alive) {
+					double aiDistance = hexes[h].getPosition().distance(team2.getPosition());
+					if(aiDistance < team2Distance) { team2Distance = aiDistance; }
+				}
 			}
-			for (Ai team2: team1Alive) {
-				double aiDistance = hexes[h].getPosition().distance(team2.getPosition());
-				if(aiDistance < team2Distance) { team2Distance = aiDistance; }
+			else{
+				team1Distance = 0;
+				team2Distance = 0;
 			}
+			
 			if(team == 1) {
-				distances[h][2] = team1Distance; //enemies
-				distances[h][1] = team2Distance; //allies
+				distances[0][h] = team2Distance; //enemies
+				distances[1][h] = team1Distance; //allies
 			}
 			else {
-				distances[h][1] = team1Distance; //enemies
-				distances[h][2] = team2Distance; //allies
+				distances[0][h] = team1Distance; //enemies
+				distances[1][h] = team2Distance; //allies
 				}
 		}
 		return distances;
