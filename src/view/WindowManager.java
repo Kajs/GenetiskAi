@@ -231,6 +231,13 @@ public class WindowManager {
 	    	}
 	    });
 	   
+	   JMenuItem showXyChart = new JMenuItem("Show Xy Chart");
+	   showXyChart.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Controller.showFitnessXyChart();
+	    	}
+	    });
+	   
 	   JMenu manual = new JMenu("Manual");
 	   manual.add(newRound);
 	   manual.add(simulateTen);
@@ -265,10 +272,15 @@ public class WindowManager {
 	   speed.add(setSpeed);
 	   speed.add(toggleRoundDelay);
 	   
+	   JMenu charts = new JMenu("Charts");
+	   charts.add(showXyChart);
+	   
+	   
 	   menuBar.add(manual);
 	   menuBar.add(automatic);
 	   menuBar.add(output);
 	   menuBar.add(speed);
+	   menuBar.add(charts);
 	   frame.setJMenuBar(menuBar);
 	   
 	    

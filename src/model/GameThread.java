@@ -17,7 +17,7 @@ public class GameThread implements Runnable {
 	private boolean fitnessOutput;
 	private int choices;
 	private int information;
-	private int testDifficulty = 2;
+	//private int testDifficulty = 2;
 	
 	private double totalFitness;
 	private double bestFitness;

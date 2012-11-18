@@ -7,6 +7,7 @@ import static java.lang.Math.toRadians;
 
 import model.*;
 import view.BoardRenderer;
+import view.FitnessChart;
 import view.WindowManager;
 
 public class Controller {
@@ -30,9 +31,9 @@ public class Controller {
 	static double crossPercent = 0.25;
 	static double drasticLikelihood = 0.0;
 	static double mutateLikelihood = 0.95;
-	public boolean elitism = true;
+	public boolean elitism = false;
 	public boolean skipZeroFitnessScaling = true;
-	public boolean alwaysKeepBest = true;
+	public boolean alwaysKeepBest = false;
 	
 	
 	static Coordinate[][] geneticPositions;
@@ -48,6 +49,8 @@ public class Controller {
 	public static boolean runSingleBestTeamGame = false;
 	public static int singleBestTeamNumber;
 	public static double[] bestTeamsFitness = new double[maxGames];
+	public static double[] team1PopulationFitness = new double[maxGames];
+	public static double[] team2PopulationFitness = new double[maxGames];
 	
 	
 	// ____Scenario Section____
@@ -175,6 +178,9 @@ public class Controller {
 			tm2AvrFit = tm2AvrFit / (double) populationSize;
 			tm1FinalAvrFit = tm1FinalAvrFit + tm1AvrFit;
 			tm2FinalAvrFit = tm2FinalAvrFit + tm2AvrFit;
+			
+			team1PopulationFitness[game] = tm1AvrFit;
+			team2PopulationFitness[game] = tm2AvrFit;
 			
 		    System.out.println("Game " + (game + 1) + " bestFit: " + round(bestFitness, 2) + ", tm1AvrFit = " + round(tm1AvrFit, 2)  + ", tm2AvrFit = " + round(tm2AvrFit, 2));
 			
@@ -358,4 +364,27 @@ public class Controller {
 			catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
 		}
 	}
+	
+	//_________________________________JFreeChart section
+	
+	public static void showFitnessXyChart() {
+		int length = 3;
+		
+		double[][] fitnessMatrix = new double[length][gamesCompleted];
+		for (int i = 0; i < gamesCompleted; i++) {
+			fitnessMatrix[0][i] = bestTeamsFitness[i];
+			fitnessMatrix[1][i] = team1PopulationFitness[i];
+			fitnessMatrix[2][i] = team2PopulationFitness[i];
+		}
+		
+		String[] names = new String[length];
+		names[0] = "Team 1 best";
+		names[1] = "Team 1 average";
+		names[2] = "Team 2 average";
+		
+		FitnessChart fitnessChart = new FitnessChart("Fitness results", fitnessMatrix, names);
+		fitnessChart.showResults();
+	}
+	
+	//_________________________________JFreeChart section
 }
