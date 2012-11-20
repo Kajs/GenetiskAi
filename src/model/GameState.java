@@ -609,16 +609,12 @@ public class GameState extends Observable {
 		String extendedType = preferredAction.getExtendedType();
 		Ai targetAi = newHex.getAi();
 		
-		switch(baseType) {
-		case "move":
-			moveAi(ai, orgHex, newHex);
-			break;
-		case "attack":
-			switch(extendedType) {
-			case "stun":
-				targetAi.setStunned(true);
-				break;
-			case "area":
+		if(baseType.equals("move")) {
+			moveAi(ai, orgHex, newHex); } else {
+		if(baseType.equals("attack")) {
+			if(extendedType.equals("stun")) {
+				targetAi.setStunned(true); } else {
+			if(extendedType.equals("area")) {
 				if(Launcher.allowAreaDamageOutput) {System.out.println(targetAi.getId() + ":  lost " + ai.getAreaDamage() + " hp to area damage, hp = " + (targetAi.getHp() - ai.getAreaDamage() + " (t)"));}
 				doDamage(targetAi, ai.getAreaDamage(), newHex);
 				double enemyTeam = targetAi.getTeam();
@@ -635,26 +631,22 @@ public class GameState extends Observable {
 						}
 					}					
 				}
-				
-				break;
-			case "normal":
+			} else {
+			if(extendedType.equals("normal")) {
 				if(targetAi.getShielded()) {
 					targetAi.setShielded(false);
-					break;
 				}
 				else {
 					double damage = ai.getMeleeDamage();
 					if(Launcher.allowNormalDamageOutput) {System.out.println(targetAi.getId() + ":  took " + damage + " damage, hp = " + (targetAi.getHp() - damage));}
-					doDamage(targetAi, damage, newHex);
-					break;
-				
+					doDamage(targetAi, damage, newHex);				
 				}
-			default:
-				System.out.println("Unknown attack type");
-				break;
 			}
-		case "support":
-			if(extendedType.equals("shield")) { targetAi.setShielded(true); }
+			else {
+				System.out.println("Unknown attack type"); }}}} else {
+		if(baseType.equals("support")) {
+			if(extendedType.equals("shield")) {
+				targetAi.setShielded(true);	} else {
 			if(extendedType.equals("heal")) {
 				double currentHp = targetAi.getHp();
 				double initialHp = targetAi.getInitialHp();
@@ -662,17 +654,15 @@ public class GameState extends Observable {
 					double healAmount = min(currentHp + ai.getHealAmount(), initialHp) - currentHp;
 					if(Launcher.allowHealOutput) {System.out.println(targetAi.getId() + ":  healed " + healAmount + ", hp = " + (currentHp + healAmount));}
 					targetAi.setHp(currentHp + healAmount);
-				}
-			}
+				}} else {
 			if(extendedType.equals("boost")) {
 				targetAi.setBoosted(true);
-			}
-			break;
-		default:
-			System.out.println("Unknown action type: " + baseType + ", " + extendedType);
-			break;
+			} 
+			else { System.out.println("Unknown support type");}}}
 		}
-	}
+		else {
+			System.out.println("Unknown action type: " + baseType + ", " + extendedType); }}}
+		}
 	
 	public double min(double a, double b) {
 		if(a <= b) {

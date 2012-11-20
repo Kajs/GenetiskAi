@@ -294,21 +294,13 @@ public class Ai {
 			if(nearestEnemy.getShielded()) {nearestEnemyShielded = 1;}
 			if(nearestEnemy.getStunned()) {nearestEnemyStunned = 1;}
 			
-			switch(nearestEnemy.getAiType()) {
-			case "Warrior":
-				nearestEnemyIsWarrior = 1;
-				break;
-			case "Wizard":
-				nearestEnemyIsWizard = 1;
-				break;
-			case "Cleric":
-				nearestEnemyIsCleric = 1;
-				break;
-			default:
-				System.out.println("Unknown enemy ai type " + nearestEnemy.getAiType());
-			}
-				
+			String enemyType = nearestEnemy.getAiType();
+			if(enemyType.equals("Warrior")) { nearestEnemyIsWarrior = 1; } else { 
+			if(enemyType.equals("Wizard")) { nearestEnemyIsWizard = 1; } else {
+			if(enemyType.equals("Cleric")) { nearestEnemyIsCleric = 1; } 
+			else { System.out.println("Unknown enemy ai type: " + enemyType); }}}				
 		}
+		
 		if(nearestAlly != null) {
 			nearestAllyHp = nearestAlly.getHp(); 
 			nearestAllyDistance = position.distance(nearestAlly.getPosition());	
@@ -316,19 +308,11 @@ public class Ai {
 			if(nearestAlly.getShielded()) {nearestAllyShielded = 1;}
 			if(nearestAlly.getStunned()) {nearestAllyStunned = 1;}
 			
-			switch(nearestAlly.getAiType()) {
-			case "Warrior":
-				nearestAllyIsWarrior = 1;
-				break;
-			case "Wizard":
-				nearestAllyIsWizard = 1;
-				break;
-			case "Cleric":
-				nearestAllyIsCleric = 1;
-				break;
-			default:
-				System.out.println("Unknown ally ai type " + nearestAlly.getAiType());
-			}
+			String allyType = nearestAlly.getAiType();
+			if(allyType.equals("Warrior")) { nearestAllyIsWarrior = 1; } else {
+		    if(allyType.equals("Wizard")) { nearestAllyIsWizard = 1; } else {
+		    if(allyType.equals("Cleric")) { nearestAllyIsCleric = 1; } 
+		    else { System.out.println("Unknown ally ai type: " + allyType); }}}
 		}
 		
 		information[0] = hp;
