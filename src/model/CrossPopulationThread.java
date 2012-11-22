@@ -28,26 +28,45 @@ public class CrossPopulationThread implements Runnable {
 		for(int i = start; i < end; i = i + 2) {
 			//System.out.println("Cross i: " + i + "__________________, (" + start + "," + end + ")");
 			double[][][][] parents = choseParents(2, population, scaledFitness, totalFitness, populationLimit);			
-			double[][][] child1 = crossover(parents[0], parents[1]);
-			double[][][] child2 = crossover(parents[1], parents[0]);
+			double[][][] child1 = crossOverAll(parents[0], parents[1]);
+			double[][][] child2 = crossOverOne(parents[1], parents[0]);
 			
 			newPopulation[i] = child1;
 			newPopulation[i + 1] = child2;
 		}
 	}
 	
-	public double[][][] crossover (double[][][] dad, double[][][] mom) {
+	public double[][][] crossOverAll (double[][][] dad, double[][][] mom) {
 		double[][][] child = new double[3][choices + 1][information];
+		
 		for (int t = 0; t < 3; t++) {
 			for (int i = 0; i < choices + 1; i++) {
 				for (int j = 0; j < information; j++) {
-					if (coinFlip()) {child[t][i][j] = dad[t][i][j];
-					}
-					else {
-						child[t][i][j] = mom[t][i][j];
-					}
+					double value;
+					
+					if (coinFlip()) {value = dad[t][i][j];	}
+					else { value = mom[t][i][j]; }					
+					child[t][i][j] = value;
 				}
-			}	
+			}
+		}	
+		return child;
+	}
+	
+	public double[][][] crossOverOne (double[][][] dad, double[][][] mom) {
+		double[][][] child = new double[3][choices + 1][information];
+		int aiType = randomGenerator.nextInt(3);
+		
+		for (int t = 0; t < 3; t++) {
+			for (int i = 0; i < choices + 1; i++) {
+				for (int j = 0; j < information; j++) {
+					double value;					
+					
+					if (coinFlip() && t == aiType) { value = dad[t][i][j]; }
+					else { value = mom[t][i][j]; }					
+					child[t][i][j] = value;
+				}
+			}
 		}	
 		return child;
 	}
@@ -67,10 +86,9 @@ public class CrossPopulationThread implements Runnable {
 			double chance = randomGenerator.nextDouble();
 			double summedFitness = 0.0;
 			for (int i = 0; i < populationLimit; i++) {
-				summedFitness = summedFitness + fitness[i];
+				summedFitness += fitness[i];
 				if (chance <= summedFitness / totalFitness) {
-					parents[parentsFound] = population[i];
-					parentsFound = parentsFound + 1;
+					parents[parentsFound++] = population[i];
 					break;
 				}
 			}

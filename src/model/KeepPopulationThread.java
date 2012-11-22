@@ -50,10 +50,9 @@ public class KeepPopulationThread implements Runnable {
 			double chance = randomGenerator.nextDouble();
 			double summedFitness = 0.0;
 			for (int i = 0; i < populationLimit; i++) {
-				summedFitness = summedFitness + fitness[i];
+				summedFitness += fitness[i];
 				if (chance <= summedFitness / totalFitness) {
-					parents[parentsFound] = population[i];
-					parentsFound = parentsFound + 1;
+					parents[parentsFound++] = population[i];
 					break;
 				}
 			}

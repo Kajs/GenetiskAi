@@ -56,6 +56,7 @@ public class GameThread implements Runnable {
 			
 			
 			for (int i = 0; i < scenarios.length; i++) {
+				if(scenarios[i] == null) { continue; }
 				gameState.reset();
 				this.geneticPositions = scenarios[i].geneticPositions;
 				this.staticPositions = scenarios[i].staticPositions;

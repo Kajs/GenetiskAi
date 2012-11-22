@@ -31,7 +31,7 @@ public class Controller {
 	public static int information = 27;
 	static double keepPercent = 0.25;
 	static double crossPercent = 0.25;
-	static double mutateLikelihood = 0.95;
+	static double mutateLikelihood = 0.9;
 	public boolean elitism = true;
 	public boolean skipZeroFitnessScaling = true;
 	public boolean alwaysKeepBest = true;
@@ -181,6 +181,8 @@ public class Controller {
 		    System.out.println("Game " + (game + 1) + " bestFit: " + round(bestFitness, 2) + ", tm1AvrFit = " + round(tm1AvrFit, 2)  + ", tm2AvrFit = " + round(tm2AvrFit, 2));
 			
 			team1 = geneticAlgorithm.newPopulation(team1, team1Fitness, elitism, bestTeam);
+			
+			//checkTeam(team1);
 		}
 		
 		tm1FinalAvrFit = tm1FinalAvrFit/(lastGame + 1);
@@ -191,6 +193,22 @@ public class Controller {
 		return bestTeams;
 	}
 	
+	public void checkTeam(double[][][][] team) {
+		int l1 = team.length;
+		int l2 = team[0].length;
+		int l3 = team[0][0].length;
+		int l4 = team[0][0][0].length;
+		for (int a = 0; a < l1; a++) {
+			for (int b = 0; b < l2; b++) {
+				for (int c = 0; c < l3; c++) {
+					for (int d = 0; d < l4; d++) {
+						if(team[a][b][c][d] == 0) { System.out.println("Checking team 1 values: " + team[a][b][c][d]); }
+					}
+				}
+			}
+			
+		}
+	}
 	
 	
 	
@@ -221,7 +239,7 @@ public class Controller {
 		
 	public void setupScenarios() {
 		
-		scenarios = new Scenario[5];
+		scenarios = new Scenario[2];
 		
 		//Scenario 0 3v3 standard
 		int scenarioCounter = 0;
@@ -255,6 +273,8 @@ public class Controller {
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);	
 		
+		/*
+		
 		//Scenario 2 warrior 1v1
 		
 		geneticPositions = new Coordinate[1][3];
@@ -284,6 +304,8 @@ public class Controller {
 		staticPositions[0][2] = new Coordinate(7, 20);		
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
+		
+		*/
 	}
 	
 	
