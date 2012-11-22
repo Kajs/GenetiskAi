@@ -1,5 +1,7 @@
 package view;
 
+import java.awt.event.WindowEvent;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -16,8 +18,8 @@ import org.jfree.ui.RefineryUtilities;
  * This demo shows a simple bar chart created using the {@link XYSeriesCollection} dataset.
  *
  */
-public class FitnessChart extends ApplicationFrame {
-
+public class XyChart extends ApplicationFrame {
+	
     /**
 	 * 
 	 */
@@ -28,7 +30,12 @@ public class FitnessChart extends ApplicationFrame {
      *
      * @param title  the frame title.
      */
-    public FitnessChart(final String title, double[][] dataMatrix, String[] names) {
+	
+	public void windowClosing(final WindowEvent evt){
+		 if(evt.getWindow() == this){ dispose(); }
+	}
+	
+    public XyChart(final String title, double[][] dataMatrix, String[] names) {
         super(title);
         IntervalXYDataset dataset = createDataset(dataMatrix, names);
         JFreeChart chart = createChart(dataset);
@@ -73,9 +80,9 @@ public class FitnessChart extends ApplicationFrame {
     private JFreeChart createChart(IntervalXYDataset dataset) {
         final JFreeChart chart = ChartFactory.createXYBarChart(
             "Fitness Results",
-            "Game", 
+            "game", 
             false,
-            "Fitness", 
+            "fitness", 
             dataset,
             PlotOrientation.VERTICAL,
             true,
@@ -85,11 +92,11 @@ public class FitnessChart extends ApplicationFrame {
         XYPlot plot = (XYPlot) chart.getPlot();
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
         renderer.setSeriesLinesVisible(0, true);
-        renderer.setSeriesShapesVisible(0, true);
+        renderer.setSeriesShapesVisible(0, false);
         renderer.setSeriesLinesVisible(1, true);
-        renderer.setSeriesShapesVisible(1, true);
+        renderer.setSeriesShapesVisible(1, false);
         renderer.setSeriesLinesVisible(2, true);
-        renderer.setSeriesShapesVisible(2, true);
+        renderer.setSeriesShapesVisible(2, false);
         plot.setRenderer(renderer);
         return chart;    
     }

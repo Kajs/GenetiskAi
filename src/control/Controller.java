@@ -7,8 +7,10 @@ import static java.lang.Math.toRadians;
 
 import model.*;
 import view.BoardRenderer;
-import view.FitnessChart;
+import view.XyChart;
 import view.WindowManager;
+import view.XyDeviationChart;
+import view.XySplineChart;
 
 public class Controller {
 	
@@ -21,29 +23,28 @@ public class Controller {
 	static Coordinate startPosition = new Coordinate(sin(toRadians(30)) * hexSideSize, 1);
 	
 	static int maxRounds = 100;
-	static int maxGames = 100;
+	static int maxGames = 10000;
 	public static int gamesCompleted = 0;
 	
-	static int populationSize = 1000;
+	static int populationSize = 50000;
 	static int choices = 6;
 	public static int information = 27;
 	static double keepPercent = 0.25;
 	static double crossPercent = 0.25;
-	static double drasticLikelihood = 0.0;
 	static double mutateLikelihood = 0.95;
-	public boolean elitism = false;
+	public boolean elitism = true;
 	public boolean skipZeroFitnessScaling = true;
-	public boolean alwaysKeepBest = false;
+	public boolean alwaysKeepBest = true;
 	
 	
 	static Coordinate[][] geneticPositions;
 	static Coordinate[][] staticPositions = new Coordinate[2][3];
-	static int enemyDifficulty = 2;
+	static int enemyDifficulty = 0;
 	
 	public static final GameState gameState = new GameState(startPosition, rows, columns, hexSideSize);
 	public BoardRenderer boardRenderer;
 	public WindowManager window;
-	public GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(populationSize, choices, information, keepPercent, crossPercent, drasticLikelihood, mutateLikelihood, skipZeroFitnessScaling, alwaysKeepBest, numThreads);
+	public GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(populationSize, choices, information, keepPercent, crossPercent, mutateLikelihood, skipZeroFitnessScaling, alwaysKeepBest, numThreads);
 	public static double[][][][] bestTeams;
 	public static boolean runBestTeamGames = false;
 	public static boolean runSingleBestTeamGame = false;
@@ -227,7 +228,7 @@ public class Controller {
 		
 	public void setupScenarios() {
 		
-		scenarios = new Scenario[2];
+		scenarios = new Scenario[1];
 		
 		//Scenario 0 positions 3v3
 		
@@ -240,10 +241,13 @@ public class Controller {
 		staticPositions[0][0] = new Coordinate(6, 20);
 		staticPositions[1][0] = new Coordinate(5, 20);
 		staticPositions[2][0] = new Coordinate(7, 20);
+		//staticPositions[0][1] = new Coordinate(6, 19);
+		//staticPositions[1][1] = new Coordinate(5, 19);
+		
 		
 		
 		scenarios[0] = new Scenario(geneticPositions, staticPositions);
-		scenarios[1] = new Scenario(staticPositions, geneticPositions);
+		//scenarios[1] = new Scenario(staticPositions, geneticPositions);
 		
 		//Scenario 1 positions: warrior 1v1
 		/*
@@ -367,22 +371,38 @@ public class Controller {
 	
 	//_________________________________JFreeChart section
 	
-	public static void showFitnessXyChart() {
-		int length = 3;
-		
-		double[][] fitnessMatrix = new double[length][gamesCompleted];
+	public static int numChartLines = 3;
+	
+	public static String[] chartNames() {
+		String[] names = new String[numChartLines];
+		names[0] = "Team 1 best";
+		names[1] = "Team 1 average";
+		names[2] = "Team 2 average";
+		return names;
+	}
+	
+	public static double[][] chartData() {
+		double[][] fitnessMatrix = new double[numChartLines][gamesCompleted];
 		for (int i = 0; i < gamesCompleted; i++) {
 			fitnessMatrix[0][i] = bestTeamsFitness[i];
 			fitnessMatrix[1][i] = team1PopulationFitness[i];
 			fitnessMatrix[2][i] = team2PopulationFitness[i];
 		}
-		
-		String[] names = new String[length];
-		names[0] = "Team 1 best";
-		names[1] = "Team 1 average";
-		names[2] = "Team 2 average";
-		
-		FitnessChart fitnessChart = new FitnessChart("Fitness results", fitnessMatrix, names);
+		return fitnessMatrix;
+	}
+	
+	public static void showFitnessXyChart() {
+		XyChart fitnessChart = new XyChart("Xy Chart", chartData(), chartNames());
+		fitnessChart.showResults();
+	}
+	
+	public static void showFitnessXySplineChart() {
+		XySplineChart fitnessChart = new XySplineChart("Xy Spline Chart", chartData(), chartNames());
+		fitnessChart.showResults();
+	}
+	
+	public static void showFitnessXyDeviationChart() {
+		XyDeviationChart fitnessChart = new XyDeviationChart("Xy Standard Deviation Chart", chartData(), chartNames());
 		fitnessChart.showResults();
 	}
 	

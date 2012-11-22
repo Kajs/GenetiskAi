@@ -231,10 +231,24 @@ public class WindowManager {
 	    	}
 	    });
 	   
-	   JMenuItem showXyChart = new JMenuItem("Show Xy Chart");
+	   JMenuItem showXyChart = new JMenuItem("Show xy chart");
 	   showXyChart.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		Controller.showFitnessXyChart();
+	    	}
+	    });
+	   
+	   JMenuItem showXySplineChart = new JMenuItem("Show xy spline chart");
+	   showXySplineChart.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Controller.showFitnessXySplineChart();
+	    	}
+	    });
+	   
+	   JMenuItem showXyDeviationChart = new JMenuItem("Show xy deviation chart");
+	   showXyDeviationChart.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Controller.showFitnessXyDeviationChart();
 	    	}
 	    });
 	   
@@ -274,6 +288,8 @@ public class WindowManager {
 	   
 	   JMenu charts = new JMenu("Charts");
 	   charts.add(showXyChart);
+	   charts.add(showXySplineChart);
+	   charts.add(showXyDeviationChart);
 	   
 	   
 	   menuBar.add(manual);

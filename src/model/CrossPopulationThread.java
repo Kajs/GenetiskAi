@@ -40,8 +40,7 @@ public class CrossPopulationThread implements Runnable {
 		double[][] child = new double[choices + 1][information];
 		for (int i = 0; i < choices + 1; i++) {
 			for (int j = 0; j < information; j++) {
-				boolean flip = randomGenerator.nextInt(1) == 1;
-				if (flip) {child[i][j] = dad[i][j];
+				if (coinFlip()) {child[i][j] = dad[i][j];
 				}
 				else {
 					child[i][j] = mom[i][j];
@@ -69,11 +68,13 @@ public class CrossPopulationThread implements Runnable {
 				summedFitness = summedFitness + fitness[i];
 				if (chance <= summedFitness / totalFitness) {
 					parents[parentsFound] = population[i];
+					parentsFound = parentsFound + 1;
 					break;
 				}
 			}
-			parentsFound = parentsFound + 1;
 		}		
 		return parents;
 	}
+	
+	private boolean coinFlip() { return randomGenerator.nextDouble() <= 0.5; }
 }

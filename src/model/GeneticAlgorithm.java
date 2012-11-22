@@ -28,7 +28,7 @@ public class GeneticAlgorithm {
 	
 	
 	
-	public GeneticAlgorithm (int populationSize, int choices, int information, double keepPercent, double crossPercent, double drasticLikelihood, double mutateLikelihood, boolean skipZeroFitnessScaling, boolean allwaysKeepBest, int numThreads) {
+	public GeneticAlgorithm (int populationSize, int choices, int information, double keepPercent, double crossPercent, double mutateLikelihood, boolean skipZeroFitnessScaling, boolean allwaysKeepBest, int numThreads) {
 		this.populationSize = populationSize;
 		this.choices = choices;
 		this.information = information;
@@ -79,17 +79,14 @@ public class GeneticAlgorithm {
 		if(stepSize < 1) {stepSize = 1;}
 		start = keepAmount + crossAmount;
 		end = start + stepSize;
-		double drasticStepSize = 1.0/numThreads;
 		double drasticStart = 0;
-		double drasticEnd = drasticStepSize;
+		double drasticEnd = 1;
 		
 		for (int i = 0; i < numThreads; i++) {
-			if(i == numThreads - 1 || end > populationSize) { end = populationSize; drasticEnd = 1.0;}
+			if(i == numThreads - 1 || end > populationSize) { end = populationSize;}
 			mutatePopulationThreads[i] = new MutatePopulationThread(start, end, populationLimit, choices, information, drasticStart, drasticEnd, mutateLikelihood);
 			start = end;
-			drasticStart = drasticEnd;
 			end += stepSize;
-			drasticEnd += drasticStepSize;
 		}
 		
 	}
@@ -116,7 +113,7 @@ public class GeneticAlgorithm {
 		for (int i = 0; i < choices + 1; i++) {
 			for (int j = 0; j < information; j++) {
 				double value = randomGenerator.nextDouble();
-				if (randomGenerator.nextInt(1) == 0) {
+				if (coinFlip()) {
 					weights[i][j] = value * (-1.0);
 				}
 				else {
@@ -197,11 +194,12 @@ public class GeneticAlgorithm {
 		double maxRounds = results[8];
 		double rounds = results[9];
 		
-		double speedBonus = 0.0 * (maxRounds - rounds)/maxRounds;
+		double bonusFactor = 0.0;
+		double speedBonus = bonusFactor * (maxRounds - rounds)/maxRounds;
 		double fitness = (teamHp/teamInitialHp) * (teamAlive * 2);
 		fitness = fitness + ((enemiesInitialHp-enemiesHp)/enemiesInitialHp)*((enemiesSize-enemiesAlive) * 2);
 		fitness = fitness * (1 + speedBonus);
-		double maxFitness = (teamSize + enemiesSize) * 2 * (1 + speedBonus);
+		double maxFitness = (teamSize + enemiesSize) * 2 * (1 + bonusFactor);
 		fitness = fitness/maxFitness;
 		if(teamHp < 0 || enemiesHp < 0) {System.out.println("Fitness: " + fitness +", " + teamInitialHp + ", " + teamHp + ", " + teamAlive + ", " + teamSize + ", " + enemiesInitialHp + ", " + enemiesHp + ", " + enemiesAlive + ", " + enemiesSize + ", " + maxRounds + ", " + rounds);}
 		return fitness;
@@ -271,4 +269,6 @@ public class GeneticAlgorithm {
 			catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
 		}
 	}
+	
+	private boolean coinFlip() { return randomGenerator.nextDouble() <= 0.5; }
 }

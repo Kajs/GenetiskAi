@@ -68,7 +68,7 @@ public class GameThread implements Runnable {
 				}
 				
 				insertGeneticAis(currentTeam, geneticPositions);	
-				//insertStaticAis(testDifficulty, geneticPositions, 1);
+				//insertStaticAis(enemyDifficulty, geneticPositions, 1);
 			    insertStaticAis(enemyDifficulty, staticPositions, 2);
 			    
 			    double[][] results = gameState.newGame(maxRounds);

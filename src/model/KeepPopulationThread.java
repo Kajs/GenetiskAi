@@ -53,10 +53,10 @@ public class KeepPopulationThread implements Runnable {
 				summedFitness = summedFitness + fitness[i];
 				if (chance <= summedFitness / totalFitness) {
 					parents[parentsFound] = population[i];
+					parentsFound = parentsFound + 1;
 					break;
 				}
 			}
-			parentsFound = parentsFound + 1;
 		}		
 		return parents;
 	}

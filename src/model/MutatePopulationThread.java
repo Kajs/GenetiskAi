@@ -31,6 +31,13 @@ public class MutatePopulationThread implements Runnable {
 	}
 	
 	public void run() {
+		
+        if(coinFlip()) {
+			double temp = drasticEnd;
+			drasticEnd = drasticStart;
+			drasticStart = temp;
+		}
+		
 		double stepSize = (drasticEnd - drasticStart) / (end - start);
 		double newDrasticLikelihood = drasticStart;
 
@@ -39,7 +46,7 @@ public class MutatePopulationThread implements Runnable {
 			if(i == end - 1) { newDrasticLikelihood = drasticEnd; }
 			double[][][] mutant = choseParents(1, population, scaledFitness, totalFitness, populationLimit);
 			newPopulation[i] = mutate(mutant[0], newDrasticLikelihood, mutateLikelihood);
-			newDrasticLikelihood = newDrasticLikelihood + stepSize;
+			newDrasticLikelihood += stepSize;
 		}
 	}
 	
@@ -53,7 +60,7 @@ public class MutatePopulationThread implements Runnable {
 					boolean flip = randomGenerator.nextDouble() <= drasticLikelihood;
 					if(flip) {
 						double value = randomGenerator.nextDouble();
-						if (randomGenerator.nextInt(1) == 0) {
+						if (coinFlip()) {
 							mutant[i][j] = value * (-1.0);
 						}
 						else {
@@ -62,7 +69,7 @@ public class MutatePopulationThread implements Runnable {
 					}
 					else {
 						double value = child[i][j];
-						if (randomGenerator.nextInt(1) == 0) {
+						if (coinFlip()) {
 							value = value * 1.1;
 							if (value > 1.0) {
 								value = 1.0;
@@ -101,12 +108,14 @@ public class MutatePopulationThread implements Runnable {
 				summedFitness = summedFitness + fitness[i];
 				if (chance <= summedFitness / totalFitness) {
 					parents[parentsFound] = population[i];
+					parentsFound = parentsFound + 1;
 					break;
 				}
 			}
-			parentsFound = parentsFound + 1;
 		}		
 		return parents;
 	}
+	
+	private boolean coinFlip() { return randomGenerator.nextDouble() <= 0.5; }
 
 }
