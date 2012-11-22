@@ -3,8 +3,8 @@ package model;
 import java.util.Random;
 
 public class KeepPopulationThread implements Runnable {
-	private double[][][] population;
-	private double[][][] newPopulation;
+	private double[][][][] population;
+	private double[][][][] newPopulation;
 	private boolean alwaysKeepBest;
 	private double[] scaledFitness;
 	private double totalFitness;
@@ -35,15 +35,15 @@ public class KeepPopulationThread implements Runnable {
 		
 	}
 	
-	public void setVariables(double[][][] population, double[][][] newPopulation, double[] scaledFitness, double totalFitness) {
+	public void setVariables(double[][][][] population, double[][][][] newPopulation, double[] scaledFitness, double totalFitness) {
 		this.population = population;
 		this.newPopulation = newPopulation;
 		this.scaledFitness = scaledFitness;
 		this.totalFitness = totalFitness;
 	}
 	
-	public double[][][] choseParents(int numberOfParents, double[][][] population, double[] fitness, double totalFitness, int populationLimit) {
-		double[][][] parents = new double[numberOfParents][choices+1][information];
+	public double[][][][] choseParents(int numberOfParents, double[][][][] population, double[] fitness, double totalFitness, int populationLimit) {
+		double[][][][] parents = new double[numberOfParents][3][choices+1][information];
 		int parentsFound = 0;
 		
 		while(parentsFound < numberOfParents) {

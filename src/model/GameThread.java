@@ -59,17 +59,17 @@ public class GameThread implements Runnable {
 				gameState.reset();
 				this.geneticPositions = scenarios[i].geneticPositions;
 				this.staticPositions = scenarios[i].staticPositions;
-				currentTeam = new double[geneticPositions.length][geneticPositions[0].length][choices+1][information];
+				currentTeam = new double[geneticPositions.length][3][choices+1][information];
 				
-				for (int aiType = 0; aiType < geneticPositions.length; aiType++) {
-					for (int aiPos = 0; aiPos < geneticPositions[aiType].length; aiPos++) {
-						currentTeam[aiType][aiPos] = team1[aiType][team];
-					}
+				for (int teamPos = 0; teamPos < geneticPositions.length; teamPos++) {
+					currentTeam[teamPos] = team1[team];
 				}
 				
 				insertGeneticAis(currentTeam, geneticPositions);	
 				//insertStaticAis(enemyDifficulty, geneticPositions, 1);
 			    insertStaticAis(enemyDifficulty, staticPositions, 2);
+			    
+			    if(fitnessOutput) {System.out.println("\nTeam " + (team + 1) + " with fitness " + round(team1Fitness[team], 2) + " in scenario " + (i + 1) + "\n");}
 			    
 			    double[][] results = gameState.newGame(maxRounds);
 			    
@@ -91,7 +91,6 @@ public class GameThread implements Runnable {
 			tm2AvrFit = tm2AvrFit + tm2FitVal;
 			
 			team1Fitness[team] = tm1FitVal;
-			if(fitnessOutput) {System.out.println("\nTeam " + (team + 1) + " with fitness " + round(tm1FitVal, 2) + "\n");}
 		}
 	}
 	
@@ -105,17 +104,17 @@ public class GameThread implements Runnable {
 	public double getTeam2AverageFitness() { return tm2AvrFit; }
 	
 	private void insertGeneticAis(double[][][][] geneticAis, Coordinate[][] geneticPositions) {
-		for (int aiType = 0; aiType < 3; aiType++) {
-			for (int i = 0; i < geneticPositions[aiType].length && geneticPositions[aiType][i] != null; i++) {
-				gameState.insertAi(newGeneticAi(geneticAis[aiType][i], aiType), 1, geneticColors(aiType), geneticPositions[aiType][i]);
+		for (int teamPos = 0; teamPos < geneticPositions.length; teamPos++) {
+			for (int aiType = 0; aiType < 3; aiType++) {
+				if (geneticPositions[teamPos][aiType] != null) { gameState.insertAi(newGeneticAi(geneticAis[teamPos][aiType], aiType), 1, geneticColors(aiType), geneticPositions[teamPos][aiType]); }
 			}
 		}
 	}
 	
 	private void insertStaticAis(int difficulty, Coordinate[][] staticPositions, int team) {
-		for (int aiType = 0; aiType < 3; aiType++) {
-			for (int i = 0; i < staticPositions[aiType].length && staticPositions[aiType][i] != null; i++) {
-				gameState.insertAi(newStaticAi(difficulty, aiType), team, staticColors(aiType, difficulty), staticPositions[aiType][i]);
+		for (int teamPos = 0; teamPos < staticPositions.length; teamPos++) {
+			for (int aiType = 0; aiType < 3; aiType++) {
+				if (staticPositions[teamPos][aiType] != null) {	gameState.insertAi(newStaticAi(difficulty, aiType), team, staticColors(aiType, difficulty), staticPositions[teamPos][aiType]); }
 			}
 		}
 	}

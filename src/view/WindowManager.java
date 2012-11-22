@@ -79,18 +79,14 @@ public class WindowManager {
 	   JMenuItem sortBestTeamsLowToHigh = new JMenuItem("Sort best teams (low to high)");
 	   sortBestTeamsLowToHigh.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
-	    		HeapSort.heapSortLow(Controller.bestTeams[0], copyArray(Controller.bestTeamsFitness), Controller.gamesCompleted);
-	    		HeapSort.heapSortLow(Controller.bestTeams[1], copyArray(Controller.bestTeamsFitness), Controller.gamesCompleted);
-	    		HeapSort.heapSortLow(Controller.bestTeams[2], Controller.bestTeamsFitness, Controller.gamesCompleted);
+	    		HeapSort.heapSortLow(Controller.bestTeams, Controller.bestTeamsFitness, Controller.gamesCompleted);
 	    	}
 	    });
 	   
 	   JMenuItem sortBestTeamsHighToLow = new JMenuItem("Sort best teams (high to low)");
 	   sortBestTeamsHighToLow.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
-	    		HeapSort.heapSortHigh(Controller.bestTeams[0], copyArray(Controller.bestTeamsFitness), Controller.gamesCompleted);
-	    		HeapSort.heapSortHigh(Controller.bestTeams[1], copyArray(Controller.bestTeamsFitness), Controller.gamesCompleted);
-	    		HeapSort.heapSortHigh(Controller.bestTeams[2], Controller.bestTeamsFitness, Controller.gamesCompleted);
+	    		HeapSort.heapSortHigh(Controller.bestTeams, Controller.bestTeamsFitness, Controller.gamesCompleted);
 	    	}
 	    });
 	   

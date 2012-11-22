@@ -2,7 +2,6 @@ package view;
 
 import java.awt.*;
 import java.awt.event.WindowEvent;
-import static java.lang.Math.abs;
 import static java.lang.Math.sqrt;
 
 import javax.swing.JPanel;
@@ -60,7 +59,7 @@ public class XyDeviationChart extends ApplicationFrame
 
 	private JFreeChart createChart(XYDataset xydataset)
 	{
-		JFreeChart jfreechart = ChartFactory.createScatterPlot("Pojected Fitness Results", "game", "fitness", xydataset, PlotOrientation.VERTICAL, false, false, false);
+		JFreeChart jfreechart = ChartFactory.createScatterPlot("Pojected Fitness Results", "game", "fitness", xydataset, PlotOrientation.VERTICAL, true, false, false);
 		XYPlot xyplot = (XYPlot)jfreechart.getPlot();
 		DeviationRenderer deviationrenderer = new DeviationRenderer(true, false);
 		xyplot.setRenderer(deviationrenderer);

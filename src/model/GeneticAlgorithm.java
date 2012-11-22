@@ -96,10 +96,10 @@ public class GeneticAlgorithm {
 	
 	
 	
-	public double[][][] initialPopulation(int size, int choices, int information) {
+	public double[][][][] initialPopulation(int size, int choices, int information) {
 		if(Launcher.allowGenAlgAnnounce) {System.out.println("Generating initialPopulation");}
 		
-		double[][][] population = new double[size][choices + 1][information];
+		double[][][][] population = new double[size][3][choices + 1][information];
 		
 		for (int i = 0; i < size; i++) {
 			population[i] = generateWeights(choices, information);
@@ -107,20 +107,23 @@ public class GeneticAlgorithm {
 		return population;
 	}
 	
-	public double[][] generateWeights(int choices, int information) {
-		double[][] weights = new double[choices + 1][information];
+	public double[][][] generateWeights(int choices, int information) {
+		double[][][] weights = new double[3][choices + 1][information];
 		
-		for (int i = 0; i < choices + 1; i++) {
-			for (int j = 0; j < information; j++) {
-				double value = randomGenerator.nextDouble();
-				if (coinFlip()) {
-					weights[i][j] = value * (-1.0);
-				}
-				else {
-					weights[i][j] = value;
+		for (int t = 0; t < 3; t++) {
+			for (int i = 0; i < choices + 1; i++) {
+				for (int j = 0; j < information; j++) {
+					double value = randomGenerator.nextDouble();
+					if (coinFlip()) {
+						weights[t][i][j] = value * (-1.0);
+					}
+					else {
+						weights[t][i][j] = value;
+					}
 				}
 			}
 		}
+		
 		return weights;
 	}
 	
@@ -132,8 +135,8 @@ public class GeneticAlgorithm {
 	
 	
 	
-	public double[][][] newPopulation(double[][][] population, double[] fitness, boolean elitism, int bestTeam) {
-		double[][] bestAi = null;
+	public double[][][][] newPopulation(double[][][][] population, double[] fitness, boolean elitism, int bestTeam) {
+		double[][][] bestAi = null;
 		double bestAiFitness = 0;
 		
 		if(elitism) {
@@ -143,12 +146,12 @@ public class GeneticAlgorithm {
 		
         if(allwaysKeepBest) { HeapSort.heapSortHigh(population, fitness, populationSize); }
 		
-		double[][][] newPopulation = new double[populationSize][choices+1][information];
+		double[][][][] newPopulation = new double[populationSize][3][choices+1][information];
 		double[] scaledFitness;
 		
 		//scaledFitness = fitness;
-		//scaledFitness = linearTransformationScaling(fitness, 0.9, 1.0);
-		scaledFitness = exponentialScaling(fitness);
+		scaledFitness = linearTransformationScaling(fitness, 0.9, 1.0/populationSize);
+		//scaledFitness = exponentialScaling(fitness);
 		double totalFitness = getTotalFitness(scaledFitness, populationLimit);
 		
 		for (int i = 0; i < numThreads; i++) {
