@@ -28,41 +28,24 @@ public class CrossPopulationThread implements Runnable {
 		for(int i = start; i < end; i = i + 2) {
 			//System.out.println("Cross i: " + i + "__________________, (" + start + "," + end + ")");
 			double[][][][] parents = choseParents(2, population, scaledFitness, totalFitness, populationLimit);			
-			double[][][] child1 = crossOverAll(parents[0], parents[1]);
-			double[][][] child2 = crossOverOne(parents[1], parents[0]);
+			double[][][] child1 = crossOver(parents[0], parents[1], true);
+			double[][][] child2 = crossOver(parents[1], parents[0], false);
 			
 			newPopulation[i] = child1;
 			newPopulation[i + 1] = child2;
 		}
 	}
 	
-	public double[][][] crossOverAll (double[][][] dad, double[][][] mom) {
-		double[][][] child = new double[3][choices + 1][information];
-		
-		for (int t = 0; t < 3; t++) {
-			for (int i = 0; i < choices + 1; i++) {
-				for (int j = 0; j < information; j++) {
-					double value;
-					
-					if (coinFlip()) {value = dad[t][i][j];	}
-					else { value = mom[t][i][j]; }					
-					child[t][i][j] = value;
-				}
-			}
-		}	
-		return child;
-	}
-	
-	public double[][][] crossOverOne (double[][][] dad, double[][][] mom) {
+	public double[][][] crossOver (double[][][] dad, double[][][] mom, boolean wholeTeam) {
 		double[][][] child = new double[3][choices + 1][information];
 		int aiType = randomGenerator.nextInt(3);
 		
 		for (int t = 0; t < 3; t++) {
 			for (int i = 0; i < choices + 1; i++) {
 				for (int j = 0; j < information; j++) {
-					double value;					
+					double value;
 					
-					if (coinFlip() && t == aiType) { value = dad[t][i][j]; }
+					if (coinFlip() && (wholeTeam || !wholeTeam && t == aiType)) {value = dad[t][i][j];	}
 					else { value = mom[t][i][j]; }					
 					child[t][i][j] = value;
 				}

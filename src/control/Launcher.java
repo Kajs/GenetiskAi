@@ -28,5 +28,4 @@ public class Launcher {
 		@SuppressWarnings("unused")
 		Controller control = new Controller(isAutomatic, displayAutomatic);
 	  }
-	  
 }

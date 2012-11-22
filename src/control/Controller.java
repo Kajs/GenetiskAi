@@ -182,7 +182,7 @@ public class Controller {
 			
 			team1 = geneticAlgorithm.newPopulation(team1, team1Fitness, elitism, bestTeam);
 			
-			//checkTeam(team1);
+			checkTeam(team1);
 		}
 		
 		tm1FinalAvrFit = tm1FinalAvrFit/(lastGame + 1);

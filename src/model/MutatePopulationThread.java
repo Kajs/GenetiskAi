@@ -45,38 +45,26 @@ public class MutatePopulationThread implements Runnable {
 			//System.out.println("Mutate i: " + i + "__________________, end: " + end);
 			if(i == end - 1) { newDrasticLikelihood = drasticEnd; }
 			double[][][][] mutant = choseParents(1, population, scaledFitness, totalFitness, populationLimit);
-			if (coinFlip()) { newPopulation[i] = mutateOne(mutant[0], newDrasticLikelihood, mutateLikelihood); }
-			else { newPopulation[i] = mutateAll(mutant[0], newDrasticLikelihood, mutateLikelihood); }
+			newPopulation[i] = mutate(mutant[0], newDrasticLikelihood, mutateLikelihood, coinFlip());
 			newDrasticLikelihood += stepSize;
 		}
 	}
 	
-	public double[][][] mutateAll (double[][][] child, double drasticLikelihood, double mutateLikelihood) {
+	public double[][][] mutate (double[][][] child, double drasticLikelihood, double mutateLikelihood, boolean wholeTeam) {
 		double[][][] mutant = new double[3][choices+1][information];
+		int aiType = randomGenerator.nextInt(3);
 		
 		for (int t = 0; t < 3; t++) {				
 			for (int i = 0; i < choices + 1; i++) {
 				for (int j = 0; j < information; j++) {
 					boolean mutate = randomGenerator.nextDouble() <= mutateLikelihood;
-					if(mutate) {
+					
+					if(mutate && (wholeTeam || !wholeTeam && aiType == t)) {
 						boolean drasticMutation = randomGenerator.nextDouble() <= drasticLikelihood;
 						double value;
 						
-						if(drasticMutation) {
-							value = randomGenerator.nextDouble();
-							if (coinFlip()) { value = value * (-1.0); }
-							mutant[t][i][j] = value;
-						}
-						else {
-							value = child[t][i][j];
-							if (coinFlip()) {
-								value = value * 1.1;
-								if (value > 1.0) { value = 1.0;	}
-								if (value < -1.0) { value = -1.0; }
-							}
-							else { value = value * 0.9; }
-						}
-						
+						if(drasticMutation) { value = mutateDrastic(); }
+						else { value = mutateLight(child[t][i][j]);	}						
 						mutant[t][i][j] = value;
 					}	
 					else { mutant[t][i][j] = child[t][i][j]; }
@@ -87,41 +75,20 @@ public class MutatePopulationThread implements Runnable {
 		return mutant;
 	}
 	
-	public double[][][] mutateOne (double[][][] child, double drasticLikelihood, double mutateLikelihood) {
-		double[][][] mutant = new double[3][choices+1][information];		
-		int aiType = randomGenerator.nextInt(3);
-		
-		for (int t = 0; t < 3; t++) {				
-			for (int i = 0; i < choices + 1; i++) {
-				for (int j = 0; j < information; j++) {
-					boolean mutate = randomGenerator.nextDouble() <= mutateLikelihood;
-					if(mutate) {
-						boolean drasticMutation = randomGenerator.nextDouble() <= drasticLikelihood;
-						double value;
-						if(drasticMutation) {
-							value = randomGenerator.nextDouble();
-							if (coinFlip()) { value = value * (-1.0); }
-							mutant[t][i][j] = value;
-						}
-						else {
-							value = child[t][i][j];
-							if (coinFlip()) {
-								value = value * 1.1;
-								if (value > 1.0) { value = 1.0;	}
-								if (value < -1.0) {	value = -1.0; }
-							}
-							else { value = value * 0.9; }
-						}
-						
-						if (t == aiType) { mutant[t][i][j] = value; }
-						else { mutant[t][i][j] = child[t][i][j]; }
-					}
-					else { mutant[t][i][j] = child[t][i][j]; }
-				}
-			}
+	public double mutateDrastic() {
+		double value = randomGenerator.nextDouble();
+		if (coinFlip()) { value = value * (-1.0); }
+		return value;
+	}
+	
+	public double mutateLight(double value) {
+		if (coinFlip()) {
+			value = value * 1.1;
+			if (value > 1.0) { value = 1.0;	}
+			if (value < -1.0) { value = -1.0; }
 		}
-		
-		return mutant;
+		else { value = value * 0.9; }
+		return value;
 	}
 	
 	public void setVariables(double[][][][] population, double[][][][] newPopulation, double[] scaledFitness, double totalFitness) {
