@@ -598,15 +598,20 @@ public class GameState extends Observable {
 	}
 	
 	public void reset() {
+		for(Ai ai : team1Alive) {
+			int x = ai.getPosition().getX();
+			int y = ai.getPosition().getY();
+			hexMatrix[x][y].removeAi();
+		}
+		for(Ai ai : team2Alive) {
+			int x = ai.getPosition().getX();
+			int y = ai.getPosition().getY();
+			hexMatrix[x][y].removeAi();
+		}
 		team1Alive.clear();
 		team1Dead.clear();
 		team2Alive.clear();
 		team2Dead.clear();
-		for (int r = 0; r < rows; r++) {
-			for (int c = 0; c < columns; c++) {
-				hexMatrix[r][c].reset();
-			}
-		}
 	}
 	
 	public void parseAction(Action preferredAction, Ai ai, Hex orgHex) {

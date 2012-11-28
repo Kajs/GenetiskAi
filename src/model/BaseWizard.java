@@ -19,10 +19,12 @@ public class BaseWizard extends Ai {
 			if(adjacentHex.isOccupied()) {
 				Ai adjacentAi = adjacentHex.getAi();
 				
-				if(adjacentAi.getTeam() != team && bestWeight < 3) {
+				if(adjacentAi.getTeam() != team) {
 					//attack
-					bestAction = new Action(adjacentPosition, "attack", "area");
-					bestWeight = 3;
+					if(bestWeight < 3) {
+						bestAction = new Action(adjacentPosition, "attack", "area");
+						bestWeight = 3;
+					}
 				}
 				else{
 					if(bestWeight < -1 && !adjacentAi.getBoosted()) {

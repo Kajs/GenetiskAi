@@ -17,10 +17,12 @@ public class BaseWarrior extends Ai {
 		if (adjacentHex != null) {
 			if(adjacentHex.isOccupied()) {
 				Ai adjacentAi = adjacentHex.getAi();
-				if(adjacentAi.getTeam() != team && bestWeight < 3) {
+				if(adjacentAi.getTeam() != team) {
 					//attack
-					bestAction = new Action(adjacentPosition, "attack", "normal");
-					bestWeight = 3;
+					if (bestWeight < 3) {
+						bestAction = new Action(adjacentPosition, "attack", "normal");
+						bestWeight = 3;						
+					}
 				}
 				else {
 					if(!adjacentAi.getShielded() && bestWeight < -1) {

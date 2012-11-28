@@ -598,7 +598,7 @@ public class OldGameState_AngleChange extends Observable {
 		team2Dead.clear();
 		for (int r = 0; r < rows; r++) {
 			for (int c = 0; c < columns; c++) {
-				hexMatrix[r][c].reset();
+				hexMatrix[r][c].removeAi();
 			}
 		}
 	}

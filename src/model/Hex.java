@@ -32,12 +32,6 @@ public class Hex {
 	    makeShape();
 	}
 	
-	public void reset() {
-		color = Color.white;
-		isOccupied = false;
-		ai = null;
-	}
-	
     private void makeShape()
     {
     	startPosition = new Coordinate(x, y);
