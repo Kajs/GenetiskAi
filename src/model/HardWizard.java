@@ -5,11 +5,10 @@ public class HardWizard extends Ai {
 	public HardWizard() {
 		setAiType("Wizard");
 		setSupportAction("boost");
-		initialHp = 10;
+		initialHp = wizardInitialHp;
 		hp = initialHp;
-		standardMeleeDamage = 4;
-		areaDamage = standardMeleeDamage / 2 + 0.5;
-		meleeDamage = standardMeleeDamage;
+		areaDamage = wizardAreaDamage;
+		meleeDamage = wizardMeleeDamage;
     }
 	
 	public void weight () {

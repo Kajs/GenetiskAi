@@ -4,12 +4,11 @@ public class HardCleric extends Ai {
 	
 	public HardCleric() {
 		setAiType("Cleric");
-		setSupportAction("shield");
-		initialHp = 15;
+		setSupportAction("heal");
+		initialHp = clericInitialHp;
 		hp = initialHp;
-		standardMeleeDamage = 2.5;
-		healAmount = 5.0;
-		meleeDamage = standardMeleeDamage;
+		healAmount = clericHealAmount;
+		meleeDamage = clericMeleeDamage;
     }
 	
 	public void weight () {

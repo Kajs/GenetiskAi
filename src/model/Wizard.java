@@ -5,11 +5,10 @@ public class Wizard extends Ai {
 	public Wizard(double[][] weights) {
 		setAiType("Wizard");
 		setSupportAction("boost");
-		initialHp = 10;
+		initialHp = wizardInitialHp;
 		hp = initialHp;
-		standardMeleeDamage = 4;
-		areaDamage = standardMeleeDamage / 2 + 0.5;
-		meleeDamage = standardMeleeDamage;
+		areaDamage = wizardAreaDamage;
+		meleeDamage = wizardMeleeDamage;
 		weightMatrix = weights;
     }
 	

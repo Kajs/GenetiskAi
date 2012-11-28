@@ -5,10 +5,9 @@ public class Warrior extends Ai {
 	public Warrior(double[][] weights) {
 		setAiType("Warrior");
 		setSupportAction("shield");
-		initialHp = 20;
+		initialHp = warriorInitialHp;
 		hp = initialHp;
-		standardMeleeDamage = 5;
-		meleeDamage = standardMeleeDamage;
+		meleeDamage = warriorMeleeDamage;
 		weightMatrix = weights;
     }
 	

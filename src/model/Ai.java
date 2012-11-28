@@ -31,9 +31,21 @@ public class Ai {
     public Action bestAction;
 	public double bestWeight;
 	public String supportAction;
-	public double standardMeleeDamage;
 	public double initialHp;
 	public Ai copy;
+	
+	//__________________class variables
+	public double warriorMeleeDamage = 5;
+	public double warriorInitialHp = 20;
+	
+	public double wizardMeleeDamage = 4;
+	public double wizardAreaDamage = 1.75;
+	public double wizardInitialHp = 10;
+	
+	public double clericMeleeDamage = 2.5;
+	public double clericHealAmount = 5;
+	public double clericInitialHp = 15;
+	//__________________class variables
 	
 	//__________________ weight variables section
 	public Hex adjacentHex;

@@ -5,11 +5,10 @@ public class Cleric extends Ai {
 	public Cleric(double[][] weights) {
 		setAiType("Cleric");
 		setSupportAction("heal");
-		initialHp = 15;
+		initialHp = clericInitialHp;
 		hp = initialHp;
-		standardMeleeDamage = 2.5;
-		healAmount = 5.0;
-		meleeDamage = standardMeleeDamage;
+		healAmount = clericHealAmount;
+		meleeDamage = clericMeleeDamage;
 		weightMatrix = weights;
     }
 	
