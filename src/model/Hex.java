@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.geom.Path2D;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
+import static java.lang.Math.sqrt;
 import static java.lang.Math.toRadians;
 
 import model.Coordinate;
@@ -93,5 +94,11 @@ public class Hex {
     	ai = null;
     	isOccupied = false;
     	color = Color.white;
+    }
+    
+    public double physicalDistance(Hex endHex) {
+    	double dx = endHex.getStartPosition().getXD() - startPosition.getXD();
+    	double dy = endHex.getStartPosition().getYD() - startPosition.getYD();
+    	return sqrt(dx * dx + dy * dy);    	
     }
 }

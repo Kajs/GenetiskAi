@@ -516,6 +516,8 @@ public class GameState extends Observable {
 	
 	public double[][] nearestAiDistances(Ai activeAi, Hex[] hexes, int team) {     //will add 0 ally distance if only 1 is left on team
 		double[][] distances = new double[2][6];
+		int activeX = activeAi.getPosition().getX();
+		int activeY = activeAi.getPosition().getY();
 		
 		for (int h = 0; h < 6; h++) {
 			double team1Distance = Double.MAX_VALUE;
@@ -524,19 +526,21 @@ public class GameState extends Observable {
 			if(hexes[h] != null){
 				boolean isMyself;
 				for (Ai team1: team1Alive) {
-					isMyself = (team1.getPosition().getX() == activeAi.getPosition().getX() && team1.getPosition().getY() == activeAi.getPosition().getY());
-					double aiDistance = hexes[h].getPosition().distance(team1.getPosition());
+					int x = team1.getPosition().getX();
+					int y = team1.getPosition().getY();
+					isMyself = (x == activeX && y == activeY);
+					Hex targetHex = hexMatrix[x][y];
+					double aiDistance = hexes[h].physicalDistance(targetHex);
 					if(aiDistance < team1Distance && !isMyself) { team1Distance = aiDistance; }
 				}
 				for (Ai team2: team2Alive) {
-					isMyself = (team2.getPosition().getX() == activeAi.getPosition().getX() && team2.getPosition().getY() == activeAi.getPosition().getY());
-					double aiDistance = hexes[h].getPosition().distance(team2.getPosition());
+					int x = team2.getPosition().getX();
+					int y = team2.getPosition().getY();
+					isMyself = (x == activeX && y == activeY);
+					Hex targetHex = hexMatrix[x][y];
+					double aiDistance = hexes[h].physicalDistance(targetHex);
 					if(aiDistance < team2Distance && !isMyself) { team2Distance = aiDistance; }
 				}
-			}
-			else{
-				team1Distance = 0;
-				team2Distance = 0;
 			}
 			
 			if(team == 1) {
