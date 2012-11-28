@@ -34,7 +34,7 @@ public class HardWarrior extends Ai {
 					}
 					
 					// Stun when outnumbering enemies
-					if (totalAllies > totalEnemies) {
+					if (totalAllies > totalEnemies && nearestEnemyStunned == 0) {
 						weight = 800;
 						weight += nearestEnemyHp;
 						compareAction(weight, adjacentPosition, "attack", "stun");
@@ -68,10 +68,10 @@ public class HardWarrior extends Ai {
 				
 				// Move towards enemies, but try to stay close to allies
 				weight = 200;
-				if(nearestEnemyDistance > 0) {weight += 10 + 1.0/nearestEnemyDistance;}
-				if(nearestAllyDistance > 0) {weight += 5 + 1.0/nearestAllyDistance;}
-				weight += adjacentEnemies;
-				weight += adjacentAllies/10.0;
+				weight += 1.0/(nearestEnemyDistanceGlobal + 0.1);
+				//weight += 1.0/(nearestAllyDistanceGlobal + 0.1);
+				
+				//System.out.println(getId() + "E: " + nearestEnemyDistanceGlobal + ", A: " + nearestAllyDistanceGlobal + " at (" + adjacentHex.getPosition().getX() + "," + adjacentHex.getPosition().getY() + "), seeing (");
 				//System.out.println("weight " + weight + ", nearestEnemyDistance " + nearestEnemyDistance + " at (" + adjacentHex.getPosition().getX() + "," + adjacentHex.getPosition().getY() + ")");
 
 				

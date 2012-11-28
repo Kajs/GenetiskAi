@@ -63,7 +63,7 @@ public class GameState extends Observable {
 				Hex orgHex = hexMatrix[orgPos.getX()][orgPos.getY()];
 				Hex[] adjacentHexes = adjacentHexes(orgPos);
 				double[][] adjacentAis = adjacentAis(adjacentHexes, ai.getTeam());
-				Action preferredAction = ai.action(adjacentHexes, hexCakeOptimised(orgPos), teamHp(team1Alive), teamHp(team2Alive), (double) team2Alive.size(), (double) team1Alive.size(), adjacentAis, nearestAiDistances(adjacentHexes, 1));
+				Action preferredAction = ai.action(adjacentHexes, hexCakeOptimised(orgPos), teamHp(team1Alive), teamHp(team2Alive), (double) team2Alive.size(), (double) team1Alive.size(), adjacentAis, nearestAiDistances(ai, adjacentHexes, 1));
 				
 				parseAction(preferredAction, ai, orgHex);
 			}			
@@ -77,7 +77,7 @@ public class GameState extends Observable {
 				Hex orgHex = hexMatrix[orgPos.getX()][orgPos.getY()];
 				Hex[] adjacentHexes = adjacentHexes(orgPos);
 				double[][] adjacentAis = adjacentAis(adjacentHexes, ai.getTeam());
-				Action preferredAction = ai.action(adjacentHexes, hexCakeOptimised(orgPos), teamHp(team2Alive), teamHp(team1Alive), (double) team1Alive.size(), (double) team2Alive.size(), adjacentAis, nearestAiDistances(adjacentHexes, 2));
+				Action preferredAction = ai.action(adjacentHexes, hexCakeOptimised(orgPos), teamHp(team2Alive), teamHp(team1Alive), (double) team1Alive.size(), (double) team2Alive.size(), adjacentAis, nearestAiDistances(ai, adjacentHexes, 2));
 				
 				parseAction(preferredAction, ai, orgHex);
 			}
@@ -236,37 +236,37 @@ public class GameState extends Observable {
 			//System.out.println("Team1 Angle calculated: " + Controller.round(angleToHex, 2));
 			
 			// SouthEast
-			if (angleToHex>=0 && angleToHex<60) {
+			if (angleToHex >= 0 && angleToHex <= 60) {
 				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at SE: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				southEast.add(targetHex);
 				continue;
 			}
 			//South
-			if (angleToHex>=60 && angleToHex<120) {
+			if (angleToHex >= 60 && angleToHex <= 120) {
 				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at S: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				south.add(targetHex);
 				continue;
 			}
 			//SouthWest
-			if (angleToHex>=120 && angleToHex<=180) {
+			if (angleToHex >= 120 && angleToHex <= 180) {
 				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at SW: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				southWest.add(targetHex);
 				continue;
 			}
 			//NortEast
-			if (angleToHex<0 && angleToHex>=-60) {
+			if (angleToHex <= 0 && angleToHex >= -60) {
 				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at NE: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				northEast.add(targetHex);
 				continue;
 			}
 			//North
-			if (angleToHex<-60 && angleToHex>=-120) {
+			if (angleToHex <= -60 && angleToHex >= -120) {
 				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at N: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				north.add(targetHex);
 				continue;
 			}
 			//NortWest
-			if (angleToHex<-120 && angleToHex>=-180) {
+			if (angleToHex <= -120 && angleToHex >= -180) {
 				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at NW: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				northWest.add(targetHex);
 				continue;
@@ -287,37 +287,37 @@ public class GameState extends Observable {
 			//System.out.println("Team2 Angle calculated: " + Controller.round(angleToHex, 2));
 			
 			// SouthEast
-			if (angleToHex>=0 && angleToHex<60) {
+			if (angleToHex >= 0 && angleToHex <= 60) {
 				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at SE: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				southEast.add(targetHex);
 				continue;
 			}
 			//South
-			if (angleToHex>=60 && angleToHex<120) {
+			if (angleToHex >= 60 && angleToHex <= 120) {
 				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at S: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				south.add(targetHex);
 				continue;
 			}
 			//SouthWest
-			if (angleToHex>=120 && angleToHex<=180) {
+			if (angleToHex >= 120 && angleToHex <= 180) {
 				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at SW: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				southWest.add(targetHex);
 				continue;
 			}
 			//NortEast
-			if (angleToHex<0 && angleToHex>=-60) {
+			if (angleToHex <= 0 && angleToHex >= -60) {
 				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at NE: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				northEast.add(targetHex);
 				continue;
 			}
 			//North
-			if (angleToHex<-60 && angleToHex>=-120) {
+			if (angleToHex <= -60 && angleToHex >= -120) {
 				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at N: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				north.add(targetHex);
 				continue;
 			}
 			//NortWest
-			if (angleToHex<-120 && angleToHex>=-180) {
+			if (angleToHex <= -120 && angleToHex >= -180) {
 				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at NW: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				northWest.add(targetHex);
 				continue;
@@ -514,7 +514,7 @@ public class GameState extends Observable {
 		return adjacentHexes;
 	}
 	
-	public double[][] nearestAiDistances(Hex[] hexes, int team) {     //will add 0 ally distance if only 1 is left on team
+	public double[][] nearestAiDistances(Ai activeAi, Hex[] hexes, int team) {     //will add 0 ally distance if only 1 is left on team
 		double[][] distances = new double[2][6];
 		
 		for (int h = 0; h < 6; h++) {
@@ -522,13 +522,16 @@ public class GameState extends Observable {
 			double team2Distance = Double.MAX_VALUE;
 			
 			if(hexes[h] != null){
+				boolean isMyself;
 				for (Ai team1: team1Alive) {
+					isMyself = (team1.getPosition().getX() == activeAi.getPosition().getX() && team1.getPosition().getY() == activeAi.getPosition().getY());
 					double aiDistance = hexes[h].getPosition().distance(team1.getPosition());
-					if(aiDistance < team1Distance) { team1Distance = aiDistance; }
+					if(aiDistance < team1Distance && !isMyself) { team1Distance = aiDistance; }
 				}
-				for (Ai team2: team1Alive) {
+				for (Ai team2: team2Alive) {
+					isMyself = (team2.getPosition().getX() == activeAi.getPosition().getX() && team2.getPosition().getY() == activeAi.getPosition().getY());
 					double aiDistance = hexes[h].getPosition().distance(team2.getPosition());
-					if(aiDistance < team2Distance) { team2Distance = aiDistance; }
+					if(aiDistance < team2Distance && !isMyself) { team2Distance = aiDistance; }
 				}
 			}
 			else{

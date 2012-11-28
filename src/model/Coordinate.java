@@ -54,8 +54,12 @@ public class Coordinate {
 		int largest = abs(dx);
 		int dy = end.getY() - y;
 		if (abs(dy) > largest) { largest = abs(dy); }
-		int dd = dy - dx;
+		int dd;
+		if(dy < 0 && dx > 0 || dy > 0 && dx < 0) { dd = dy + dx;}
+		else{ dd = dy - dx; }
 		if (abs(dd) > largest) { largest = abs(dd); }
+		
+		//System.out.println("from (" + x + "," + y + ") to (" + end.getX() + "," + end.getY() + ") = " + largest);
 		return (double) largest;
 	}
 	

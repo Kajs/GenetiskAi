@@ -22,11 +22,11 @@ public class Controller {
 	public static int roundDelay = 1000;  // in milliseconds
 	static Coordinate startPosition = new Coordinate(sin(toRadians(30)) * hexSideSize, 1);
 	
-	static int maxRounds = 100;
+	static int maxRounds = 35;
 	static int maxGames = 10000;
 	public static int gamesCompleted = 0;
 	
-	static int populationSize = 1000;
+	static int populationSize = 10;
 	static int choices = 6;
 	public static int information = 27;
 	static double keepPercent = 0.25;
@@ -244,10 +244,10 @@ public class Controller {
 		//Scenario 0 3v3 standard
 		int scenarioCounter = 0;
 		
-		geneticPositions = new Coordinate[1][3];
-		geneticPositions[0][0] = new Coordinate(9, 2);
-		geneticPositions[0][1] = new Coordinate(7, 2);
-		geneticPositions[0][2] = new Coordinate(5, 2);
+		geneticPositions = new Coordinate[3][3];
+		geneticPositions[0][0] = new Coordinate(13, 2);
+		geneticPositions[1][0] = new Coordinate(7, 2);
+		geneticPositions[2][0] = new Coordinate(1, 2);
 
 		staticPositions = new Coordinate[1][3];
 		staticPositions[0][0] = new Coordinate(6, 20);
@@ -258,10 +258,10 @@ public class Controller {
 		
 		//Scenario 1 surrounded
 		
-		geneticPositions = new Coordinate[1][3];
-		geneticPositions[0][0] = new Coordinate(7, 20);
-		geneticPositions[0][1] = new Coordinate(9, 20);
-		geneticPositions[0][2] = new Coordinate(11, 20);
+		geneticPositions = new Coordinate[3][3];
+		geneticPositions[0][0] = new Coordinate(1, 20);
+		geneticPositions[1][0] = new Coordinate(9, 20);
+		geneticPositions[2][0] = new Coordinate(17, 20);
 
 		staticPositions = new Coordinate[2][3];
 		staticPositions[0][0] = new Coordinate(7, 38);
