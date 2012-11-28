@@ -17,15 +17,13 @@ public class BaseWarrior extends Ai {
 		if (adjacentHex != null) {
 			if(adjacentHex.isOccupied()) {
 				Ai adjacentAi = adjacentHex.getAi();
-				if(adjacentAi.getTeam() != team) {
-					if(bestWeight < 3) {
-						//attack
-						bestAction = new Action(adjacentPosition, "attack", "normal");
-						bestWeight = 3;
-					}
+				if(adjacentAi.getTeam() != team && bestWeight < 3) {
+					//attack
+					bestAction = new Action(adjacentPosition, "attack", "normal");
+					bestWeight = 3;
 				}
 				else {
-					if(!adjacentAi.getShielded() && bestWeight < 2) {
+					if(!adjacentAi.getShielded() && bestWeight < -1) {
 						bestAction = new Action(adjacentPosition, "support", "shield");
 						bestWeight = -1;
 					}	
@@ -33,18 +31,13 @@ public class BaseWarrior extends Ai {
 			
 			}
 			else {
-				if(enemies.size() > 0 && bestWeight < 2) {
-					Ai nearestEnemy = nearestAi(enemies);
-					double distance = position.distance(nearestEnemy.getPosition());
-					if(1.0/distance > bestWeight) {
-						bestAction = new Action(adjacentPosition, "move", "nearestEnemy");
-						bestWeight = 1.0 / distance;
-					}
+				if(bestWeight < 1.0/nearestEnemyDistance) {
+					bestAction = new Action(adjacentPosition, "move", "nearestEnemy");
+					bestWeight = 1.0 / nearestEnemyDistance;
 				}
 				else {
 					if (bestAction == null) {
 						bestAction = new Action(adjacentPosition, "move", "base");
-						bestWeight = 0;
 					}
 				}
 			}

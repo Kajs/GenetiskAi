@@ -97,11 +97,23 @@ public class Ai {
 			enemies.clear();
 			allies.clear();
 			
+			nearestEnemyDistance = Controller.boardDiagonal;
+			nearestAllyDistance = Controller.boardDiagonal;
+			
 			for (Hex hex : slice) {
 				if (hex.isOccupied()) {
+					double dist = Controller.boardDiagonal;	
+					if (adjacentHexes[i] != null) { dist = adjacentHexes[i].physicalDistance(hex);}
+					
 					Ai foundAi = hex.getAi();
-					if(foundAi.getTeam() == team) { allies.add(foundAi); }
-					    else { enemies.add(foundAi); }
+					if(foundAi.getTeam() == team) { 
+						allies.add(foundAi);
+						if(dist < nearestAllyDistance) { nearestAllyDistance = dist; }
+					}
+					else { 
+						enemies.add(foundAi); 
+						if(dist < nearestEnemyDistance) { nearestEnemyDistance = dist; }
+					}
 				}
 			}
 			
@@ -301,7 +313,7 @@ public class Ai {
 		
 		if(nearestEnemy != null) {
 			nearestEnemyHp = nearestEnemy.getHp();
-			nearestEnemyDistance = position.distance(nearestEnemy.getPosition());	
+			//nearestEnemyDistance = position.distance(nearestEnemy.getPosition());	
 			if(nearestEnemy.getBoosted()) {nearestEnemyIsBoosted = 1;}
 			if(nearestEnemy.getShielded()) {nearestEnemyShielded = 1;}
 			if(nearestEnemy.getStunned()) {nearestEnemyStunned = 1;}
@@ -315,7 +327,7 @@ public class Ai {
 		
 		if(nearestAlly != null) {
 			nearestAllyHp = nearestAlly.getHp(); 
-			nearestAllyDistance = position.distance(nearestAlly.getPosition());	
+			//nearestAllyDistance = position.distance(nearestAlly.getPosition());	
 			if(nearestAlly.getBoosted()) {nearestAllyIsBoosted = 1;}
 			if(nearestAlly.getShielded()) {nearestAllyShielded = 1;}
 			if(nearestAlly.getStunned()) {nearestAllyStunned = 1;}

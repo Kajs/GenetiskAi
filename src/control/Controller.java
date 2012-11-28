@@ -3,6 +3,7 @@ package control;
 import java.awt.Color;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
+import static java.lang.Math.sqrt;
 import static java.lang.Math.toRadians;
 
 import model.*;
@@ -14,19 +15,20 @@ import view.XySplineChart;
 
 public class Controller {
 	
-	static int width = 930;
-	static int height = 600;
+	public static int width = 930;
+	public static int height = 600;
+	public static double boardDiagonal = sqrt(width * width + height * height);
 	static int rows = 20;
 	static int columns = 40;
 	static double hexSideSize = scaledHexSideSize();
 	public static int roundDelay = 1000;  // in milliseconds
 	static Coordinate startPosition = new Coordinate(sin(toRadians(30)) * hexSideSize, 1);
 	
-	static int maxRounds = 35;
+	static int maxRounds = 50;
 	static int maxGames = 10000;
 	public static int gamesCompleted = 0;
 	
-	static int populationSize = 10;
+	static int populationSize = 250;
 	static int choices = 6;
 	public static int information = 27;
 	static double keepPercent = 0.25;
@@ -60,7 +62,7 @@ public class Controller {
 	// ____Scenario Section____
 	
 	//_______________Thread Section________
-	private static int numThreads = 4;
+	private static int numThreads = 2;
 	private Thread[] threads;
 	private GameThread[] gameThreads;
 	
@@ -244,12 +246,12 @@ public class Controller {
 		//Scenario 0 3v3 standard
 		int scenarioCounter = 0;
 		
-		geneticPositions = new Coordinate[3][3];
+		geneticPositions = new Coordinate[1][3];
 		geneticPositions[0][0] = new Coordinate(13, 2);
-		geneticPositions[1][0] = new Coordinate(7, 2);
-		geneticPositions[2][0] = new Coordinate(1, 2);
+		geneticPositions[0][1] = new Coordinate(7, 2);
+		geneticPositions[0][2] = new Coordinate(1, 2);
 
-		staticPositions = new Coordinate[1][3];
+		staticPositions = new Coordinate[3][3];
 		staticPositions[0][0] = new Coordinate(6, 20);
 		staticPositions[0][1] = new Coordinate(5, 20);
 		staticPositions[0][2] = new Coordinate(7, 20);		
@@ -258,10 +260,10 @@ public class Controller {
 		
 		//Scenario 1 surrounded
 		
-		geneticPositions = new Coordinate[3][3];
+		geneticPositions = new Coordinate[1][3];
 		geneticPositions[0][0] = new Coordinate(1, 20);
-		geneticPositions[1][0] = new Coordinate(9, 20);
-		geneticPositions[2][0] = new Coordinate(17, 20);
+		geneticPositions[0][1] = new Coordinate(9, 20);
+		geneticPositions[0][2] = new Coordinate(17, 20);
 
 		staticPositions = new Coordinate[2][3];
 		staticPositions[0][0] = new Coordinate(7, 38);

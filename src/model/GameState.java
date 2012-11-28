@@ -520,8 +520,8 @@ public class GameState extends Observable {
 		int activeY = activeAi.getPosition().getY();
 		
 		for (int h = 0; h < 6; h++) {
-			double team1Distance = Double.MAX_VALUE;
-			double team2Distance = Double.MAX_VALUE;
+			double team1Distance = Controller.boardDiagonal;
+			double team2Distance = Controller.boardDiagonal;
 			
 			if(hexes[h] != null){
 				boolean isMyself;
