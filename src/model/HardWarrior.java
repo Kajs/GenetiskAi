@@ -34,7 +34,7 @@ public class HardWarrior extends Ai {
 					}
 					
 					// Stun when outnumbering enemies
-					if (totalAllies > totalEnemies && nearestEnemyStunned == 0) {
+					if (geneticsAlive > staticsAlive && nearestEnemyStunned == 0 && hp < warriorInitialHp) {
 						weight = 800;
 						weight += nearestEnemyHp;
 						compareAction(weight, adjacentPosition, "attack", "stun");
@@ -55,7 +55,7 @@ public class HardWarrior extends Ai {
 					//support
 					
 					// Shield ally if HP is low, modified by number of enemies next to him and type
-					if (nearestAllyHp < 8 && nearestAllyShielded == 0) {
+					if (nearestAllyHp < 15 && nearestAllyShielded == 0) {
 						weight = 910;
 						weight += adjacentHexEnemies;
 						if (nearestAllyIsWizard == 1) {
@@ -75,29 +75,29 @@ public class HardWarrior extends Ai {
 			}
 			else {
 				//move
+				weight = 200;                                            //basic near enemy move
+				weight += 1.0 / (nearestEnemyDistanceGlobal);
+				compareAction(weight, adjacentPosition, "move", "move1");
 				
-				// Move towards enemies, but try to stay close to allies
-				if(adjacentLocalAllies == 0 && adjacentHexAllies == 0) {
+				// Move towards enemies, but try to stay close to allies if alone
+				if(adjacentLocalAllies == 0 && adjacentHexAllies == 0 && geneticsAlive > 2) {
 					weight = 210;
 					weight += 1.0/nearestAllyDistanceGlobal;
 					weight += 0.1/nearestEnemyDistanceGlobal;
 					compareAction(weight, adjacentPosition, "move", "move1"); 
 				}
 				
-				if(adjacentLocalAllies == 0 && adjacentHexAllies == 1) {
+				if(adjacentLocalAllies == 0 && adjacentHexAllies > 0 && geneticsAlive > 2) {  //keep close to nearby allies, yet facing the enemy
 					weight = 220;
-					compareAction(weight, position, "move", "stay"); 
-				}
-				
-				if(adjacentHexEnemies >= 1) {
-					weight = 500;
-					weight += adjacentHexAllies;
+					weight += 1.0/nearestEnemyDistanceGlobal;
 					compareAction(weight, adjacentPosition, "move", "move1"); 
 				}
 				
-				weight = 200;
-				weight += 1.0 / (nearestEnemyDistanceGlobal);
-				compareAction(weight, adjacentPosition, "move", "move1"); 
+				if(adjacentHexEnemies >= 1) { //go to close combat rather than shield ally
+					weight = 500;
+					weight += adjacentHexAllies;
+					compareAction(weight, adjacentPosition, "move", "move1"); 
+				} 
 				
 				//System.out.println("weight " + weight + ", nearestEnemyDistance " + nearestEnemyDistance + " at (" + adjacentHex.getPosition().getX() + "," + adjacentHex.getPosition().getY() + ")");
 

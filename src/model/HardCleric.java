@@ -77,9 +77,14 @@ public class HardCleric extends Ai {
 					compareAction(weight, adjacentPosition, "move", "move1");
 				}
 				
-				if(adjacentLocalAllies >= 1 && adjacentLocalEnemies == 0) {   //stay with allies if safe
+				if(adjacentLocalAllies == 1 && adjacentLocalEnemies == 0) {   //stay with allies if safe
 					weight = 220;
 					compareAction(weight, position, "move", "stay");
+				}
+				
+				if(adjacentLocalAllies < adjacentHexAllies) {   //go to most allies
+					weight = 230;
+					compareAction(weight, adjacentPosition, "move", "move1");
 				}
 				
 				if(adjacentLocalEnemies >= 1) {         //run from enemies
