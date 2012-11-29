@@ -51,8 +51,8 @@ public class HardWarrior extends Ai {
 					
 					// Shield ally if HP is low, modified by number of enemies next to him and type
 					if (nearestAllyHp < 8 && nearestAllyShielded == 0) {
-						weight = 900;
-						weight += adjacentEnemies;
+						weight = 910;
+						weight += adjacentHexEnemies;
 						if (nearestAllyIsWizard == 1) {
 							weight+=0.5;
 						}
@@ -61,23 +61,33 @@ public class HardWarrior extends Ai {
 						}
 						compareAction(weight, adjacentPosition, "support", "shield");
 					}
+					
+					if(nearestAllyShielded == 0) {
+						weight = 900;
+						compareAction(weight, adjacentPosition, "support", "shield");
+					}
 				}
 			}
 			else {
 				//move
 				
 				// Move towards enemies, but try to stay close to allies
-				weight = 200;
-				weight += 1.0/(nearestEnemyDistanceGlobal + 0.1);
-				//weight += 1.0/(nearestAllyDistanceGlobal + 0.1);
+				if(adjacentLocalAllies == 0) {
+					weight = 210;
+					weight += 1.0/nearestAllyDistanceGlobal;
+					weight += 0.1/nearestEnemyDistanceGlobal;
+				}
+				else {
+					weight = 200;
+					weight += 1.0 / (nearestEnemyDistanceGlobal);
+					weight += 0.1 / (nearestAllyDistanceGlobal);
+				}
 				
-				//System.out.println(getId() + "E: " + nearestEnemyDistanceGlobal + ", A: " + nearestAllyDistanceGlobal + " at (" + adjacentHex.getPosition().getX() + "," + adjacentHex.getPosition().getY() + "), seeing (");
 				//System.out.println("weight " + weight + ", nearestEnemyDistance " + nearestEnemyDistance + " at (" + adjacentHex.getPosition().getX() + "," + adjacentHex.getPosition().getY() + ")");
 
-				
-				//if(nearestAllyDistance != 0) { result += 0.1/nearestAllyDistance;}
 				//System.out.println(result + ", nearestEnemyDistance " + nearestEnemyDistance);
 				compareAction(weight, adjacentPosition, "move", "move1");      //move1
+				//System.out.println(getId() + "E: " + nearestEnemyDistanceGlobal + ", A: " + nearestAllyDistanceGlobal + " at (" + adjacentHex.getPosition().getX() + "," + adjacentHex.getPosition().getY() + "), weight " + bestWeight);
 			}
 		}
 	}

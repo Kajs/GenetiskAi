@@ -55,8 +55,10 @@ public class Ai {
 	public double enemyTeamHp;
 	double totalEnemies;
 	double totalAllies;
-	double adjacentEnemies;
-	double adjacentAllies;
+	double adjacentHexEnemies;
+	double adjacentHexAllies;
+	double adjacentLocalEnemies;
+	double adjacentLocalAllies;
 	double nearestEnemyDistanceGlobal;
 	double nearestAllyDistanceGlobal;
 	
@@ -87,7 +89,7 @@ public class Ai {
     public Ai() {
     }
     
-    public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies, double[][] adjacentAis, double[][] nearestAiDistances) {   	
+    public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies, double[][] adjacentHexAis, double[] adjacentLocalAis, double[][] nearestAiDistances) {   	
     	
 		bestAction = null;
 		bestWeight = (int)Math.pow(-2, 31);
@@ -123,8 +125,10 @@ public class Ai {
 				this.enemyTeamHp = enemyTeamHp;
 				this.totalEnemies = totalEnemies;
 				this.totalAllies = totalAllies;
-				this.adjacentEnemies = adjacentAis[0][i];
-				this.adjacentAllies = adjacentAis[1][i];
+				this.adjacentHexEnemies = adjacentHexAis[0][i];
+				this.adjacentHexAllies = adjacentHexAis[1][i];
+				this.adjacentLocalEnemies = adjacentLocalAis[0];
+				this.adjacentLocalAllies = adjacentLocalAis[1];
 				this.nearestEnemyDistanceGlobal = nearestAiDistances[0][i];
 				this.nearestAllyDistanceGlobal = nearestAiDistances[1][i];
 				
@@ -362,14 +366,16 @@ public class Ai {
 		information[20] = nearestAllyIsCleric;
 		information[21] = nearestAllyIsBoosted;
 		information[22] = nearestEnemyIsBoosted;
-		information[23] = adjacentEnemies;
-		information[24] = adjacentAllies;
+		information[23] = adjacentHexEnemies;
+		information[24] = adjacentHexAllies;
 		information[25] = nearestEnemyDistanceGlobal;
 		information[26] = nearestAllyDistanceGlobal;
+		information[27] = adjacentLocalEnemies;
+		information[28] = adjacentLocalAllies;
 		
 		if(Launcher.allowAdjacentAiOutput) {
-			if(adjacentEnemies > 0) {System.out.println("Team " + team + " " + aiType + " at " + "(" + position.getX() + ", " + position.getY() + "): found " + (int)adjacentEnemies + " enemies"); }
-			if(adjacentAllies > 0) { System.out.println("Team " + team + " " + aiType + " at " + "(" + position.getX() + ", " + position.getY() + "): found " + (int)adjacentAllies + " allies"); }
+			if(adjacentHexEnemies > 0) {System.out.println("Team " + team + " " + aiType + " at " + "(" + position.getX() + ", " + position.getY() + "): found " + (int)adjacentHexEnemies + " enemies"); }
+			if(adjacentHexAllies > 0) { System.out.println("Team " + team + " " + aiType + " at " + "(" + position.getX() + ", " + position.getY() + "): found " + (int)adjacentHexAllies + " allies"); }
 		}
     }    
 }

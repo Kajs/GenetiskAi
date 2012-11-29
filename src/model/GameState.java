@@ -62,8 +62,8 @@ public class GameState extends Observable {
 				Coordinate orgPos = ai.getPosition();
 				Hex orgHex = hexMatrix[orgPos.getX()][orgPos.getY()];
 				Hex[] adjacentHexes = adjacentHexes(orgPos);
-				double[][] adjacentAis = adjacentAis(adjacentHexes, ai.getTeam());
-				Action preferredAction = ai.action(adjacentHexes, hexCakeOptimised(orgPos), teamHp(team1Alive), teamHp(team2Alive), (double) team2Alive.size(), (double) team1Alive.size(), adjacentAis, nearestAiDistances(ai, adjacentHexes, 1));
+				double[][] adjacentHexAis = adjacentHexAis(adjacentHexes, ai.getTeam());
+				Action preferredAction = ai.action(adjacentHexes, hexCakeOptimised(orgPos), teamHp(team1Alive), teamHp(team2Alive), (double) team2Alive.size(), (double) team1Alive.size(), adjacentHexAis, adjacentLocalAis(orgHex, 1), nearestAiDistances(ai, adjacentHexes, 1));
 				
 				parseAction(preferredAction, ai, orgHex);
 			}			
@@ -76,8 +76,8 @@ public class GameState extends Observable {
 				Coordinate orgPos = ai.getPosition();
 				Hex orgHex = hexMatrix[orgPos.getX()][orgPos.getY()];
 				Hex[] adjacentHexes = adjacentHexes(orgPos);
-				double[][] adjacentAis = adjacentAis(adjacentHexes, ai.getTeam());
-				Action preferredAction = ai.action(adjacentHexes, hexCakeOptimised(orgPos), teamHp(team2Alive), teamHp(team1Alive), (double) team1Alive.size(), (double) team2Alive.size(), adjacentAis, nearestAiDistances(ai, adjacentHexes, 2));
+				double[][] adjacentHexAis = adjacentHexAis(adjacentHexes, ai.getTeam());
+				Action preferredAction = ai.action(adjacentHexes, hexCakeOptimised(orgPos), teamHp(team2Alive), teamHp(team1Alive), (double) team1Alive.size(), (double) team2Alive.size(), adjacentHexAis, adjacentLocalAis(orgHex, 2), nearestAiDistances(ai, adjacentHexes, 2));
 				
 				parseAction(preferredAction, ai, orgHex);
 			}
@@ -556,7 +556,7 @@ public class GameState extends Observable {
 		
 	}
 	
-	public double[][] adjacentAis(Hex[] hexes, int team) {
+	public double[][] adjacentHexAis(Hex[] hexes, int team) {
 		double[][] adjacentAiCount = new double[2][6];
 		int position = 0;
 		
@@ -579,6 +579,26 @@ public class GameState extends Observable {
 			adjacentAiCount[1][position++] = allies;
 			
 		}
+		
+		return adjacentAiCount;
+	}
+	
+	public double[] adjacentLocalAis(Hex hex, int team) {
+		double[] adjacentAiCount = new double[2];
+			
+			double enemies = 0;
+			double allies = 0;
+				Hex[] adjHexes = adjacentHexes(hex.getPosition());
+				for (Hex adjHex : adjHexes) {
+					if(adjHex != null && adjHex.isOccupied()) {
+						if(adjHex.getAi().getTeam() == team) {	allies++; }
+						else { enemies++; }
+					}
+					
+				}			
+			
+			adjacentAiCount[0] = enemies;
+			adjacentAiCount[1] = allies;
 		
 		return adjacentAiCount;
 	}

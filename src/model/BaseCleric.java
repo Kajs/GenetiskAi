@@ -37,7 +37,7 @@ public class BaseCleric extends Ai {
 			}
 		}
 		else {
-			if(1.0/nearestEnemyDistance > bestWeight) {
+			if(1.0 / nearestEnemyDistance > bestWeight) {
 				bestAction = new Action(adjacentPosition, "move", "nearestEnemy");
 				bestWeight = 1.0 / nearestEnemyDistance;
 		    }

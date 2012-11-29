@@ -34,7 +34,7 @@ public class BaseWizard extends Ai {
 				}
 			}
 			else {
-				if(bestWeight < 1.0/nearestEnemyDistance) {
+				if(bestWeight < 1.0 / nearestEnemyDistance) {
 					bestAction = new Action(adjacentPosition, "move", "nearestEnemy");
 					bestWeight = 1.0 / nearestEnemyDistance;
 				}
