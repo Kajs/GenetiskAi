@@ -67,7 +67,6 @@ public class HardWizard extends Ai {
 				weight = 200;            //near allies, but away from enemies
 				weight += 1.0 / (nearestEnemyDistanceGlobal);
 				weight += 0.1 / (nearestAllyDistanceGlobal);
-				weight += adjacentHexAllies;
 				compareAction(weight, adjacentPosition, "move", "move1");
 				
 				if(adjacentLocalAllies == 0 && adjacentHexAllies == 0) {  //go to allies
@@ -77,14 +76,14 @@ public class HardWizard extends Ai {
 					compareAction(weight, adjacentPosition, "move", "move1");
 				}
 				// Move towards enemies, but try to stay close to allies
-				if(adjacentLocalAllies == 0 && adjacentHexAllies >= 1) {  //go to allies
+				if(adjacentLocalAllies == 0 && adjacentHexAllies == 1) {  //go to allies
 					weight = 220;
 					weight += 0.1/nearestAllyDistanceGlobal;
 					weight += 1.0/nearestEnemyDistanceGlobal;
 					compareAction(weight, adjacentPosition, "move", "move1");
 				}
 				
-				if(adjacentLocalEnemies == 0 && adjacentHexEnemies >= 1) {  //go to allies
+				if(adjacentLocalEnemies == 0 && adjacentHexEnemies >= 1) {  //go to enemies
 					weight = 230;
 					weight += 1.0/nearestAllyDistanceGlobal;
 					weight += 0.1/nearestEnemyDistanceGlobal;
