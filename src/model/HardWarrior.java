@@ -80,16 +80,10 @@ public class HardWarrior extends Ai {
 				compareAction(weight, adjacentPosition, "move", "move1");
 				
 				// Move towards enemies, but try to stay close to allies if alone
-				if(adjacentLocalAllies == 0 && adjacentHexAllies == 0 && geneticsAlive > 2) {
+				if(adjacentLocalAllies == 0 && adjacentHexAllies <= 1 && geneticsAlive > 2) {
 					weight = 210;
 					weight += 1.0/nearestAllyDistanceGlobal;
 					weight += 0.1/nearestEnemyDistanceGlobal;
-					compareAction(weight, adjacentPosition, "move", "move1"); 
-				}
-				
-				if(adjacentLocalAllies == 0 && adjacentHexAllies >= 1) {  //keep close to nearby allies, yet facing the enemy
-					weight = 220;
-					weight += 1.0/nearestEnemyDistanceGlobal;
 					compareAction(weight, adjacentPosition, "move", "move1"); 
 				}
 				

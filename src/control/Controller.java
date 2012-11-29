@@ -24,11 +24,11 @@ public class Controller {
 	public static int roundDelay = 1000;  // in milliseconds
 	static Coordinate startPosition = new Coordinate(sin(toRadians(30)) * hexSideSize, 1);
 	
-	static int maxRounds = 50;
+	static int maxRounds = 100;
 	static int maxGames = 10000;
 	public static int gamesCompleted = 0;
 	
-	static int populationSize = 10;
+	static int populationSize = 1000;
 	static int choices = 6;
 	public static int information = 29;
 	static double keepPercent = 0.25;
@@ -41,7 +41,7 @@ public class Controller {
 	
 	static Coordinate[][] geneticPositions;
 	static Coordinate[][] staticPositions;
-	static int enemyDifficulty = 0;
+	static int enemyDifficulty = 2;
 	
 	public static final GameState gameState = new GameState(startPosition, rows, columns, hexSideSize);
 	public BoardRenderer boardRenderer;
