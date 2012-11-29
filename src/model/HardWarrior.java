@@ -38,12 +38,17 @@ public class HardWarrior extends Ai {
 						weight = 800;
 						weight += nearestEnemyHp;
 						compareAction(weight, adjacentPosition, "attack", "stun");
-						
-					} else {
-						weight = 800;
+					}
+					
+					if(myTeamHp > enemyTeamHp) {
+						weight = 850;
 						weight += 1.0/nearestEnemyHp;
 						compareAction(weight, adjacentPosition, "attack", "normal");
 					}
+					
+					weight = 800;
+					weight += 1.0/nearestEnemyHp;
+					compareAction(weight, adjacentPosition, "attack", "normal");
 					
 				}
 				else {
@@ -63,7 +68,7 @@ public class HardWarrior extends Ai {
 					}
 					
 					if(nearestAllyShielded == 0) {
-						weight = 900;
+						weight = 400;
 						compareAction(weight, adjacentPosition, "support", "shield");
 					}
 				}
@@ -72,16 +77,27 @@ public class HardWarrior extends Ai {
 				//move
 				
 				// Move towards enemies, but try to stay close to allies
-				if(adjacentLocalAllies == 0) {
+				if(adjacentLocalAllies == 0 && adjacentHexAllies == 0) {
 					weight = 210;
 					weight += 1.0/nearestAllyDistanceGlobal;
 					weight += 0.1/nearestEnemyDistanceGlobal;
+					compareAction(weight, adjacentPosition, "move", "move1"); 
 				}
-				else {
-					weight = 200;
-					weight += 1.0 / (nearestEnemyDistanceGlobal);
-					weight += 0.1 / (nearestAllyDistanceGlobal);
+				
+				if(adjacentLocalAllies == 0 && adjacentHexAllies == 1) {
+					weight = 220;
+					compareAction(weight, position, "move", "stay"); 
 				}
+				
+				if(adjacentHexEnemies >= 1) {
+					weight = 500;
+					weight += adjacentHexAllies;
+					compareAction(weight, adjacentPosition, "move", "move1"); 
+				}
+				
+				weight = 200;
+				weight += 1.0 / (nearestEnemyDistanceGlobal);
+				compareAction(weight, adjacentPosition, "move", "move1"); 
 				
 				//System.out.println("weight " + weight + ", nearestEnemyDistance " + nearestEnemyDistance + " at (" + adjacentHex.getPosition().getX() + "," + adjacentHex.getPosition().getY() + ")");
 
