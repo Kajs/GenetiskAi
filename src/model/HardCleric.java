@@ -26,7 +26,7 @@ public class HardCleric extends Ai {
 					
 					// Always attack unshielded enemy with less or equal hp to attack dmg, prefer clerics
 					if (nearestEnemyHp <= meleeDamage && nearestEnemyShielded == 0 ) {
-						weight = 1100;
+						weight = 1200;
 						if (nearestEnemyIsWizard == 1) {
 							weight+=1;
 						}
@@ -53,7 +53,15 @@ public class HardCleric extends Ai {
 					//heal if possible
 					
 					if(healPotential > 0) {
-						weight += healPotential;						
+						weight += healPotential;
+						weight += 1.0/hp;
+						compareAction(weight, adjacentPosition, "support", "heal");
+					}
+					
+					if(nearestAllyHp > 0 && nearestAllyHp < 10) {
+						weight = 1100;
+						weight += healPotential;
+						weight += 1.0/hp;
 						compareAction(weight, adjacentPosition, "support", "heal");
 					}
 				}
@@ -77,13 +85,13 @@ public class HardCleric extends Ai {
 					compareAction(weight, adjacentPosition, "move", "move1");
 				}
 				
-				if(adjacentLocalAllies == 1 && adjacentLocalEnemies == 0) {   //stay with allies if safe
+				if(adjacentLocalAllies >= 1 && adjacentLocalEnemies == 0) {   //stay with allies if safe
 					weight = 220;
 					compareAction(weight, position, "move", "stay");
 				}
 				
 				if(adjacentLocalAllies < adjacentHexAllies) {   //go to most allies
-					weight = 230;
+					weight = 900;
 					compareAction(weight, adjacentPosition, "move", "move1");
 				}
 				

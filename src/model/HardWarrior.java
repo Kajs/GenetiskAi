@@ -87,7 +87,7 @@ public class HardWarrior extends Ai {
 					compareAction(weight, adjacentPosition, "move", "move1"); 
 				}
 				
-				if(adjacentLocalAllies == 0 && adjacentHexAllies > 0 && geneticsAlive > 2) {  //keep close to nearby allies, yet facing the enemy
+				if(adjacentLocalAllies == 0 && adjacentHexAllies >= 1) {  //keep close to nearby allies, yet facing the enemy
 					weight = 220;
 					weight += 1.0/nearestEnemyDistanceGlobal;
 					compareAction(weight, adjacentPosition, "move", "move1"); 
@@ -102,7 +102,6 @@ public class HardWarrior extends Ai {
 				//System.out.println("weight " + weight + ", nearestEnemyDistance " + nearestEnemyDistance + " at (" + adjacentHex.getPosition().getX() + "," + adjacentHex.getPosition().getY() + ")");
 
 				//System.out.println(result + ", nearestEnemyDistance " + nearestEnemyDistance);
-				compareAction(weight, adjacentPosition, "move", "move1");      //move1
 				//System.out.println(getId() + "E: " + nearestEnemyDistanceGlobal + ", A: " + nearestAllyDistanceGlobal + " at (" + adjacentHex.getPosition().getX() + "," + adjacentHex.getPosition().getY() + "), weight " + bestWeight);
 			}
 		}
