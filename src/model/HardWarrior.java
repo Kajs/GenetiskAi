@@ -55,7 +55,7 @@ public class HardWarrior extends Ai {
 					//support
 					
 					// Shield ally if HP is low, modified by number of enemies next to him and type
-					if (nearestAllyHp < 15 && nearestAllyShielded == 0) {
+					if (nearestAllyHp < 10 && nearestAllyShielded == 0) {
 						weight = 910;
 						weight += adjacentHexEnemies;
 						if (nearestAllyIsWizard == 1) {

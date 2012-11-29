@@ -68,6 +68,11 @@ public class HardCleric extends Ai {
 			}
 			else {
 				//move
+				weight = 200;            //near allies, but away from enemies
+				weight += -0.1 / (nearestEnemyDistanceGlobal);
+				weight += 1.0 / (nearestAllyDistanceGlobal);
+				weight += adjacentHexAllies;
+				compareAction(weight, adjacentPosition, "move", "move1");
 				
 				// Move towards enemies, but try to stay close to allies
 				if(adjacentLocalAllies == 0) {  //go to allies
@@ -84,15 +89,8 @@ public class HardCleric extends Ai {
 					weight += adjacentHexAllies;
 					compareAction(weight, adjacentPosition, "move", "move1");
 				}
-				else {
-					weight = 200;            //near allies, but away from enemies
-					weight += -0.1 / (nearestEnemyDistanceGlobal);
-					weight += 1.0 / (nearestAllyDistanceGlobal);
-					weight += adjacentHexAllies;
-					compareAction(weight, adjacentPosition, "move", "move1");
-				}
 				
-				if(adjacentLocalAllies >= 1 && adjacentLocalEnemies == 0) {   //stay with allies if safe
+				if(adjacentLocalAllies >= 1 && adjacentLocalEnemies == 0) {   //stay with allies if safe  måske 2 i vaerdi?
 					weight = 220;
 					compareAction(weight, position, "move", "stay");
 				}

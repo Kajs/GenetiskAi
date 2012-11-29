@@ -28,7 +28,7 @@ public class Controller {
 	static int maxGames = 10000;
 	public static int gamesCompleted = 0;
 	
-	static int populationSize = 1000;
+	static int populationSize = 10000;
 	static int choices = 6;
 	public static int information = 29;
 	static double keepPercent = 0.25;

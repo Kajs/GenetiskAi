@@ -35,9 +35,10 @@ public class HardWizard extends Ai {
 					}
 					
 					// Area on two or more enemies
-					if (adjacentHexEnemies >= 1) {
+					if (adjacentHexEnemies >= 2) {
 						weight = 900;
 						weight += 1.0/nearestEnemyHp;
+						weight += adjacentHexEnemies;
 						compareAction(weight, adjacentPosition, "attack", "area");
 					}
 					
@@ -49,9 +50,10 @@ public class HardWizard extends Ai {
 				else {
 					//support
 					
-					// Shield ally if HP is low, modified by number of enemies next to him and type
+					// Boost ally if no enemy is near and prefer warriors that are not stunned
 					if (nearestAllyIsBoosted == 0 && nearestAllyIsWarrior == 1 && nearestAllyStunned == 0) {
 						weight = 700;
+						weight += adjacentHexEnemies;
 						compareAction(weight, adjacentPosition, "support", "boost");
 					}
 					
@@ -75,7 +77,7 @@ public class HardWizard extends Ai {
 					compareAction(weight, adjacentPosition, "move", "move1");
 				}
 				// Move towards enemies, but try to stay close to allies
-				if(adjacentLocalAllies == 0 && adjacentHexAllies == 1) {  //go to allies
+				if(adjacentLocalAllies == 0 && adjacentHexAllies >= 1) {  //go to allies
 					weight = 220;
 					weight += 0.1/nearestAllyDistanceGlobal;
 					weight += 1.0/nearestEnemyDistanceGlobal;

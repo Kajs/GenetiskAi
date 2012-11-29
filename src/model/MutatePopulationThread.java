@@ -60,6 +60,7 @@ public class MutatePopulationThread implements Runnable {
 					boolean mutate = randomGenerator.nextDouble() <= mutateLikelihood;
 					
 					if(mutate && (wholeTeam || !wholeTeam && aiType == t)) {
+						drasticLikelihood = randomGenerator.nextDouble();
 						boolean drasticMutation = randomGenerator.nextDouble() <= drasticLikelihood;
 						double value;
 						
