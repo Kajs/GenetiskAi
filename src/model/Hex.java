@@ -95,7 +95,8 @@ public class Hex {
     public double physicalDistance(Hex endHex) {
     	double dx = endHex.getStartPosition().getXD() - startPosition.getXD();
     	double dy = endHex.getStartPosition().getYD() - startPosition.getYD();
-    	return sqrt(dx * dx + dy * dy);    	
+    	double result = sqrt(dx * dx + dy * dy);
+    	return result;    	
     }
     
     public void setConsistentPosition(int[] consistentPosition) {this.consistentPosition = consistentPosition;}

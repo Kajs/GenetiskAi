@@ -121,10 +121,9 @@ public class Ai {
 				this.adjacentLocalAllies = adjacentLocalAis[1];
 				this.nearestEnemyDistanceGlobal = nearestAiDistances[0][i];
 				this.nearestAllyDistanceGlobal = nearestAiDistances[1][i];
-				this.averageEnemyDistance = nearestAiDistances[0][6];
-				this.averageAllyDistance = nearestAiDistances[1][6];
-			
-			getInformation();
+				this.averageEnemyDistance = nearestAiDistances[2][i];
+				this.averageAllyDistance = nearestAiDistances[3][i];
+				getInformation();
 				weight();
 				//weight(adjacentHexes[i], enemies, allies, myTeamHp, enemyTeamHp, totalEnemies, totalAllies, adjacentAis[0][i], adjacentAis[1][i]);
 			}	
