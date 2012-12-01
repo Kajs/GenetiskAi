@@ -517,15 +517,15 @@ public class GameState extends Observable {
 	}
 	
 	public double[][] nearestAiDistances(Ai activeAi, Hex[] hexes) {     //will add 0 ally distance if only 1 is left on team
-		double[][] distances = new double[2][7];
+		double[][] distances = new double[4][6];
 		int activeX = activeAi.getPosition().getX();
 		int activeY = activeAi.getPosition().getY();
-		double averageTeam1Distance = 0.0;
-		double averageTeam2Distance = 0.0;
 		
 		for (int h = 0; h < 6; h++) {
 			double team1Distance = Controller.boardDiagonal;
 			double team2Distance = Controller.boardDiagonal;
+			double averageTeam1Distance = 0.0;
+			double averageTeam2Distance = 0.0;
 			
 			if(hexes[h] != null){
 				boolean isMyself;
@@ -557,39 +557,32 @@ public class GameState extends Observable {
 				distances[0][h] = team1Distance; //enemies
 				distances[1][h] = team2Distance; //allies
 				}
-		}
-		
-		if (activeAi.getTeam() == 1 && team1Alive.size() > 1) {
-			averageTeam1Distance = averageTeam1Distance
-					/ (team1Alive.size() - 1);
-			distances[1][6] = averageTeam1Distance; // average to allies
-		} else {
-			distances[1][6] = averageTeam1Distance;
-		}
+			
 
-		if (activeAi.getTeam() == 1 && team2Alive.size() >= 1) {
-			averageTeam2Distance = averageTeam2Distance / (team2Alive.size());
-			distances[0][6] = averageTeam2Distance; // average to enemies
-		} else {
-			distances[0][6] = averageTeam2Distance;
-		}
+			if (activeAi.getTeam() == 1 && team1Alive.size() > 1) {
+				averageTeam1Distance = averageTeam1Distance	/ (team1Alive.size() - 1);
+				distances[3][h] = averageTeam1Distance; // average to allies
+			} else {distances[3][h] = averageTeam1Distance;	}
 
-		if (activeAi.getTeam() == 2 && team2Alive.size() > 1) {
-			averageTeam2Distance = averageTeam2Distance
-					/ (team2Alive.size() - 1);
-			distances[1][6] = averageTeam2Distance; // average to allies
-		} else {
-			distances[1][6] = averageTeam2Distance;
-		}
+			if (activeAi.getTeam() == 1 && team2Alive.size() >= 1) {
+				averageTeam2Distance = averageTeam2Distance / (team2Alive.size());
+				distances[2][h] = averageTeam2Distance; // average to enemies
+			} else {distances[2][h] = averageTeam2Distance;	}
 
-		if (activeAi.getTeam() == 2 && team1Alive.size() >= 1) {
-			averageTeam1Distance = averageTeam1Distance / (team1Alive.size());
-			distances[0][6] = averageTeam1Distance; // average to enemies
-		} else {
-			distances[0][6] = averageTeam1Distance;
+			if (activeAi.getTeam() == 2 && team2Alive.size() > 1) {
+				averageTeam2Distance = averageTeam2Distance	/ (team2Alive.size() - 1);
+				distances[3][h] = averageTeam2Distance; // average to allies
+			} else {distances[3][h] = averageTeam2Distance;	}
+
+			if (activeAi.getTeam() == 2 && team1Alive.size() >= 1) {
+				averageTeam1Distance = averageTeam1Distance / (team1Alive.size());
+				distances[2][h] = averageTeam1Distance; // average to enemies
+			} else {distances[2][h] = averageTeam1Distance;	}
+			
+			//System.out.println(activeAi.getId() + " T1A: " + Controller.round(averageTeam1Distance , 1)+ " T2A: " + Controller.round(averageTeam2Distance, 1));
 		}
+			
 				
-		
 		return distances;
 		
 	}
