@@ -28,11 +28,13 @@ public class GameState extends Observable {
 		hexMatrix = board.getHexMatrix();
 	}
 	
-	public double[][] newGame(int maxRounds) {
+	public double[][] newGame(int maxRounds, boolean team1Starts) {
 		//format: 0_teamInitialHp, 1_teamHp, 2_teamAlive, 3_teamSize, 4_enemiesInitialHp, 5_enemiesHp, 6_enemiesAlive, 7_enemiesSize, 8_maxRounds, 9_rounds
 		
 		for (int i = 0; i <= maxRounds; i++) {
-			newRound();
+			
+			if(team1Starts) { newRound(team1Alive, team2Alive); }
+			else { newRound(team2Alive, team1Alive); }
 			
 			if(Launcher.allowRoundDelay) {
 				try { Thread.sleep(Controller.roundDelay); } 
@@ -51,10 +53,10 @@ public class GameState extends Observable {
 		return null;
 	}
 	
-	public void newRound() {
+	public void newRound(ArrayList<Ai> team1, ArrayList<Ai> team2) {
 		if(Launcher.toggleRoundSeparator) { System.out.println("_____________________________"); }
 		
-		for (Ai ai : team1Alive) {
+		for (Ai ai : team1) {
 			if (ai.getStunned()) { 
 				ai.setStunned(false);
 				}
@@ -63,12 +65,12 @@ public class GameState extends Observable {
 				Hex orgHex = hexMatrix[orgPos.getX()][orgPos.getY()];
 				Hex[] adjacentHexes = adjacentHexes(orgPos);
 				double[][] adjacentHexAis = adjacentHexAis(adjacentHexes, ai.getTeam());
-				Action preferredAction = ai.action(adjacentHexes, hexCakeOptimised(orgPos), teamHp(team1Alive), teamHp(team2Alive), (double) team2Alive.size(), (double) team1Alive.size(), adjacentHexAis, adjacentLocalAis(orgHex, 1), nearestAiDistances(ai, adjacentHexes, 1));
+				Action preferredAction = ai.action(adjacentHexes, hexCakeOptimised(orgPos), teamHp(team1), teamHp(team2), (double) team1.size(), (double) team2.size(), adjacentHexAis, adjacentLocalAis(ai, orgHex), nearestAiDistances(ai, adjacentHexes));
 				
 				parseAction(preferredAction, ai, orgHex);
 			}			
 		}
-		for (Ai ai : team2Alive) {
+		for (Ai ai : team2) {
 			if (ai.getStunned()) {
 				ai.setStunned(false);
 			}
@@ -77,7 +79,7 @@ public class GameState extends Observable {
 				Hex orgHex = hexMatrix[orgPos.getX()][orgPos.getY()];
 				Hex[] adjacentHexes = adjacentHexes(orgPos);
 				double[][] adjacentHexAis = adjacentHexAis(adjacentHexes, ai.getTeam());
-				Action preferredAction = ai.action(adjacentHexes, hexCakeOptimised(orgPos), teamHp(team2Alive), teamHp(team1Alive), (double) team1Alive.size(), (double) team2Alive.size(), adjacentHexAis, adjacentLocalAis(orgHex, 2), nearestAiDistances(ai, adjacentHexes, 2));
+				Action preferredAction = ai.action(adjacentHexes, hexCakeOptimised(orgPos), teamHp(team2), teamHp(team1), (double) team2.size(), (double) team1.size(), adjacentHexAis, adjacentLocalAis(ai, orgHex), nearestAiDistances(ai, adjacentHexes));
 				
 				parseAction(preferredAction, ai, orgHex);
 			}
@@ -514,7 +516,7 @@ public class GameState extends Observable {
 		return adjacentHexes;
 	}
 	
-	public double[][] nearestAiDistances(Ai activeAi, Hex[] hexes, int team) {     //will add 0 ally distance if only 1 is left on team
+	public double[][] nearestAiDistances(Ai activeAi, Hex[] hexes) {     //will add 0 ally distance if only 1 is left on team
 		double[][] distances = new double[2][6];
 		int activeX = activeAi.getPosition().getX();
 		int activeY = activeAi.getPosition().getY();
@@ -543,7 +545,7 @@ public class GameState extends Observable {
 				}
 			}
 			
-			if(team == 1) {
+			if(activeAi.getTeam() == 1) {
 				distances[0][h] = team2Distance; //enemies
 				distances[1][h] = team1Distance; //allies
 			}
@@ -583,7 +585,7 @@ public class GameState extends Observable {
 		return adjacentAiCount;
 	}
 	
-	public double[] adjacentLocalAis(Hex hex, int team) {
+	public double[] adjacentLocalAis(Ai activeAi, Hex hex) {
 		double[] adjacentAiCount = new double[2];
 			
 			double enemies = 0;
@@ -591,7 +593,7 @@ public class GameState extends Observable {
 				Hex[] adjHexes = adjacentHexes(hex.getPosition());
 				for (Hex adjHex : adjHexes) {
 					if(adjHex != null && adjHex.isOccupied()) {
-						if(adjHex.getAi().getTeam() == team) {	allies++; }
+						if(adjHex.getAi().getTeam() == activeAi.getTeam()) {	allies++; }
 						else { enemies++; }
 					}
 					

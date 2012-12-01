@@ -28,7 +28,7 @@ public class Controller {
 	static int maxGames = 10000;
 	public static int gamesCompleted = 0;
 	
-	static int populationSize = 1000;
+	static int populationSize = 500;
 	static int choices = 6;
 	public static int information = 29;
 	static double keepPercent = 0.25;
@@ -62,7 +62,7 @@ public class Controller {
 	// ____Scenario Section____
 	
 	//_______________Thread Section________
-	private static int numThreads = 32;
+	private static int numThreads = 2;
 	private Thread[] threads;
 	private GameThread[] gameThreads;
 	
@@ -241,10 +241,13 @@ public class Controller {
 		
 	public void setupScenarios() {
 		
-		scenarios = new Scenario[2];
+		scenarios = new Scenario[1];
+		boolean geneticsStart;
 		
 		//Scenario 0 3v3 standard
 		int scenarioCounter = 0;
+		
+		geneticsStart = false;
 		
 		geneticPositions = new Coordinate[3][3];
 		geneticPositions[0][0] = new Coordinate(13, 2);
@@ -256,9 +259,11 @@ public class Controller {
 		staticPositions[0][1] = new Coordinate(5, 20);
 		staticPositions[0][2] = new Coordinate(7, 20);		
 		
-		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
+		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, geneticsStart);
 		
 		//Scenario 1 surrounded
+		
+		geneticsStart = true;
 		
 		geneticPositions = new Coordinate[3][3];
 		geneticPositions[0][0] = new Coordinate(1, 20);
@@ -273,41 +278,7 @@ public class Controller {
 		staticPositions[1][1] = new Coordinate(9, 1);
 		staticPositions[1][2] = new Coordinate(11, 1);
 		
-		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);	
-		
-		/*
-		
-		//Scenario 2 warrior 1v1
-		
-		geneticPositions = new Coordinate[1][3];
-		geneticPositions[0][0] = new Coordinate(9, 2);
-
-		staticPositions = new Coordinate[1][3];
-		staticPositions[0][0] = new Coordinate(6, 20);		
-		
-		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
-		
-		//Scenario 3 wizard 1v1
-		
-		geneticPositions = new Coordinate[1][3];
-		geneticPositions[0][1] = new Coordinate(7, 2);
-
-		staticPositions = new Coordinate[1][3];
-		staticPositions[0][1] = new Coordinate(5, 20);	
-		
-		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
-		
-		//Scenario 4 cleric 1v1
-		
-		geneticPositions = new Coordinate[1][3];
-		geneticPositions[0][2] = new Coordinate(5, 2);
-
-		staticPositions = new Coordinate[1][3];
-		staticPositions[0][2] = new Coordinate(7, 20);		
-		
-		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
-		
-		*/
+		//scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, geneticsStart);	
 	}
 	
 	

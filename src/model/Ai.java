@@ -89,7 +89,7 @@ public class Ai {
     public Ai() {
     }
     
-    public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, double myTeamHp, double enemyTeamHp, double staticsAlive, double geneticsAlive, double[][] adjacentHexAis, double[] adjacentLocalAis, double[][] nearestAiDistances) {   	
+    public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, double myTeamHp, double enemyTeamHp, double geneticsAlive, double staticsAlive, double[][] adjacentHexAis, double[] adjacentLocalAis, double[][] nearestAiDistances) {   	
     	
 		bestAction = null;
 		bestWeight = (int)Math.pow(-2, 31);

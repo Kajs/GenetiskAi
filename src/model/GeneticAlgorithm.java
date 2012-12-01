@@ -150,8 +150,8 @@ public class GeneticAlgorithm {
 		double[] scaledFitness;
 		
 		//scaledFitness = fitness;
-		scaledFitness = linearTransformationScaling(fitness, 0.9, 1.0/populationSize);
-		//scaledFitness = exponentialScaling(fitness);
+		//scaledFitness = linearTransformationScaling(fitness, 0.9, 1.0/populationSize);
+		scaledFitness = exponentialScaling(fitness);
 		double totalFitness = getTotalFitness(scaledFitness, populationLimit);
 		
 		for (int i = 0; i < numThreads; i++) {

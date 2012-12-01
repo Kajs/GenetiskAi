@@ -33,25 +33,7 @@ public class WindowManager {
 	    });
 	    
 	    Container contentPane = frame.getContentPane();
-	    contentPane.add(boardRenderer);	    
-	    
-	   JMenuItem newRound = new JMenuItem("New round");
-	   newRound.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) {
-	    		Controller.gameState.newRound();
-	    	}
-	    });
-	   
-	   JMenuItem simulateTen = new JMenuItem("10 rounds");
-	   simulateTen.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) {
-	    		int x = 0;
-	    		while (x<10) {
-		    		Controller.gameState.newRound();
-		    		x++;
-	    		}
-	    	}
-	    });
+	    contentPane.add(boardRenderer);
 	   
 	   JMenuItem newBestTeamGame = new JMenuItem("Chose best team");
 	   newBestTeamGame.addActionListener(new ActionListener() {
@@ -248,10 +230,6 @@ public class WindowManager {
 	    	}
 	    });
 	   
-	   JMenu manual = new JMenu("Manual");
-	   manual.add(newRound);
-	   manual.add(simulateTen);
-	   
 	   JMenu automatic = new JMenu("Automatic");
 	   automatic.add(newBestTeamGame);
 	   automatic.add(runBestTeamGames);
@@ -287,8 +265,6 @@ public class WindowManager {
 	   charts.add(showXySplineChart);
 	   charts.add(showXyDeviationChart);
 	   
-	   
-	   menuBar.add(manual);
 	   menuBar.add(automatic);
 	   menuBar.add(output);
 	   menuBar.add(speed);
