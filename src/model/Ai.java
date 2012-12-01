@@ -169,7 +169,16 @@ public class Ai {
     	}
     }
     
-    public double getHealAmount() { return healAmount; }
+    public double getHealAmount() {
+    	if(boosted) {
+    		if(Launcher.allowBoostOutput) {System.out.println(getId() + ":  healing " + (healAmount * (1.0 + boostFactor) + " hp due to boost"));}
+    		boosted = false;
+    		return healAmount * (1.0 + boostFactor);
+    	}
+    	else {
+    		return healAmount;
+    	}
+    }
 
     public double getHp() { return hp; }
     
