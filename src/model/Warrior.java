@@ -13,7 +13,6 @@ public class Warrior extends Ai {
 	
 	//public void weight (Hex adjacentHex, ArrayList<Ai> enemies, ArrayList<Ai> allies, double myTeamHp, double enemyTeamHp, double totalEnemies, double totalAllies, double adjacentEnemies, double adjacentAllies) {
 	public void weight() {
-		getInformation();
 		
 		Coordinate adjacentPosition = adjacentHex.getPosition();
 		

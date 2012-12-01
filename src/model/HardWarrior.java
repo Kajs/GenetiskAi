@@ -11,7 +11,6 @@ public class HardWarrior extends Ai {
     }
 	
 	public void weight () {
-		getInformation();
 		
 		Coordinate adjacentPosition = adjacentHex.getPosition();
 		double weight=0; 

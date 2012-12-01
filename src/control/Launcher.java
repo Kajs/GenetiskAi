@@ -6,7 +6,7 @@ public class Launcher {
 	
 	public static boolean allowActionOutput = true;
 	public static boolean allowAdjacentAiOutput = false;
-	public static boolean allowAngleOutput = false;
+	public static boolean allowAngleOutput = true;
 	public static boolean allowAreaDamageOutput = false;
 	public static boolean allowBestTeamsFitnessOutput = false;
 	public static boolean allowBoostOutput = false;

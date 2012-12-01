@@ -28,7 +28,7 @@ public class Controller {
 	static int maxGames = 10000;
 	public static int gamesCompleted = 0;
 	
-	static int populationSize = 500;
+	static int populationSize = 10;
 	static int choices = 6;
 	public static int information = 31;
 	static double keepPercent = 0.25;
@@ -36,12 +36,12 @@ public class Controller {
 	static double mutateLikelihood = 0.9;
 	public boolean elitism = true;
 	public boolean skipZeroFitnessScaling = true;
-	public boolean alwaysKeepBest = true;
+	public boolean alwaysKeepBest = false;
 	
 	
 	static Coordinate[][] geneticPositions;
 	static Coordinate[][] staticPositions;
-	static int enemyDifficulty = 2;
+	static int enemyDifficulty = 0;
 	
 	public static final GameState gameState = new GameState(startPosition, rows, columns, hexSideSize);
 	public BoardRenderer boardRenderer;

@@ -7,6 +7,8 @@ public class Coordinate {
 	private int x;
 	private int y;
 	
+	private int[] consistentPosition;
+	
 	public Coordinate(double xD, double yD) {
 		this.xD = xD;
 		this.yD = yD;		
@@ -50,17 +52,17 @@ public class Coordinate {
 	}
 	
 	public double distance(Coordinate end) {
-		int dx = end.getX() - x;
+		int[] endCPos = end.getConsistentPosition();
+		int dx = endCPos[0] - consistentPosition[0];
 		int largest = abs(dx);
-		int dy = end.getY() - y;
+		int dy = endCPos[1] - consistentPosition[1];
 		if (abs(dy) > largest) { largest = abs(dy); }
-		/*
-		int dd;
-		if(dy < 0 && dx > 0 || dy > 0 && dx < 0) { dd = dy + dx;}
-		else{ dd = dy - dx; }
-		if (abs(dd) > largest) { largest = abs(dd); }
-		*/
+		int z = 0 - consistentPosition[0] - consistentPosition[1];
+		int endZ = 0 - endCPos[0] - endCPos[1];
+		int dz = endZ - z;
+		if (abs(dz) > largest) {largest = abs(dz);}
 		
+		//System.out.println(largest);
 		//System.out.println("from (" + x + "," + y + ") to (" + end.getX() + "," + end.getY() + ") = " + largest);
 		return (double) largest;
 	}
@@ -87,5 +89,8 @@ public class Coordinate {
 		}
 		return null;
 	}
+	
+	 public int[] getConsistentPosition() {return this.consistentPosition; }
+	 public void setConsistentPosition(int[] consistentPosition) {this.consistentPosition = consistentPosition;}
 
 }

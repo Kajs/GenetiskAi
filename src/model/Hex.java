@@ -20,6 +20,8 @@ public class Hex {
 	private Coordinate position;
 	private boolean isOccupied = false;
     private Ai ai;
+    
+    private int[] consistentPosition;
 	
 	public Hex(double sideLength, Coordinate position) {
 		color = Color.white;
@@ -95,4 +97,7 @@ public class Hex {
     	double dy = endHex.getStartPosition().getYD() - startPosition.getYD();
     	return sqrt(dx * dx + dy * dy);    	
     }
+    
+    public void setConsistentPosition(int[] consistentPosition) {this.consistentPosition = consistentPosition;}
+    public int[] getConsistentPosition() {return consistentPosition;}
 }
