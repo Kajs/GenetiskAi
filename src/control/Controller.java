@@ -41,7 +41,7 @@ public class Controller {
 	
 	static Coordinate[][] geneticPositions;
 	static Coordinate[][] staticPositions;
-	static int enemyDifficulty = 0;
+	static int enemyDifficulty = 2;
 	
 	public static final GameState gameState = new GameState(startPosition, rows, columns, hexSideSize);
 	public BoardRenderer boardRenderer;
@@ -241,13 +241,13 @@ public class Controller {
 		
 	public void setupScenarios() {
 		
-		scenarios = new Scenario[1];
-		boolean geneticsStart;
+		scenarios = new Scenario[8];
+		boolean team1Start;
 		
-		//Scenario 0 3v3 standard
+		//Scenario 0 3v3 standard, spreadout starting positions
 		int scenarioCounter = 0;
 		
-		geneticsStart = false;
+		team1Start = false;
 		
 		geneticPositions = new Coordinate[3][3];
 		geneticPositions[0][0] = new Coordinate(13, 2);
@@ -259,26 +259,165 @@ public class Controller {
 		staticPositions[0][1] = new Coordinate(5, 20);
 		staticPositions[0][2] = new Coordinate(7, 20);		
 		
-		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, geneticsStart);
+		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, team1Start);
+		
+		
+		//Scenario 0b same as scenario 0 but with other team starts first
+		
+		team1Start = true;
+		
+		geneticPositions = new Coordinate[3][3];
+		geneticPositions[0][0] = new Coordinate(13, 2);
+		geneticPositions[0][1] = new Coordinate(7, 2);
+		geneticPositions[0][2] = new Coordinate(1, 2);
+
+		staticPositions = new Coordinate[3][3];
+		staticPositions[0][0] = new Coordinate(6, 20);
+		staticPositions[0][1] = new Coordinate(5, 20);
+		staticPositions[0][2] = new Coordinate(7, 20);		
+		
+		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, team1Start);
+				
+				
+		//Scenario 0.1 3v3 standard, close starting positions
+		
+		team1Start = false;
+		
+		geneticPositions = new Coordinate[3][3];
+		geneticPositions[0][0] = new Coordinate(9, 2);
+		geneticPositions[0][1] = new Coordinate(7, 2);
+		geneticPositions[0][2] = new Coordinate(5, 2);
+
+		staticPositions = new Coordinate[3][3];
+		staticPositions[0][0] = new Coordinate(6, 20);
+		staticPositions[0][1] = new Coordinate(5, 20);
+		staticPositions[0][2] = new Coordinate(7, 20);		
+		
+		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, team1Start);
+		
+		//Scenario 0.1b same as 0.1, other team starts
+		
+		team1Start = true;
+		
+		geneticPositions = new Coordinate[3][3];
+		geneticPositions[0][0] = new Coordinate(9, 2);
+		geneticPositions[0][1] = new Coordinate(7, 2);
+		geneticPositions[0][2] = new Coordinate(5, 2);
+
+		staticPositions = new Coordinate[3][3];
+		staticPositions[0][0] = new Coordinate(6, 20);
+		staticPositions[0][1] = new Coordinate(5, 20);
+		staticPositions[0][2] = new Coordinate(7, 20);		
+		
+		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, team1Start);
+		
+		//Scenario 0.2 positioned in the middle of map
+		
+		team1Start = true;
+		
+		geneticPositions = new Coordinate[3][3];
+		geneticPositions[0][0] = new Coordinate(18, 15);
+		geneticPositions[0][1] = new Coordinate(18, 13);
+		geneticPositions[0][2] = new Coordinate(18, 17);
+
+		staticPositions = new Coordinate[3][3];
+		staticPositions[0][0] = new Coordinate(2, 14);
+		staticPositions[0][1] = new Coordinate(2, 12);
+		staticPositions[0][2] = new Coordinate(2, 16);		
+		
+		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, team1Start);
+		
+		//Scenario 0.2b other team starts
+		
+		team1Start = false;
+		
+		geneticPositions = new Coordinate[3][3];
+		geneticPositions[0][0] = new Coordinate(18, 15);
+		geneticPositions[0][1] = new Coordinate(18, 13);
+		geneticPositions[0][2] = new Coordinate(18, 17);
+
+		staticPositions = new Coordinate[3][3];
+		staticPositions[0][0] = new Coordinate(2, 14);
+		staticPositions[0][1] = new Coordinate(2, 12);
+		staticPositions[0][2] = new Coordinate(2, 16);		
+		
+		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, team1Start);
+		
 		
 		//Scenario 1 surrounded
 		
-		geneticsStart = true;
+		team1Start = true;
 		
 		geneticPositions = new Coordinate[3][3];
-		geneticPositions[0][0] = new Coordinate(1, 20);
-		geneticPositions[0][1] = new Coordinate(9, 20);
-		geneticPositions[0][2] = new Coordinate(17, 20);
+		geneticPositions[0][0] = new Coordinate(10, 20);
+		geneticPositions[0][1] = new Coordinate(10, 21);
+		geneticPositions[0][2] = new Coordinate(11, 20);
 
 		staticPositions = new Coordinate[3][3];
-		staticPositions[0][0] = new Coordinate(7, 38);
-		staticPositions[0][1] = new Coordinate(9, 38);
-		staticPositions[0][2] = new Coordinate(11, 38);
-		staticPositions[1][0] = new Coordinate(7, 1);
-		staticPositions[1][1] = new Coordinate(9, 1);
-		staticPositions[1][2] = new Coordinate(11, 1);
+		staticPositions[0][0] = new Coordinate(1, 1);
+		staticPositions[0][1] = new Coordinate(1, 39);
+		staticPositions[0][2] = new Coordinate(19, 1);
+		staticPositions[1][0] = new Coordinate(19, 39);
 		
-		//scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, geneticsStart);	
+		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, team1Start);
+		
+		
+		//Scenario 1b other team starts
+		
+		team1Start = false;
+		
+		geneticPositions = new Coordinate[3][3];
+		geneticPositions[0][0] = new Coordinate(10, 20);
+		geneticPositions[0][1] = new Coordinate(10, 21);
+		geneticPositions[0][2] = new Coordinate(11, 20);
+
+		staticPositions = new Coordinate[3][3];
+		staticPositions[0][0] = new Coordinate(1, 1);
+		staticPositions[0][1] = new Coordinate(1, 39);
+		staticPositions[0][2] = new Coordinate(19, 1);
+		staticPositions[1][0] = new Coordinate(19, 39);
+		
+		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, team1Start);
+		
+		
+		
+		/*
+		//Scenario 1.1 vs 5 enemies
+		
+		team1Start = true;
+		
+		geneticPositions = new Coordinate[3][3];
+		geneticPositions[0][0] = new Coordinate(9, 3);
+		geneticPositions[0][1] = new Coordinate(7, 2);
+		geneticPositions[0][2] = new Coordinate(11, 2);
+
+		staticPositions = new Coordinate[3][3];
+		staticPositions[0][0] = new Coordinate(7, 35);
+		staticPositions[0][1] = new Coordinate(9, 35);
+		staticPositions[0][2] = new Coordinate(11, 35);
+		staticPositions[1][0] = new Coordinate(7, 34);
+		staticPositions[1][1] = new Coordinate(9, 34);
+		
+		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, team1Start);
+		
+		//Scenario 1.1b other team starts
+		
+		team1Start = false;
+		
+		geneticPositions = new Coordinate[3][3];
+		geneticPositions[0][0] = new Coordinate(9, 3);
+		geneticPositions[0][1] = new Coordinate(7, 2);
+		geneticPositions[0][2] = new Coordinate(11, 2);
+
+		staticPositions = new Coordinate[3][3];
+		staticPositions[0][0] = new Coordinate(7, 35);
+		staticPositions[0][1] = new Coordinate(9, 35);
+		staticPositions[0][2] = new Coordinate(11, 35);
+		staticPositions[1][0] = new Coordinate(7, 34);
+		staticPositions[1][1] = new Coordinate(9, 34);
+		
+		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, team1Start);
+		*/
 	}
 	
 	
