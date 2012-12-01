@@ -61,6 +61,8 @@ public class Ai {
 	double adjacentLocalAllies;
 	double nearestEnemyDistanceGlobal;
 	double nearestAllyDistanceGlobal;
+	double averageEnemyDistance;
+	double averageAllyDistance;
 	
 	//__________________ weight variables section
     
@@ -131,6 +133,8 @@ public class Ai {
 				this.adjacentLocalAllies = adjacentLocalAis[1];
 				this.nearestEnemyDistanceGlobal = nearestAiDistances[0][i];
 				this.nearestAllyDistanceGlobal = nearestAiDistances[1][i];
+				this.averageEnemyDistance = nearestAiDistances[0][6];
+				this.averageAllyDistance = nearestAiDistances[1][6];
 				
 				weight();
 				//weight(adjacentHexes[i], enemies, allies, myTeamHp, enemyTeamHp, totalEnemies, totalAllies, adjacentAis[0][i], adjacentAis[1][i]);
@@ -381,6 +385,9 @@ public class Ai {
 		information[26] = nearestAllyDistanceGlobal;
 		information[27] = adjacentLocalEnemies;
 		information[28] = adjacentLocalAllies;
+		information[29] = averageEnemyDistance;
+		information[30] = averageAllyDistance;
+		
 		
 		if(Launcher.allowAdjacentAiOutput) {
 			if(adjacentHexEnemies > 0) {System.out.println("Team " + team + " " + aiType + " at " + "(" + position.getX() + ", " + position.getY() + "): found " + (int)adjacentHexEnemies + " enemies"); }

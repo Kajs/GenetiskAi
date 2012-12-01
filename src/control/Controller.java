@@ -30,7 +30,7 @@ public class Controller {
 	
 	static int populationSize = 500;
 	static int choices = 6;
-	public static int information = 29;
+	public static int information = 31;
 	static double keepPercent = 0.25;
 	static double crossPercent = 0.25;
 	static double mutateLikelihood = 0.9;
