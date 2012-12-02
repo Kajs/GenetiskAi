@@ -3,7 +3,6 @@ import java.awt.Color;
 import java.awt.geom.Path2D;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
-import static java.lang.Math.sqrt;
 import static java.lang.Math.toRadians;
 
 import model.Coordinate;

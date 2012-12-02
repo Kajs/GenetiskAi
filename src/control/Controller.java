@@ -3,7 +3,6 @@ package control;
 import java.awt.Color;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
-import static java.lang.Math.sqrt;
 import static java.lang.Math.toRadians;
 
 import model.*;
@@ -24,7 +23,7 @@ public class Controller {
 	public static int roundDelay = 1000;  // in milliseconds
 	static Coordinate startPosition = new Coordinate(sin(toRadians(30)) * hexSideSize, 1);
 	
-	static int maxRounds = 100;
+	static int maxRounds = 1000;
 	static int maxGames = 10000;
 	public static int gamesCompleted = 0;
 	

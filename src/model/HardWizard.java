@@ -1,5 +1,6 @@
 package model;
 
+
 public class HardWizard extends Ai {
 	
 	public HardWizard() {
@@ -34,7 +35,7 @@ public class HardWizard extends Ai {
 					}
 					
 					// Area on two or more enemies
-					if (adjacentHexEnemies >= 2) {
+					if (adjacentHexEnemies >= 1) {
 						weight = 900;
 						weight += 1.0/nearestEnemyHp;
 						weight += adjacentHexEnemies;
@@ -53,6 +54,7 @@ public class HardWizard extends Ai {
 					if (nearestAllyIsBoosted == 0 && nearestAllyIsWarrior == 1 && nearestAllyStunned == 0) {
 						weight = 700;
 						weight += adjacentHexEnemies;
+						//if(nearestEnemyShielded == 1 && nearestEnemyDistance <= 4) {weight = 0;}
 						compareAction(weight, adjacentPosition, "support", "boost");
 					}
 					
@@ -65,44 +67,48 @@ public class HardWizard extends Ai {
 			else {
 				weight = 200;            //near allies, but away from enemies
 				weight += 1.0 / (nearestEnemyDistanceGlobal);
-				weight += 0.1 / (nearestAllyDistanceGlobal);
+				weight += 0.1 / nearestAllyDistanceGlobal;
+				//if(alliesAliveGlobal > 1) { weight += 0.1 / (averageAllyDistance); }
 				compareAction(weight, adjacentPosition, "move", "move1");
 				
-				if(adjacentLocalAllies == 0 && adjacentHexAllies == 0) {  //go to allies
+				// Move towards enemies, but try to stay close to allies if alone
+				if(adjacentLocalAllies == 0 && alliesAliveGlobal > 1) {
 					weight = 210;
 					weight += 1.0/nearestAllyDistanceGlobal;
-					weight += 0.1/nearestEnemyDistanceGlobal;
-					weight += 1.0/averageAllyDistance;
-					compareAction(weight, adjacentPosition, "move", "move1");
+					weight += 0.01/averageAllyDistance;
+					weight += 0.0001/nearestEnemyDistanceGlobal;
+					compareAction(weight, adjacentPosition, "move", "move2"); 
 				}
-				// Move towards enemies, but try to stay close to allies
-				if(adjacentLocalAllies == 0 && adjacentHexAllies == 1) {  //go to allies
+				
+				if(adjacentLocalAllies == 1 && alliesAliveGlobal >= 2) {
 					weight = 220;
-					//weight += 0.1/nearestAllyDistanceGlobal;
-					weight += 1.0/nearestEnemyDistanceGlobal;
+					weight += 0.01/nearestAllyDistanceGlobal;
 					weight += 1.0/averageAllyDistance;
-					compareAction(weight, adjacentPosition, "move", "move1");
+					weight += 0.0001/nearestEnemyDistanceGlobal;
+					compareAction(weight, adjacentPosition, "move", "move3"); 
 				}
 				
-							
-				if(adjacentLocalEnemies == 0 && adjacentHexEnemies >= 1) {  //go to enemies
+				if(adjacentLocalAllies == 1 && alliesAliveGlobal > 2) {
 					weight = 230;
-					//weight += 1.0/nearestAllyDistanceGlobal;
-					weight += 0.1/nearestEnemyDistanceGlobal;
 					weight += 1.0/averageAllyDistance;
+					weight += 0.0001/nearestAllyDistanceGlobal;
+					weight -= 0.01/nearestEnemyDistanceGlobal;
+					weight -= 0.01/averageEnemyDistance;
+					compareAction(weight, adjacentPosition, "move", "move4"); 
+				}
+				
+				if(adjacentLocalAllies == 2 && alliesAliveGlobal >= 3) {
+					weight = 240;
+					weight += 1.0/nearestEnemyDistanceGlobal;
+					weight -= 0.0001/averageEnemyDistance;
+					compareAction(weight, adjacentPosition, "move", "move5"); 
+				}  
+				
+				if(adjacentLocalEnemies == 0 && adjacentHexEnemies >= 1 && hp == initialHp) {
+					weight = 250;
 					weight += adjacentHexAllies;
-					compareAction(weight, adjacentPosition, "move", "move1");
+					compareAction(weight, adjacentPosition, "move", "move5");
 				}
-				
-				// Move to allies if there are some
-				if (averageAllyDistance > 1 && alliesAliveGlobal > 1) {
-					System.out.println("WizAvgAllyDist: " + averageAllyDistance);
-					weight = 500;
-					weight += 1.0/averageAllyDistance;
-					//weight -= 0.1/averageEnemyDistance;
-					compareAction(weight, adjacentPosition, "move", "move1");
-				}
-				
 				//System.out.println("weight " + weight + ", nearestEnemyDistance " + nearestEnemyDistance + " at (" + adjacentHex.getPosition().getX() + "," + adjacentHex.getPosition().getY() + ")");
 
 				//System.out.println(result + ", nearestEnemyDistance " + nearestEnemyDistance);
