@@ -243,10 +243,34 @@ public class Controller {
 		
 		scenarios = new Scenario[8];
 		boolean team1Start;
-		
-		//Scenario 0 3v3 standard, spreadout starting positions
 		int scenarioCounter = 0;
 		
+		
+		/*
+		//TestScenario 0: Distance test
+		
+		team1Start = false;
+		
+		geneticPositions = new Coordinate[3][3];
+		geneticPositions[0][0] = new Coordinate(10, 20);
+		geneticPositions[0][1] = new Coordinate(0, 0);
+		geneticPositions[0][2] = new Coordinate(19, 39);
+		geneticPositions[1][2] = new Coordinate(19, 0);
+		geneticPositions[2][2] = new Coordinate(0, 39);
+
+		staticPositions = new Coordinate[3][3];
+		staticPositions[0][0] = new Coordinate(9, 20);
+		staticPositions[0][1] = new Coordinate(11, 20);
+		staticPositions[0][2] = new Coordinate(10, 19);
+		staticPositions[1][0] = new Coordinate(10, 21);
+		staticPositions[1][1] = new Coordinate(9, 19);
+		staticPositions[1][2] = new Coordinate(9, 21);
+		
+		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, team1Start);
+		*/
+		
+		//Scenario 0 3v3 standard, spreadout starting positions
+				
 		team1Start = false;
 		
 		geneticPositions = new Coordinate[3][3];

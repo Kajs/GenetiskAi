@@ -83,12 +83,13 @@ public class MutatePopulationThread implements Runnable {
 	}
 	
 	public double mutateLight(double value) {
+		double mutatePercentage = randomGenerator.nextDouble() * 0.1;
 		if (coinFlip()) {
-			value = value * 1.1;
+			value = value * (1.0 + mutatePercentage);
 			if (value > 1.0) { value = 1.0;	}
 			if (value < -1.0) { value = -1.0; }
 		}
-		else { value = value * 0.9; }
+		else { value = value * (1.0 - mutatePercentage); }
 		return value;
 	}
 	
