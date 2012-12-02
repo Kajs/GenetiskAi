@@ -18,8 +18,8 @@ public class Controller {
 	public static int width = 930;
 	public static int height = 600;
 	public static double boardDiagonal = sqrt(width * width + height * height);
-	static int rows = 20;
-	static int columns = 40;
+	public static int rows = 20;
+	public static int columns = 40;
 	static double hexSideSize = scaledHexSideSize();
 	public static int roundDelay = 1000;  // in milliseconds
 	static Coordinate startPosition = new Coordinate(sin(toRadians(30)) * hexSideSize, 1);
@@ -28,7 +28,7 @@ public class Controller {
 	static int maxGames = 10000;
 	public static int gamesCompleted = 0;
 	
-	static int populationSize = 10;
+	static int populationSize = 1000;
 	static int choices = 6;
 	public static int information = 31;
 	static double keepPercent = 0.25;
@@ -36,7 +36,7 @@ public class Controller {
 	static double mutateLikelihood = 0.9;
 	public boolean elitism = true;
 	public boolean skipZeroFitnessScaling = true;
-	public boolean alwaysKeepBest = false;
+	public boolean alwaysKeepBest = true;
 	
 	
 	static Coordinate[][] geneticPositions;
@@ -62,7 +62,7 @@ public class Controller {
 	// ____Scenario Section____
 	
 	//_______________Thread Section________
-	private static int numThreads = 2;
+	private static int numThreads = 4;
 	private Thread[] threads;
 	private GameThread[] gameThreads;
 	

@@ -64,6 +64,8 @@ public class Coordinate {
 		
 		//System.out.println(largest);
 		//System.out.println("from (" + x + "," + y + ") to (" + end.getX() + "," + end.getY() + ") = " + largest);
+		//System.out.println("x = " + x + ", y = " + y + ", cX = " + consistentPosition[0] + ", cY = " + consistentPosition[1]);
+		//System.out.println("Ex = " + end.getX() + ", Ey = " + end.getY() + ", EcX = " + endCPos[0] + ", EcY = " + endCPos[1]);
 		return (double) largest;
 	}
 	

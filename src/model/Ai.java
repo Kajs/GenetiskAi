@@ -309,7 +309,7 @@ public class Ai {
 		if(nearestEnemy != null) {
 			nearestEnemyHp = nearestEnemy.getHp();
 			nearestEnemyDistance = position.distance(nearestEnemy.getPosition());	
-			System.out.println(getId() + " to " + nearestEnemy.getId() + " = " + nearestEnemyDistance);
+			//System.out.println(getId() + " to " + nearestEnemy.getId() + " = " + nearestEnemyDistance);
 			if(nearestEnemy.getBoosted()) {nearestEnemyIsBoosted = 1;}
 			if(nearestEnemy.getShielded()) {nearestEnemyShielded = 1;}
 			if(nearestEnemy.getStunned()) {nearestEnemyStunned = 1;}
@@ -324,7 +324,7 @@ public class Ai {
 		if(nearestAlly != null) {
 			nearestAllyHp = nearestAlly.getHp(); 
 			nearestAllyDistance = position.distance(nearestAlly.getPosition());	
-			System.out.println(getId() + " to " + nearestAlly.getId() + " = " + nearestAllyDistance);
+			//System.out.println(getId() + " to " + nearestAlly.getId() + " = " + nearestAllyDistance);
 			if(nearestAlly.getBoosted()) {nearestAllyIsBoosted = 1;}
 			if(nearestAlly.getShielded()) {nearestAllyShielded = 1;}
 			if(nearestAlly.getStunned()) {nearestAllyStunned = 1;}

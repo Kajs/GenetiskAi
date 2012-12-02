@@ -16,6 +16,7 @@ public class Board {
     	for(int row = 0; row < rows; row++) {
     		int consistentX = 0 + row;
     		int consistentY = 0 - row;
+    		boolean consistentFlip = true;
     		
     		hexArray = new Hex[columns];
     		for(int col = 0; col < columns; col++) {
@@ -29,8 +30,9 @@ public class Board {
     			hex.setPosition(new Coordinate(row, col));
     			
     			int[] consistentPosition = new int[2];
-    			if(consistentX == consistentY) {consistentPosition[0] = consistentX++; consistentPosition[1] = consistentY;}
+    			if(consistentFlip) {consistentPosition[0] = consistentX++; consistentPosition[1] = consistentY;}
     			else {consistentPosition[0] = consistentX; consistentPosition[1] = consistentY++;}
+    			consistentFlip = !consistentFlip;
     			hex.getPosition().setConsistentPosition(consistentPosition);
     			
     			hexArray[col] = hex;

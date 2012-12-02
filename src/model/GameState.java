@@ -235,7 +235,7 @@ public class GameState extends Observable {
 			Coordinate hexPosition = targetHex.getStartPosition();
 			Coordinate hexVector = new Coordinate(hexPosition.getXD()-originPosition.getXD(), hexPosition.getYD()-originPosition.getYD());
 			double angleToHex = Math.toDegrees((Math.atan2(hexVector.getYD(),hexVector.getXD())) - (Math.atan2(comparisonVector.getYD(),comparisonVector.getXD())));
-			System.out.println("Team1 Angle calculated: " + Controller.round(angleToHex, 2));
+			//System.out.println("Team1 Angle calculated: " + Controller.round(angleToHex, 2));
 			
 			// SouthEast
 			if (angleToHex >= 0 && angleToHex <= 60) {
@@ -286,7 +286,7 @@ public class GameState extends Observable {
 			Coordinate hexPosition = targetHex.getStartPosition();
 			Coordinate hexVector = new Coordinate(hexPosition.getXD()-originPosition.getXD(), hexPosition.getYD()-originPosition.getYD());
 			double angleToHex = Math.toDegrees((Math.atan2(hexVector.getYD(),hexVector.getXD())) - (Math.atan2(comparisonVector.getYD(),comparisonVector.getXD())));
-			System.out.println("Team2 Angle calculated: " + Controller.round(angleToHex, 2));
+			//System.out.println("Team2 Angle calculated: " + Controller.round(angleToHex, 2));
 			
 			// SouthEast
 			if (angleToHex >= 0 && angleToHex <= 60) {
