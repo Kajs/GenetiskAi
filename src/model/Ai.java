@@ -53,8 +53,8 @@ public class Ai {
 	public ArrayList<Ai> allies = new ArrayList<Ai>();
 	public double myTeamHp;
 	public double enemyTeamHp;
-	double staticsAlive;
-	double geneticsAlive;
+	double enemiesAliveGlobal;
+	double alliesAliveGlobal;
 	double adjacentHexEnemies;
 	double adjacentHexAllies;
 	double adjacentLocalEnemies;
@@ -91,7 +91,7 @@ public class Ai {
     public Ai() {
     }
     
-    public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, double myTeamHp, double enemyTeamHp, double geneticsAlive, double staticsAlive, double[][] adjacentHexAis, double[] adjacentLocalAis, double[][] nearestAiDistances) {   	
+    public Action action(Hex[] adjacentHexes, ArrayList<ArrayList<Hex>> hexCake, double myTeamHp, double enemyTeamHp, double alliesAliveGlobal, double enemiesAliveGlobal, double[][] adjacentHexAis, double[] adjacentLocalAis, double[][] nearestAiDistances) {   	
     	
 		bestAction = null;
 		bestWeight = (int)Math.pow(-2, 31);
@@ -109,12 +109,12 @@ public class Ai {
 				}
 			}
 			
-			if (staticsAlive > 0 && adjacentHexes[i] != null) {
+			if (enemiesAliveGlobal > 0 && adjacentHexes[i] != null) {
 				this.adjacentHex = adjacentHexes[i];
 				this.myTeamHp = myTeamHp;
 				this.enemyTeamHp = enemyTeamHp;
-				this.staticsAlive = staticsAlive;
-				this.geneticsAlive = geneticsAlive;
+				this.enemiesAliveGlobal = enemiesAliveGlobal;
+				this.alliesAliveGlobal = alliesAliveGlobal;
 				this.adjacentHexEnemies = adjacentHexAis[0][i];
 				this.adjacentHexAllies = adjacentHexAis[1][i];
 				this.adjacentLocalEnemies = adjacentLocalAis[0];
@@ -349,8 +349,8 @@ public class Ai {
 		information[10] = nearestEnemyDistance;
 		information[11] = nearestEnemyStunned;
 		information[12] = nearestEnemyShielded;
-		information[13] = staticsAlive;
-		information[14] = geneticsAlive;
+		information[13] = enemiesAliveGlobal;
+		information[14] = alliesAliveGlobal;
 		information[15] = nearestEnemyIsWarrior;
 		information[16] = nearestEnemyIsWizard;
 		information[17] = nearestEnemyIsCleric;

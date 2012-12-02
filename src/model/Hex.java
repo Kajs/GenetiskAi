@@ -91,14 +91,14 @@ public class Hex {
     	isOccupied = false;
     	color = Color.white;
     }
-    
+    /*
     public double physicalDistance(Hex endHex) {
     	double dx = endHex.getStartPosition().getXD() - startPosition.getXD();
     	double dy = endHex.getStartPosition().getYD() - startPosition.getYD();
     	double result = sqrt(dx * dx + dy * dy);
     	return result;    	
     }
-    
+    */
     public void setConsistentPosition(int[] consistentPosition) {this.consistentPosition = consistentPosition;}
     public int[] getConsistentPosition() {return consistentPosition;}
 }

@@ -24,10 +24,10 @@ public class MediumWarrior extends Ai {
 				if(adjacentHex.getAi().getTeam() != team) {
 					//attack
 					
-					result = 3.0 + 1.0/nearestEnemyHp + (geneticsAlive - 1) - nearestEnemyShielded/10;
+					result = 3.0 + 1.0/nearestEnemyHp + (alliesAliveGlobal - 1) - nearestEnemyShielded/10;
 					compareAction(result, adjacentPosition, "attack", "normal");    //normalAttack
 					
-					result = (2.0 + nearestEnemyHp/aiInitialHp + (1.0/geneticsAlive) + nearestEnemyShielded) * (1 - nearestEnemyStunned);
+					result = (2.0 + nearestEnemyHp/aiInitialHp + (1.0/alliesAliveGlobal) + nearestEnemyShielded) * (1 - nearestEnemyStunned);
 					compareAction(result, adjacentPosition, "attack", "stun");      //stunAttack
 				}
 				else {					

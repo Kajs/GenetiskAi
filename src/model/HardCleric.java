@@ -77,12 +77,14 @@ public class HardCleric extends Ai {
 					weight = 210;
 					weight += 1.0/nearestAllyDistanceGlobal;
 					weight += -0.1/nearestEnemyDistanceGlobal;
+					weight += 1.0/averageAllyDistance;
 					compareAction(weight, adjacentPosition, "move", "move1");
 				}
 				if(adjacentLocalAllies == 1 && adjacentHexEnemies == 0) {  //go to allies
 					weight = 220;
-					weight += 0.1/nearestAllyDistanceGlobal;
+					//weight += 0.1/nearestAllyDistanceGlobal;
 					weight += 1.0/nearestEnemyDistanceGlobal;
+					weight += 1.0/averageAllyDistance;
 					compareAction(weight, adjacentPosition, "move", "move1");
 				}
 				
@@ -100,6 +102,14 @@ public class HardCleric extends Ai {
 					weight = 1000;
 					weight -= 10 * adjacentHexEnemies;
 					weight += adjacentHexAllies;
+					compareAction(weight, adjacentPosition, "move", "move1");
+				}
+				
+				// Move to allies if there are some
+				if (averageAllyDistance > 1 && alliesAliveGlobal > 1) {
+					weight = 500;
+					weight += 1.0/averageAllyDistance;
+					//weight -= 0.1/averageEnemyDistance;
 					compareAction(weight, adjacentPosition, "move", "move1");
 				}
 				

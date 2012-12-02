@@ -17,9 +17,9 @@ public class Controller {
 	
 	public static int width = 930;
 	public static int height = 600;
-	public static double boardDiagonal = sqrt(width * width + height * height);
 	public static int rows = 20;
 	public static int columns = 40;
+	public static double boardDiagonal = rows + columns;
 	static double hexSideSize = scaledHexSideSize();
 	public static int roundDelay = 1000;  // in milliseconds
 	static Coordinate startPosition = new Coordinate(sin(toRadians(30)) * hexSideSize, 1);
@@ -28,7 +28,7 @@ public class Controller {
 	static int maxGames = 10000;
 	public static int gamesCompleted = 0;
 	
-	static int populationSize = 1000;
+	static int populationSize = 10;
 	static int choices = 6;
 	public static int information = 31;
 	static double keepPercent = 0.25;
@@ -241,7 +241,7 @@ public class Controller {
 		
 	public void setupScenarios() {
 		
-		scenarios = new Scenario[8];
+		scenarios = new Scenario[10];
 		boolean team1Start;
 		int scenarioCounter = 0;
 		
@@ -301,6 +301,22 @@ public class Controller {
 		staticPositions[0][2] = new Coordinate(7, 20);		
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, team1Start);
+		
+		//Scenario 0c 3v3 standard, reversed starting positions
+		
+		team1Start = false;
+		
+		geneticPositions = new Coordinate[3][3];
+		geneticPositions[0][0] = new Coordinate(13, 2);
+		geneticPositions[0][1] = new Coordinate(7, 2);
+		geneticPositions[0][2] = new Coordinate(1, 2);
+
+		staticPositions = new Coordinate[3][3];
+		staticPositions[0][0] = new Coordinate(6, 20);
+		staticPositions[0][1] = new Coordinate(5, 20);
+		staticPositions[0][2] = new Coordinate(7, 20);		
+		
+		scenarios[scenarioCounter++] = new Scenario( staticPositions, geneticPositions, team1Start);
 				
 				
 		//Scenario 0.1 3v3 standard, close starting positions
@@ -403,6 +419,22 @@ public class Controller {
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, team1Start);
 		
+		//Scenario 1c reversed positions
+		
+		team1Start = false;
+		
+		geneticPositions = new Coordinate[3][3];
+		geneticPositions[0][0] = new Coordinate(10, 20);
+		geneticPositions[0][1] = new Coordinate(10, 21);
+		geneticPositions[0][2] = new Coordinate(11, 20);
+
+		staticPositions = new Coordinate[3][3];
+		staticPositions[0][0] = new Coordinate(1, 1);
+		staticPositions[0][1] = new Coordinate(1, 39);
+		staticPositions[0][2] = new Coordinate(19, 1);
+		staticPositions[1][0] = new Coordinate(19, 39);
+		
+		scenarios[scenarioCounter++] = new Scenario(staticPositions, geneticPositions, team1Start);
 		
 		
 		/*

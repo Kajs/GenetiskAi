@@ -72,21 +72,34 @@ public class HardWizard extends Ai {
 					weight = 210;
 					weight += 1.0/nearestAllyDistanceGlobal;
 					weight += 0.1/nearestEnemyDistanceGlobal;
+					weight += 1.0/averageAllyDistance;
 					compareAction(weight, adjacentPosition, "move", "move1");
 				}
 				// Move towards enemies, but try to stay close to allies
 				if(adjacentLocalAllies == 0 && adjacentHexAllies == 1) {  //go to allies
 					weight = 220;
-					weight += 0.1/nearestAllyDistanceGlobal;
+					//weight += 0.1/nearestAllyDistanceGlobal;
 					weight += 1.0/nearestEnemyDistanceGlobal;
+					weight += 1.0/averageAllyDistance;
 					compareAction(weight, adjacentPosition, "move", "move1");
 				}
 				
+							
 				if(adjacentLocalEnemies == 0 && adjacentHexEnemies >= 1) {  //go to enemies
 					weight = 230;
-					weight += 1.0/nearestAllyDistanceGlobal;
+					//weight += 1.0/nearestAllyDistanceGlobal;
 					weight += 0.1/nearestEnemyDistanceGlobal;
+					weight += 1.0/averageAllyDistance;
 					weight += adjacentHexAllies;
+					compareAction(weight, adjacentPosition, "move", "move1");
+				}
+				
+				// Move to allies if there are some
+				if (averageAllyDistance > 1 && alliesAliveGlobal > 1) {
+					System.out.println("WizAvgAllyDist: " + averageAllyDistance);
+					weight = 500;
+					weight += 1.0/averageAllyDistance;
+					//weight -= 0.1/averageEnemyDistance;
 					compareAction(weight, adjacentPosition, "move", "move1");
 				}
 				

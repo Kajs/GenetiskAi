@@ -65,8 +65,8 @@ public class GameThread implements Runnable {
 					currentTeam[teamPos] = team1[team];
 				}
 				
-			    insertGeneticAis(currentTeam, geneticPositions);	
-				//insertStaticAis(2, geneticPositions, 1);
+			    //insertGeneticAis(currentTeam, geneticPositions);	
+				insertStaticAis(2, geneticPositions, 1);
 			    insertStaticAis(enemyDifficulty, staticPositions, 2);
 			    
 			    if(fitnessOutput) {System.out.println("\nTeam " + (team + 1) + " with fitness " + round(team1Fitness[team], 2) + " in scenario " + (i + 1) + "\n");}

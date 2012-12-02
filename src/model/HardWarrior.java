@@ -33,7 +33,7 @@ public class HardWarrior extends Ai {
 					}
 					
 					// Stun when outnumbering enemies
-					if (geneticsAlive > staticsAlive && nearestEnemyStunned == 0 && hp < warriorInitialHp) {
+					if (alliesAliveGlobal > enemiesAliveGlobal && nearestEnemyStunned == 0 && hp < warriorInitialHp) {
 						weight = 800;
 						weight += nearestEnemyHp;
 						compareAction(weight, adjacentPosition, "attack", "stun");
@@ -79,7 +79,7 @@ public class HardWarrior extends Ai {
 				compareAction(weight, adjacentPosition, "move", "move1");
 				
 				// Move towards enemies, but try to stay close to allies if alone
-				if(adjacentLocalAllies == 0 && adjacentHexAllies <= 1 && geneticsAlive > 2) {
+				if(adjacentLocalAllies == 0 && adjacentHexAllies <= 1 && alliesAliveGlobal > 2) {
 					weight = 210;
 					weight += 1.0/nearestAllyDistanceGlobal;
 					weight += 0.1/nearestEnemyDistanceGlobal;
@@ -91,6 +91,14 @@ public class HardWarrior extends Ai {
 					weight += adjacentHexAllies;
 					compareAction(weight, adjacentPosition, "move", "move1"); 
 				} 
+				
+				// Move to allies if there are some
+				if (averageAllyDistance > 1 && alliesAliveGlobal > 1) {
+					weight = 600;
+					weight += 1.0/averageAllyDistance;
+					//weight -= 0.1/averageEnemyDistance;
+					compareAction(weight, adjacentPosition, "move", "move1");
+				}
 				
 				//System.out.println("weight " + weight + ", nearestEnemyDistance " + nearestEnemyDistance + " at (" + adjacentHex.getPosition().getX() + "," + adjacentHex.getPosition().getY() + ")");
 
