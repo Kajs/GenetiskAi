@@ -27,7 +27,7 @@ public class Controller {
 	static int maxGames = 10000;
 	public static int gamesCompleted = 0;
 	
-	static int populationSize = 10;
+	static int populationSize = 1000;
 	static int choices = 6;
 	public static int information = 31;
 	static double keepPercent = 0.25;
@@ -51,12 +51,16 @@ public class Controller {
 	public static boolean runSingleBestTeamGame = false;
 	public static int singleBestTeamNumber;
 	public static double[] bestTeamsFitness = new double[maxGames];
-	public static double[] team1PopulationFitness = new double[maxGames];
-	public static double[] team2PopulationFitness = new double[maxGames];
+	private static double[] team1PopulationFitness = new double[maxGames];
+	private static double[] team2PopulationFitness = new double[maxGames];
 	
 	
 	// ____Scenario Section____
-	public static Scenario[] scenarios;
+	private static Scenario[] scenarios;
+	private static boolean bothTeamsStart = true;
+	private static boolean alsoReversedPositions = true;
+	private boolean testingStatics = false;
+	private int testStaticDifficulty = 2;
 	
 	// ____Scenario Section____
 	
@@ -82,7 +86,7 @@ public class Controller {
 		int end = stepSize;
 		for (int i = 0; i < numThreads; i++) {
 			if(i == numThreads - 1 || end > populationSize) {end = populationSize;}
-			gameThreads[i] = new GameThread(new GameState(startPosition, rows, columns, hexSideSize), start, end, enemyDifficulty, maxRounds, geneticAlgorithm, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios);
+			gameThreads[i] = new GameThread(new GameState(startPosition, rows, columns, hexSideSize), start, end, enemyDifficulty, maxRounds, geneticAlgorithm, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty);
 			start = end;
 			end += stepSize;
 		}
@@ -152,8 +156,8 @@ public class Controller {
 			
 			for (int i = 0; i < numThreads; i++) {
 				totalFitness = totalFitness + gameThreads[i].getTotalFitness();
-				tm1AvrFit = tm1AvrFit + gameThreads[i].getTeam1AverageFitness();
-				tm2AvrFit = tm2AvrFit + gameThreads[i].getTeam2AverageFitness();
+				tm1AvrFit = tm1AvrFit + gameThreads[i].getTeam1AverageFitness() / numThreads;
+				tm2AvrFit = tm2AvrFit + gameThreads[i].getTeam2AverageFitness() / numThreads;
 				double gameThreadBestFitness = gameThreads[i].getBestFitness();
 				int gameThreadBestTeam = gameThreads[i].getBestTeam();
 				if(gameThreadBestFitness > bestFitness) {
@@ -170,9 +174,7 @@ public class Controller {
 			bestTeamsFitness[game] = bestFitness;
 			
 			//System.out.println("bestFitness: " + bestFitness + ", team number: " + bestTeam + ", stored Fitness: " + team1Fitness.get(bestTeam));
-			
-			tm1AvrFit = tm1AvrFit / (double) populationSize;
-			tm2AvrFit = tm2AvrFit / (double) populationSize;
+
 			tm1FinalAvrFit = tm1FinalAvrFit + tm1AvrFit;
 			tm2FinalAvrFit = tm2FinalAvrFit + tm2AvrFit;
 			
@@ -217,7 +219,7 @@ public class Controller {
 	//------------------------- check best team games after evolve() finishes
 	
 		private void runSingleBestTeamGame(int bestTeam) {
-			GameThread bestGameThread = new GameThread(gameState, 0, 1, enemyDifficulty, maxRounds, geneticAlgorithm, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios);
+			GameThread bestGameThread = new GameThread(gameState, 0, 1, enemyDifficulty, maxRounds, geneticAlgorithm, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty);
 			final double[][][][] singleBestTeam = new double[1][3][choices+1][information];
 			final double[] singleBestTeamFitness = new double[1];
 			singleBestTeamFitness[0] = bestTeamsFitness[bestTeam];
@@ -230,7 +232,7 @@ public class Controller {
 			}
 
 		private void runBestTeamGames() {
-			GameThread bestGameThread = new GameThread(gameState, 0, gamesCompleted, enemyDifficulty, maxRounds, geneticAlgorithm, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios);
+			GameThread bestGameThread = new GameThread(gameState, 0, gamesCompleted, enemyDifficulty, maxRounds, geneticAlgorithm, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty);
 			bestGameThread.setTeam1(bestTeams);
 			bestGameThread.setTeam1Fitness(bestTeamsFitness);
 			Thread lastThread = new Thread(bestGameThread);
@@ -240,15 +242,12 @@ public class Controller {
 		
 	public void setupScenarios() {
 		
-		scenarios = new Scenario[10];
-		boolean team1Start;
+		scenarios = new Scenario[4];
 		int scenarioCounter = 0;
 		
 		
 		/*
 		//TestScenario 0: Distance test
-		
-		team1Start = false;
 		
 		geneticPositions = new Coordinate[3][3];
 		geneticPositions[0][0] = new Coordinate(10, 20);
@@ -265,12 +264,10 @@ public class Controller {
 		staticPositions[1][1] = new Coordinate(9, 19);
 		staticPositions[1][2] = new Coordinate(9, 21);
 		
-		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, team1Start);
+		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
 		*/
 		
 		//Scenario 0 3v3 standard, spreadout starting positions
-				
-		team1Start = false;
 		
 		geneticPositions = new Coordinate[3][3];
 		geneticPositions[0][0] = new Coordinate(13, 2);
@@ -282,46 +279,11 @@ public class Controller {
 		staticPositions[0][1] = new Coordinate(5, 20);
 		staticPositions[0][2] = new Coordinate(7, 20);		
 		
-		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, team1Start);
-		
-		
-		//Scenario 0b same as scenario 0 but with other team starts first
-		
-		team1Start = true;
-		
-		geneticPositions = new Coordinate[3][3];
-		geneticPositions[0][0] = new Coordinate(13, 2);
-		geneticPositions[0][1] = new Coordinate(7, 2);
-		geneticPositions[0][2] = new Coordinate(1, 2);
-
-		staticPositions = new Coordinate[3][3];
-		staticPositions[0][0] = new Coordinate(6, 20);
-		staticPositions[0][1] = new Coordinate(5, 20);
-		staticPositions[0][2] = new Coordinate(7, 20);		
-		
-		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, team1Start);
-		
-		//Scenario 0c 3v3 standard, reversed starting positions
-		
-		team1Start = false;
-		
-		geneticPositions = new Coordinate[3][3];
-		geneticPositions[0][0] = new Coordinate(13, 2);
-		geneticPositions[0][1] = new Coordinate(7, 2);
-		geneticPositions[0][2] = new Coordinate(1, 2);
-
-		staticPositions = new Coordinate[3][3];
-		staticPositions[0][0] = new Coordinate(6, 20);
-		staticPositions[0][1] = new Coordinate(5, 20);
-		staticPositions[0][2] = new Coordinate(7, 20);		
-		
-		scenarios[scenarioCounter++] = new Scenario( staticPositions, geneticPositions, team1Start);
+		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);	
 				
 				
 		//Scenario 0.1 3v3 standard, close starting positions
 		
-		team1Start = false;
-		
 		geneticPositions = new Coordinate[3][3];
 		geneticPositions[0][0] = new Coordinate(9, 2);
 		geneticPositions[0][1] = new Coordinate(7, 2);
@@ -332,28 +294,10 @@ public class Controller {
 		staticPositions[0][1] = new Coordinate(5, 20);
 		staticPositions[0][2] = new Coordinate(7, 20);		
 		
-		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, team1Start);
-		
-		//Scenario 0.1b same as 0.1, other team starts
-		
-		team1Start = true;
-		
-		geneticPositions = new Coordinate[3][3];
-		geneticPositions[0][0] = new Coordinate(9, 2);
-		geneticPositions[0][1] = new Coordinate(7, 2);
-		geneticPositions[0][2] = new Coordinate(5, 2);
-
-		staticPositions = new Coordinate[3][3];
-		staticPositions[0][0] = new Coordinate(6, 20);
-		staticPositions[0][1] = new Coordinate(5, 20);
-		staticPositions[0][2] = new Coordinate(7, 20);		
-		
-		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, team1Start);
+		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
 		
 		//Scenario 0.2 positioned in the middle of map
 		
-		team1Start = true;
-		
 		geneticPositions = new Coordinate[3][3];
 		geneticPositions[0][0] = new Coordinate(18, 15);
 		geneticPositions[0][1] = new Coordinate(18, 13);
@@ -364,29 +308,10 @@ public class Controller {
 		staticPositions[0][1] = new Coordinate(2, 12);
 		staticPositions[0][2] = new Coordinate(2, 16);		
 		
-		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, team1Start);
-		
-		//Scenario 0.2b other team starts
-		
-		team1Start = false;
-		
-		geneticPositions = new Coordinate[3][3];
-		geneticPositions[0][0] = new Coordinate(18, 15);
-		geneticPositions[0][1] = new Coordinate(18, 13);
-		geneticPositions[0][2] = new Coordinate(18, 17);
-
-		staticPositions = new Coordinate[3][3];
-		staticPositions[0][0] = new Coordinate(2, 14);
-		staticPositions[0][1] = new Coordinate(2, 12);
-		staticPositions[0][2] = new Coordinate(2, 16);		
-		
-		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, team1Start);
-		
+		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);		
 		
 		//Scenario 1 surrounded
 		
-		team1Start = true;
-		
 		geneticPositions = new Coordinate[3][3];
 		geneticPositions[0][0] = new Coordinate(10, 20);
 		geneticPositions[0][1] = new Coordinate(10, 21);
@@ -398,43 +323,7 @@ public class Controller {
 		staticPositions[0][2] = new Coordinate(19, 1);
 		staticPositions[1][0] = new Coordinate(19, 39);
 		
-		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, team1Start);
-		
-		
-		//Scenario 1b other team starts
-		
-		team1Start = false;
-		
-		geneticPositions = new Coordinate[3][3];
-		geneticPositions[0][0] = new Coordinate(10, 20);
-		geneticPositions[0][1] = new Coordinate(10, 21);
-		geneticPositions[0][2] = new Coordinate(11, 20);
-
-		staticPositions = new Coordinate[3][3];
-		staticPositions[0][0] = new Coordinate(1, 1);
-		staticPositions[0][1] = new Coordinate(1, 39);
-		staticPositions[0][2] = new Coordinate(19, 1);
-		staticPositions[1][0] = new Coordinate(19, 39);
-		
-		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, team1Start);
-		
-		//Scenario 1c reversed positions
-		
-		team1Start = false;
-		
-		geneticPositions = new Coordinate[3][3];
-		geneticPositions[0][0] = new Coordinate(10, 20);
-		geneticPositions[0][1] = new Coordinate(10, 21);
-		geneticPositions[0][2] = new Coordinate(11, 20);
-
-		staticPositions = new Coordinate[3][3];
-		staticPositions[0][0] = new Coordinate(1, 1);
-		staticPositions[0][1] = new Coordinate(1, 39);
-		staticPositions[0][2] = new Coordinate(19, 1);
-		staticPositions[1][0] = new Coordinate(19, 39);
-		
-		scenarios[scenarioCounter++] = new Scenario(staticPositions, geneticPositions, team1Start);
-		
+		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);		
 		
 		/*
 		//Scenario 1.1 vs 5 enemies

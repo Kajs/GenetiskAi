@@ -17,16 +17,27 @@ public class GameThread implements Runnable {
 	private boolean fitnessOutput;
 	private int choices;
 	private int information;
+	private boolean bothTeamsStart;
+	private boolean alsoReversedPositions;
+	
+	private boolean switchStartTeam = true;  //just used to clarify runGame parameters
+	private boolean reversePositions = true; //just used to clarify runGame parameters
+	
+	private boolean testingStatics;
+	private int testStaticDifficulty;
 	
 	private double totalFitness;
 	private double bestFitness;
 	private int bestTeam;
-	private double tm1AvrFit;
-	private double tm2AvrFit;
+	private double tm1GameAvrFit;
+	private double tm2GameAvrFit;
+	private double tm1ScenarioSummedFit;
+	private double tm2ScenarioSummedFit;
+	private double fitScale;
 	
 	private Scenario[] scenarios;
 	
-	public GameThread(GameState gameState, int firstTeam, int lastTeam, int enemyDifficulty, int maxRounds, GeneticAlgorithm geneticAlgorithm, int choices, int information, boolean fitnessOutput, Scenario[] scenarios) {
+	public GameThread(GameState gameState, int firstTeam, int lastTeam, int enemyDifficulty, int maxRounds, GeneticAlgorithm geneticAlgorithm, int choices, int information, boolean fitnessOutput, Scenario[] scenarios, boolean alsoReversedPositions, boolean bothTeamsStart, boolean testingStatics, int testStaticDifficulty) {
 		this.gameState = gameState;
 		this.firstTeam = firstTeam;
 		this.lastTeam = lastTeam;
@@ -36,63 +47,71 @@ public class GameThread implements Runnable {
 		this.fitnessOutput = fitnessOutput;
 		this.choices = choices;
 		this.information = information;
+		this.bothTeamsStart = bothTeamsStart;
+		this.alsoReversedPositions = alsoReversedPositions;
+		this.testingStatics = testingStatics;
+		this.testStaticDifficulty = testStaticDifficulty;
 		
 		this.scenarios = scenarios;
 	}
 	
 	public void run() {
-		totalFitness = 0;
 		bestFitness = (int)Math.pow(-2, 31);
 		bestTeam = 0;
-		tm1AvrFit = 0;
-		tm2AvrFit = 0;
-		
+		double tm1GameSummedFitness = 0;
+		double tm2GameSummedFitness = 0;
 		
 		for (int team = firstTeam; team < lastTeam; team++) {
 			//System.out.println("Game " + i + ", team number " + lastAi + "_____________________________");
-			double tm1FitVal = 0;
-			double tm2FitVal = 0;
+			double tm1ScenarioFitVal = 0;
+			double tm2ScenarioFitVal = 0;
 			
 			
 			for (int i = 0; i < scenarios.length; i++) {
 				if(scenarios[i] == null) { continue; }
-				gameState.reset();
 				this.geneticPositions = scenarios[i].geneticPositions;
 				this.staticPositions = scenarios[i].staticPositions;
 				currentTeam = new double[geneticPositions.length][3][choices+1][information];
+				
+				tm1ScenarioSummedFit = 0;
+				tm2ScenarioSummedFit = 0;
+				fitScale = 0;
 				
 				for (int teamPos = 0; teamPos < geneticPositions.length; teamPos++) {
 					currentTeam[teamPos] = team1[team];
 				}
 				
-			    //insertGeneticAis(currentTeam, geneticPositions);	
-				insertStaticAis(2, geneticPositions, 1);
-			    insertStaticAis(enemyDifficulty, staticPositions, 2);
+				if(fitnessOutput) {System.out.println("\nTeam " + (team + 1) + " with fitness " + round(team1Fitness[team], 2) + " in scenario " + (i + 1) + "\n");}
+				
+				runGame(!reversePositions, !switchStartTeam); // not reversed, team 1 starts
+			    if(bothTeamsStart) { runGame(!reversePositions, switchStartTeam); } 
+			    if(alsoReversedPositions) {
+					runGame(reversePositions, !switchStartTeam); //reversed, team 1 starts				    
+				    if(bothTeamsStart) { runGame(reversePositions, switchStartTeam); }
+				}
 			    
-			    if(fitnessOutput) {System.out.println("\nTeam " + (team + 1) + " with fitness " + round(team1Fitness[team], 2) + " in scenario " + (i + 1) + "\n");}
-			    
-			    double[][] results = gameState.newGame(maxRounds, scenarios[i].geneticsStart());
-			    
-			    tm1FitVal += geneticAlgorithm.fitness(results[0]);
-				tm2FitVal += geneticAlgorithm.fitness(results[1]);
-			}
-			
-			tm1FitVal = tm1FitVal/scenarios.length;
-			tm2FitVal = tm2FitVal/scenarios.length;
-			
-			totalFitness = totalFitness + tm1FitVal;
-			
-			if(tm1FitVal >= bestFitness) {
-				bestFitness = tm1FitVal;
-				bestTeam = team;
-			}
-			
-			tm1AvrFit = tm1AvrFit + tm1FitVal;
-			tm2AvrFit = tm2AvrFit + tm2FitVal;
-			
-			team1Fitness[team] = tm1FitVal;
+			} //not reversed team 2 starts
+				
+				tm1ScenarioFitVal = tm1ScenarioSummedFit/fitScale;
+				tm2ScenarioFitVal = tm2ScenarioSummedFit/fitScale;
+				
+				tm1GameSummedFitness = tm1GameSummedFitness + tm1ScenarioFitVal;
+				tm2GameSummedFitness = tm2GameSummedFitness + tm2ScenarioFitVal;
+				
+				if(tm1ScenarioFitVal >= bestFitness) {
+					bestFitness = tm1ScenarioFitVal;
+					bestTeam = team;
+				}
+				
+				team1Fitness[team] = tm1ScenarioFitVal;
 		}
-	}
+		
+		totalFitness = tm1GameSummedFitness;
+		tm1GameAvrFit = tm1GameSummedFitness / (lastTeam - firstTeam);
+		tm2GameAvrFit = tm2GameSummedFitness / (lastTeam - firstTeam);
+		
+		//System.out.println("totalFit " + totalFitness + ", tm1Avr " + tm1GameAvrFit + ", tm2Avr " + tm2GameAvrFit);
+    }
 	
 	public void setTeam1(double[][][][] team1) {this.team1 = team1; }
 	public void setTeam1Fitness(double[] team1Fitness) { this.team1Fitness = team1Fitness; }
@@ -100,8 +119,8 @@ public class GameThread implements Runnable {
 	public double getTotalFitness() { return totalFitness; }
 	public double getBestFitness() { return bestFitness; }
 	public int getBestTeam() { return bestTeam; }
-	public double getTeam1AverageFitness() { return tm1AvrFit; }
-	public double getTeam2AverageFitness() { return tm2AvrFit; }
+	public double getTeam1AverageFitness() { return tm1GameAvrFit; }
+	public double getTeam2AverageFitness() { return tm2GameAvrFit; }
 	
 	private void insertGeneticAis(double[][][][] geneticAis, Coordinate[][] geneticPositions) {
 		for (int teamPos = 0; teamPos < geneticPositions.length; teamPos++) {
@@ -216,5 +235,40 @@ public class GameThread implements Runnable {
 	    value = value * factor;
 	    long tmp = Math.round(value);
 	    return (double) tmp / factor;
+	}
+	
+	public void runGame(boolean reversed, boolean switchStartTeam) {
+		if(fitnessOutput) {
+			String gameDescription = "";
+			if(!reversed) { gameDescription += "normal game, "; }
+			else { gameDescription += "reversed game, "; }
+			if(!switchStartTeam) { gameDescription += "team 1 starts"; }
+			else { gameDescription += "team 2 starts"; }
+			System.out.println(gameDescription);
+		}
+		
+		gameState.reset();
+		fitScale += 1;
+		
+		//insert genetic or static ais as team 1. Normal is geneticPositions, reversed is staticPositions
+		if(testingStatics) {
+			if(reversed) { insertStaticAis(testStaticDifficulty, staticPositions, 1); }
+			else { insertStaticAis(testStaticDifficulty, geneticPositions, 1); }
+		}
+		else {
+			if(reversed) { insertGeneticAis(currentTeam, staticPositions); }
+			else { insertGeneticAis(currentTeam, geneticPositions); }
+			 
+		}
+		
+		//insert opponet static ais as team 2. Normal is staticPositions, reversed is geneticPositions
+		
+		if(reversed) { insertStaticAis(enemyDifficulty, geneticPositions, 2); }
+		else { insertStaticAis(enemyDifficulty, staticPositions, 2); }
+		
+		double[][] results = gameState.newGame(maxRounds, switchStartTeam);
+	    
+	    tm1ScenarioSummedFit += geneticAlgorithm.fitness(results[0]);
+	    tm2ScenarioSummedFit += geneticAlgorithm.fitness(results[1]);
 	}
 }
