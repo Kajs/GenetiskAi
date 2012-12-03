@@ -7,21 +7,21 @@ import static java.lang.Math.floor;
 import static java.lang.Math.sqrt;
 
 public class GeneticAlgorithm {
-	private int choices;
-	private int information;
-	private int populationSize;
-	private int populationLimit;
+	int choices;
+	int information;
+	int populationSize;
+	int populationLimit;
 	
-	private int keepAmount;
-	private int crossAmount;
-	private int mutateAmount;
+	int keepAmount;
+	int crossAmount;
+	int mutateAmount;
 	
-	private boolean allwaysKeepBest;
-	private boolean skipZeroFitnessScaling;
-	private Random randomGenerator = new Random(); 	
-	private KeepPopulationThread[] keepPopulationThreads;
-	private CrossPopulationThread[] crossPopulationThreads;
-	private MutatePopulationThread[] mutatePopulationThreads;
+	boolean allwaysKeepBest;
+	boolean skipZeroFitnessScaling;
+	public final static Random randomGenerator = new Random();
+	KeepPopulationThread[] keepPopulationThreads;
+	CrossPopulationThread[] crossPopulationThreads;
+	MutatePopulationThread[] mutatePopulationThreads;
 	
 	
 	
@@ -101,13 +101,13 @@ public class GeneticAlgorithm {
 		return population;
 	}
 	
-	public double[][][] generateWeights(int choices, int information) {
+	private double[][][] generateWeights(int choices, int information) {
 		double[][][] weights = new double[3][choices + 1][information];
 		
 		for (int t = 0; t < 3; t++) {
 			for (int i = 0; i < choices + 1; i++) {
 				for (int j = 0; j < information; j++) {
-					double value = randomGenerator.nextDouble();
+					double value = nextDouble();
 					if (coinFlip()) {
 						weights[t][i][j] = value * (-1.0);
 					}
@@ -230,18 +230,7 @@ public class GeneticAlgorithm {
 	
 	//------------------------- misc functions
 	
-	
-	
-	public double round(double value, int places) {
-	    if (places < 0) throw new IllegalArgumentException();
-
-	    long factor = (long) Math.pow(10, places);
-	    value = value * factor;
-	    long tmp = Math.round(value);
-	    return (double) tmp / factor;
-	}
-	
-	public double getTotalFitness(double[] fitness, int limit) {
+	private double getTotalFitness(double[] fitness, int limit) {
 		double totalFitness = 0;
 		for (int i = 0; i < limit; i++) {
 			totalFitness = totalFitness + fitness[i];
@@ -249,5 +238,9 @@ public class GeneticAlgorithm {
 		return totalFitness;
 	}
 	
-	private boolean coinFlip() { return randomGenerator.nextDouble() <= 0.5; }
+	public static boolean coinFlip() { return randomGenerator.nextDouble() <= 0.5; }
+	
+	public static double nextDouble() { return randomGenerator.nextDouble(); }
+	
+	public static int nextInt(int val) { return randomGenerator.nextInt(val); }
 }

@@ -1,6 +1,8 @@
 package model;
 
-import java.util.Random;
+import static model.GeneticAlgorithm.coinFlip;
+import static model.GeneticAlgorithm.nextDouble;
+import static model.GeneticAlgorithm.nextInt;
 
 public class MutatePopulationThread implements Runnable {
 	private double[][][][] population;
@@ -10,7 +12,6 @@ public class MutatePopulationThread implements Runnable {
 	private int populationLimit;
 	private int information;
 	private int choices;
-	private Random randomGenerator = new Random();
 	
 	private int start;
 	private int end;
@@ -52,16 +53,16 @@ public class MutatePopulationThread implements Runnable {
 	
 	public double[][][] mutate (double[][][] child, double drasticLikelihood, double mutateLikelihood, boolean wholeTeam) {
 		double[][][] mutant = new double[3][choices+1][information];
-		int aiType = randomGenerator.nextInt(3);
+		int aiType = nextInt(3);
 		
 		for (int t = 0; t < 3; t++) {				
 			for (int i = 0; i < choices + 1; i++) {
 				for (int j = 0; j < information; j++) {
-					boolean mutate = randomGenerator.nextDouble() <= mutateLikelihood;
+					boolean mutate = nextDouble() <= mutateLikelihood;
 					
 					if(mutate && (wholeTeam || !wholeTeam && aiType == t)) {
-						drasticLikelihood = randomGenerator.nextDouble();
-						boolean drasticMutation = randomGenerator.nextDouble() <= drasticLikelihood;
+						drasticLikelihood = nextDouble();
+						boolean drasticMutation = nextDouble() <= drasticLikelihood;
 						double value;
 						
 						if(drasticMutation) { value = mutateDrastic(); }
@@ -77,13 +78,13 @@ public class MutatePopulationThread implements Runnable {
 	}
 	
 	public double mutateDrastic() {
-		double value = randomGenerator.nextDouble();
+		double value = nextDouble();
 		if (coinFlip()) { value = value * (-1.0); }
 		return value;
 	}
 	
 	public double mutateLight(double value) {
-		double mutatePercentage = randomGenerator.nextDouble() * 0.1;
+		double mutatePercentage = nextDouble() * 0.1;
 		if (coinFlip()) {
 			value = value * (1.0 + mutatePercentage);
 			if (value > 1.0) { value = 1.0;	}
@@ -105,7 +106,7 @@ public class MutatePopulationThread implements Runnable {
 		int parentsFound = 0;
 		
 		while(parentsFound < numberOfParents) {
-			double chance = randomGenerator.nextDouble();
+			double chance = nextDouble();
 			double summedFitness = 0.0;
 			for (int i = 0; i < populationLimit; i++) {
 				summedFitness += fitness[i];
@@ -117,7 +118,4 @@ public class MutatePopulationThread implements Runnable {
 		}		
 		return parents;
 	}
-	
-	private boolean coinFlip() { return randomGenerator.nextDouble() <= 0.5; }
-
 }

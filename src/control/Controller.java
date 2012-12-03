@@ -14,38 +14,38 @@ import view.XySplineChart;
 
 public class Controller {
 	
-	public static int width = 930;
-	public static int height = 600;
-	public static int rows = 20;
-	public static int columns = 40;
-	public static double boardDiagonal = rows + columns;
-	static double hexSideSize = scaledHexSideSize();
+	final int width = 930;
+	final int height = 600;
+	static final int rows = 20;
+	static final int columns = 40;
+	public static final double boardDiagonal = rows + columns;
+	final double hexSideSize = scaledHexSideSize();
 	public static int roundDelay = 1000;  // in milliseconds
-	static Coordinate startPosition = new Coordinate(sin(toRadians(30)) * hexSideSize, 1);
+	final Coordinate startPosition = new Coordinate(sin(toRadians(30)) * hexSideSize, 1);
 	
-	static int maxRounds = 100;
-	static int maxGames = 10000;
+	final int maxRounds = 100;
+	static final int maxGames = 10000;
 	public static int gamesCompleted = 0;
 	
-	static int populationSize = 1000;
-	static int choices = 6;
-	public static int information = 31;
-	static double keepPercent = 0.25;
-	static double crossPercent = 0.25;
-	static double mutateLikelihood = 0.9;
-	public boolean elitism = true;
-	public boolean skipZeroFitnessScaling = true;
-	public boolean alwaysKeepBest = false;
+	final int populationSize = 1000;
+	final int choices = 6;
+	public final static int information = 31;
+	final double keepPercent = 0.25;
+    final double crossPercent = 0.25;
+	final double mutateLikelihood = 0.9;
+	final boolean elitism = true;
+	final boolean skipZeroFitnessScaling = true;
+	final boolean alwaysKeepBest = false;
 	
 	
 	static Coordinate[][] geneticPositions;
 	static Coordinate[][] staticPositions;
-	static int enemyDifficulty = 0;
+	final int enemyDifficulty = 0;
 	
-	public static final GameState gameState = new GameState(startPosition, rows, columns, hexSideSize);
-	public BoardRenderer boardRenderer;
-	public WindowManager window;
-	public GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(populationSize, choices, information, keepPercent, crossPercent, mutateLikelihood, skipZeroFitnessScaling, alwaysKeepBest, numThreads);
+	public static GameState gameState;
+	public static BoardRenderer boardRenderer;
+	WindowManager window;
+	final GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(populationSize, choices, information, keepPercent, crossPercent, mutateLikelihood, skipZeroFitnessScaling, alwaysKeepBest, numThreads);
 	public static double[][][][] bestTeams;
 	public static boolean runBestTeamGames = false;
 	public static boolean runSingleBestTeamGame = false;
@@ -57,15 +57,15 @@ public class Controller {
 	
 	// ____Scenario Section____
 	private static Scenario[] scenarios;
-	private static boolean bothTeamsStart = false;
-	private static boolean alsoReversedPositions = false;
-	private boolean testingStatics = false;
-	private int testStaticDifficulty = 2;
+	final boolean bothTeamsStart = false;
+	final boolean alsoReversedPositions = false;
+	final boolean testingStatics = false;
+	final int testStaticDifficulty = 2;
 	
 	// ____Scenario Section____
 	
 	//_______________Thread Section________
-	private static int numThreads = 100;
+	static int numThreads = 100;
 	private GameThread[] gameThreads;
 	
 	//_______________Thread Section________
@@ -73,6 +73,7 @@ public class Controller {
 	public Controller(boolean automatic, boolean displayAutomatic) {
 		
 		Launcher.allowActionOutput = false;
+		gameState = new GameState(startPosition, rows, columns, hexSideSize);
 		setupScenarios();
 		
 		if(numThreads > populationSize) { 
@@ -99,7 +100,7 @@ public class Controller {
     		boardRenderer.setBackground(Color.white);
     		gameState.addObserver(boardRenderer);
     		window = new WindowManager(width, height, boardRenderer, this);
-    		bestTeams = evolve(maxRounds, maxGames, populationSize);
+    		evolve(maxRounds, maxGames, populationSize);
     		
     		Launcher.stop = false;
     		while(!Launcher.stop) {
@@ -117,7 +118,7 @@ public class Controller {
     	}
 		else {
 			Launcher.allowRoundDelay = false;
-			bestTeams = evolve(maxRounds, maxGames, populationSize);
+			evolve(maxRounds, maxGames, populationSize);
 		}        	
 	}
 	
@@ -131,9 +132,9 @@ public class Controller {
 	
 	
 	
-	public double[][][][] evolve(int maxRounds, int maxGames, int populationSize) {
+	public void evolve(int maxRounds, int maxGames, int populationSize) {
 		double[][][][] team1 = geneticAlgorithm.initialPopulation(populationSize, choices, information);
-		double[][][][] bestTeams = new double[maxGames][3][choices+1][information];
+		bestTeams = new double[maxGames][3][choices+1][information];
 		
 		double tm1FinalAvrFit = 0;
 		double tm2FinalAvrFit = 0;
@@ -167,8 +168,6 @@ public class Controller {
 			bestTeams[game] = team1[bestTeam];
 			
 			bestTeamsFitness[game] = bestFitness;
-			
-			//System.out.println("bestFitness: " + bestFitness + ", team number: " + bestTeam + ", stored Fitness: " + team1Fitness.get(bestTeam));
 
 			tm1FinalAvrFit = tm1FinalAvrFit + tm1AvrFit;
 			tm2FinalAvrFit = tm2FinalAvrFit + tm2AvrFit;
@@ -185,8 +184,6 @@ public class Controller {
 		tm2FinalAvrFit = tm2FinalAvrFit/(lastGame + 1);
 		
 		System.out.println("Final average fitness team1: " + tm1FinalAvrFit + ", team2: " + tm2FinalAvrFit);
-		
-		return bestTeams;
 	}
 	
 	private void runSingleBestTeamGame(int bestTeam) {
@@ -281,7 +278,7 @@ public class Controller {
 	
 	
 	
-	public static double scaledHexSideSize() {
+	public double scaledHexSideSize() {
 		double maxHexHeight = (double)height/((double)rows * cos(toRadians(30)) * (2.0 + 1.0/(double)rows)) * 0.8941;
 		double maxHexWidth = (double)width/((sin(toRadians(30)) + (double)columns * (1.0 + sin(toRadians(30))))) * 0.98;
 		if(maxHexHeight <= maxHexWidth) {

@@ -63,13 +63,13 @@ public class GameThread implements Runnable {
 			//System.out.println("Game " + i + ", team number " + lastAi + "_____________________________");
 			tm1ScenarioSummedFit = 0;
 			tm2ScenarioSummedFit = 0;
-			fitScale = 0;
-			
+			fitScale = 0;			
 			
 			for (int i = 0; i < scenarios.length; i++) {
 				if(scenarios[i] == null) { continue; }
 				this.geneticPositions = scenarios[i].geneticPositions;
 				this.staticPositions = scenarios[i].staticPositions;
+				
 				currentTeam = new double[geneticPositions.length][3][choices+1][information];
 				
 				for (int teamPos = 0; teamPos < geneticPositions.length; teamPos++) {
@@ -253,7 +253,7 @@ public class GameThread implements Runnable {
 			 
 		}
 		
-		//insert opponet static ais as team 2. Normal is staticPositions, reversed is geneticPositions
+		//insert opponent static ais as team 2. Normal is staticPositions, reversed is geneticPositions
 		
 		if(reversed) { insertStaticAis(enemyDifficulty, geneticPositions, 2); }
 		else { insertStaticAis(enemyDifficulty, staticPositions, 2); }
