@@ -63,8 +63,9 @@ public class GameThread implements Runnable {
 		
 		for (int team = firstTeam; team < lastTeam; team++) {
 			//System.out.println("Game " + i + ", team number " + lastAi + "_____________________________");
-			double tm1ScenarioFitVal = 0;
-			double tm2ScenarioFitVal = 0;
+			tm1ScenarioSummedFit = 0;
+			tm2ScenarioSummedFit = 0;
+			fitScale = 0;
 			
 			
 			for (int i = 0; i < scenarios.length; i++) {
@@ -72,10 +73,6 @@ public class GameThread implements Runnable {
 				this.geneticPositions = scenarios[i].geneticPositions;
 				this.staticPositions = scenarios[i].staticPositions;
 				currentTeam = new double[geneticPositions.length][3][choices+1][information];
-				
-				tm1ScenarioSummedFit = 0;
-				tm2ScenarioSummedFit = 0;
-				fitScale = 0;
 				
 				for (int teamPos = 0; teamPos < geneticPositions.length; teamPos++) {
 					currentTeam[teamPos] = team1[team];
@@ -92,18 +89,15 @@ public class GameThread implements Runnable {
 			    
 			} //not reversed team 2 starts
 				
-				tm1ScenarioFitVal = tm1ScenarioSummedFit/fitScale;
-				tm2ScenarioFitVal = tm2ScenarioSummedFit/fitScale;
+				tm1GameSummedFitness = tm1GameSummedFitness + tm1ScenarioSummedFit/fitScale;
+				tm2GameSummedFitness = tm2GameSummedFitness + tm2ScenarioSummedFit/fitScale;
 				
-				tm1GameSummedFitness = tm1GameSummedFitness + tm1ScenarioFitVal;
-				tm2GameSummedFitness = tm2GameSummedFitness + tm2ScenarioFitVal;
-				
-				if(tm1ScenarioFitVal >= bestFitness) {
-					bestFitness = tm1ScenarioFitVal;
+				if(tm1ScenarioSummedFit/fitScale >= bestFitness) {
+					bestFitness = tm1ScenarioSummedFit/fitScale;
 					bestTeam = team;
 				}
 				
-				team1Fitness[team] = tm1ScenarioFitVal;
+				team1Fitness[team] = tm1ScenarioSummedFit/fitScale;
 		}
 		
 		totalFitness = tm1GameSummedFitness;
@@ -267,8 +261,10 @@ public class GameThread implements Runnable {
 		else { insertStaticAis(enemyDifficulty, staticPositions, 2); }
 		
 		double[][] results = gameState.newGame(maxRounds, switchStartTeam);
+		double tm1Result = geneticAlgorithm.fitness(results[0]);
+		double tm2Result = geneticAlgorithm.fitness(results[1]);
 	    
-	    tm1ScenarioSummedFit += geneticAlgorithm.fitness(results[0]);
-	    tm2ScenarioSummedFit += geneticAlgorithm.fitness(results[1]);
+	    tm1ScenarioSummedFit += tm1Result;
+	    tm2ScenarioSummedFit += tm2Result;
 	}
 }

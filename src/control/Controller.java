@@ -23,7 +23,7 @@ public class Controller {
 	public static int roundDelay = 1000;  // in milliseconds
 	static Coordinate startPosition = new Coordinate(sin(toRadians(30)) * hexSideSize, 1);
 	
-	static int maxRounds = 1000;
+	static int maxRounds = 100;
 	static int maxGames = 10000;
 	public static int gamesCompleted = 0;
 	
@@ -57,8 +57,8 @@ public class Controller {
 	
 	// ____Scenario Section____
 	private static Scenario[] scenarios;
-	private static boolean bothTeamsStart = true;
-	private static boolean alsoReversedPositions = true;
+	private static boolean bothTeamsStart = false;
+	private static boolean alsoReversedPositions = false;
 	private boolean testingStatics = false;
 	private int testStaticDifficulty = 2;
 	
@@ -280,8 +280,7 @@ public class Controller {
 		staticPositions[0][2] = new Coordinate(7, 20);		
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);	
-				
-				
+		
 		//Scenario 0.1 3v3 standard, close starting positions
 		
 		geneticPositions = new Coordinate[3][3];
