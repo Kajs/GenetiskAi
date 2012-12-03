@@ -1,7 +1,6 @@
 package model;
 
-import static model.GeneticAlgorithm.nextDouble;
-import static model.GeneticAlgorithm.nextInt;
+import java.util.Random;
 
 public class CrossPopulationThread implements Runnable {
 		private double[][][][] population;
@@ -14,6 +13,7 @@ public class CrossPopulationThread implements Runnable {
 		
 		private int start;
 		private int end;
+		final Random randomGenerator = new Random();
 		
 		public CrossPopulationThread(int start, int end, int populationLimit, int choices, int information) {
 			this.start = start;
@@ -79,5 +79,11 @@ public class CrossPopulationThread implements Runnable {
 		return parents;
 	}
 	
-	private boolean coinFlip() { return nextDouble() <= 0.5; }
+    private boolean coinFlip() { return randomGenerator.nextDouble() <= 0.5; }
+	
+	private double nextDouble() { return randomGenerator.nextDouble(); }
+	
+	private int nextInt(int val) { return randomGenerator.nextInt(val); }
+	
+	
 }

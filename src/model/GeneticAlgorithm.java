@@ -2,7 +2,6 @@ package model;
 
 import java.util.Random;
 
-import control.Launcher;
 import static java.lang.Math.floor;
 import static java.lang.Math.sqrt;
 
@@ -23,14 +22,18 @@ public class GeneticAlgorithm {
 	CrossPopulationThread[] crossPopulationThreads;
 	MutatePopulationThread[] mutatePopulationThreads;
 	
+    MultiThreading multiThreading;
+    final HeapSort heapSort = new HeapSort();
 	
 	
-	public GeneticAlgorithm (int populationSize, int choices, int information, double keepPercent, double crossPercent, double mutateLikelihood, boolean skipZeroFitnessScaling, boolean allwaysKeepBest, int numThreads) {
+	
+	public GeneticAlgorithm (int populationSize, int choices, int information, double keepPercent, double crossPercent, double mutateLikelihood, boolean skipZeroFitnessScaling, boolean allwaysKeepBest, int numThreads, MultiThreading multiThreading) {
 		this.populationSize = populationSize;
 		this.choices = choices;
 		this.information = information;
 		this.allwaysKeepBest = allwaysKeepBest;
 		this.skipZeroFitnessScaling = skipZeroFitnessScaling;
+		this.multiThreading = multiThreading;
 		
 		keepAmount = (int)floor(populationSize * keepPercent);
 		crossAmount = (int)floor(populationSize * crossPercent);
@@ -91,7 +94,6 @@ public class GeneticAlgorithm {
 	
 	
 	public double[][][][] initialPopulation(int size, int choices, int information) {
-		if(Launcher.allowGenAlgAnnounce) {System.out.println("Generating initialPopulation");}
 		
 		double[][][][] population = new double[size][3][choices + 1][information];
 		
@@ -138,7 +140,7 @@ public class GeneticAlgorithm {
 			bestAiFitness = fitness[bestTeam];
 		}
 		
-        if(allwaysKeepBest) { HeapSort.heapSortHigh(population, fitness, populationSize); }
+        if(allwaysKeepBest) { heapSort.heapSortHigh(population, fitness, populationSize); }
 		
 		double[][][][] newPopulation = new double[populationSize][3][choices+1][information];
 		double[] scaledFitness;
@@ -147,9 +149,9 @@ public class GeneticAlgorithm {
 		//scaledFitness = exponentialScaling(fitness);
 		double totalFitness = getTotalFitness(scaledFitness, populationLimit);
 		
-		MultiThreading.runKeepPopulationThreads(keepPopulationThreads, population, newPopulation, scaledFitness, totalFitness);
-		MultiThreading.runCrossPopulationThreads(crossPopulationThreads, population, newPopulation, scaledFitness, totalFitness);
-		MultiThreading.runMutatePopulationThreads(mutatePopulationThreads, population, newPopulation, scaledFitness, totalFitness);
+		multiThreading.runKeepPopulationThreads(keepPopulationThreads, population, newPopulation, scaledFitness, totalFitness);
+		multiThreading.runCrossPopulationThreads(crossPopulationThreads, population, newPopulation, scaledFitness, totalFitness);
+		multiThreading.runMutatePopulationThreads(mutatePopulationThreads, population, newPopulation, scaledFitness, totalFitness);
 		
 		if(elitism) {
 			newPopulation[0] = bestAi;
@@ -168,7 +170,7 @@ public class GeneticAlgorithm {
 	
 	
 	
-	public static double fitness (double[] results) {
+	public double fitness (double[] results) {
 		double teamInitialHp = results[0];
 		double teamHp = results[1];
 		double teamAlive = results[2];
@@ -238,9 +240,7 @@ public class GeneticAlgorithm {
 		return totalFitness;
 	}
 	
-	public static boolean coinFlip() { return randomGenerator.nextDouble() <= 0.5; }
+	private boolean coinFlip() { return randomGenerator.nextDouble() <= 0.5; }
 	
-	public static double nextDouble() { return randomGenerator.nextDouble(); }
-	
-	public static int nextInt(int val) { return randomGenerator.nextInt(val); }
+	private double nextDouble() { return randomGenerator.nextDouble(); }
 }

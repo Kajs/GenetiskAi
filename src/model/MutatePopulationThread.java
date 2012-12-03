@@ -1,8 +1,6 @@
 package model;
 
-import static model.GeneticAlgorithm.coinFlip;
-import static model.GeneticAlgorithm.nextDouble;
-import static model.GeneticAlgorithm.nextInt;
+import java.util.Random;
 
 public class MutatePopulationThread implements Runnable {
 	private double[][][][] population;
@@ -15,6 +13,8 @@ public class MutatePopulationThread implements Runnable {
 	
 	private int start;
 	private int end;
+	final Random randomGenerator = new Random();
+	
 	private double drasticStart;
 	private double drasticEnd;
 	private double mutateLikelihood;
@@ -118,4 +118,10 @@ public class MutatePopulationThread implements Runnable {
 		}		
 		return parents;
 	}
+	
+    private boolean coinFlip() { return randomGenerator.nextDouble() <= 0.5; }
+	
+	private double nextDouble() { return randomGenerator.nextDouble(); }
+	
+	private int nextInt(int val) { return randomGenerator.nextInt(val); }
 }

@@ -3,21 +3,23 @@ import static java.lang.Math.floor;
 
 public class HeapSort {
 	
-	private static void buildMaxHeap(double[][][][] ais, double[] fitness, int limit) {
+	public HeapSort() {}
+	
+	private void buildMaxHeap(double[][][][] ais, double[] fitness, int limit) {
 		int heapSize = limit;
 		for (int i  = (int)floor(heapSize/2); i>0; i--) {
 			maxHeapify(ais, fitness, i, heapSize);
 		}
 	}
 	
-	private static void buildMinHeap(double[][][][] ais, double[] fitness, int limit) {
+	private void buildMinHeap(double[][][][] ais, double[] fitness, int limit) {
 		int heapSize = limit;
 		for (int i  = (int)floor(heapSize/2); i>0; i--) {
 			minHeapify(ais, fitness, i, heapSize);
 		}
 	}
 
-	private static void maxHeapify(double[][][][] ais, double[] fitness, int i, int heapSize) {
+	private void maxHeapify(double[][][][] ais, double[] fitness, int i, int heapSize) {
 		int largest;
 		if (i < heapSize && i > 0) {
 			int l = i * 2;
@@ -37,7 +39,7 @@ public class HeapSort {
 		}
 	}
 	
-	private static void minHeapify(double[][][][] ais, double[] fitness, int i, int heapSize) {
+	private void minHeapify(double[][][][] ais, double[] fitness, int i, int heapSize) {
 		int smallest;
 		if (i < heapSize && i > 0) {
 			int l = i * 2;
@@ -57,7 +59,7 @@ public class HeapSort {
 		}
 	}
 	
-	private static void exchange (double[][][][] ais, double[] fitness, int i, int largest) {
+	private void exchange (double[][][][] ais, double[] fitness, int i, int largest) {
 		double[][][] tempAi = ais[i-1];
 		double tempFitness = fitness[i-1];
 		
@@ -68,7 +70,7 @@ public class HeapSort {
 		fitness[largest-1] = tempFitness;
 	}
 	
-	public static void heapSortLow(double[][][][] ais, double[] fitness, int limit) {
+	public void heapSortLow(double[][][][] ais, double[] fitness, int limit) {
 		int heapSize = limit;
 		
 		buildMaxHeap(ais, fitness, limit);
@@ -80,7 +82,7 @@ public class HeapSort {
 		}
 	}
 	
-	public static void heapSortHigh(double[][][][] ais, double[] fitness, int limit) {
+	public void heapSortHigh(double[][][][] ais, double[] fitness, int limit) {
 		int heapSize = limit;
 		
 		buildMinHeap(ais, fitness, limit);

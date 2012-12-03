@@ -45,7 +45,7 @@ public class Controller {
 	public static GameState gameState;
 	public static BoardRenderer boardRenderer;
 	WindowManager window;
-	final GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(populationSize, choices, information, keepPercent, crossPercent, mutateLikelihood, skipZeroFitnessScaling, alwaysKeepBest, numThreads);
+	
 	public static double[][][][] bestTeams;
 	public static boolean runBestTeamGames = false;
 	public static boolean runSingleBestTeamGame = false;
@@ -66,6 +66,8 @@ public class Controller {
 	
 	//_______________Thread Section________
 	static int numThreads = 4;
+	final MultiThreading multiThreading = new MultiThreading(numThreads);
+	final GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(populationSize, choices, information, keepPercent, crossPercent, mutateLikelihood, skipZeroFitnessScaling, alwaysKeepBest, numThreads, multiThreading);
 	private GameThread[] gameThreads;
 	
 	//_______________Thread Section________
@@ -80,8 +82,7 @@ public class Controller {
 			numThreads = populationSize; 
 			System.out.println("Warning: there are more threads than population size, threads set to populationSize"); 
 			}
-		
-		MultiThreading.newThreadArray(numThreads);
+
 		gameThreads = new GameThread[numThreads];
 		
 		int stepSize = populationSize/numThreads;
@@ -90,7 +91,7 @@ public class Controller {
 		int end = stepSize;
 		for (int i = 0; i < numThreads; i++) {
 			if(i == numThreads - 1 || end > populationSize) {end = populationSize;}
-			gameThreads[i] = new GameThread(new GameState(startPosition, rows, columns, hexSideSize), start, end, enemyDifficulty, maxRounds, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty);
+			gameThreads[i] = new GameThread(new GameState(startPosition, rows, columns, hexSideSize), start, end, enemyDifficulty, maxRounds, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty, geneticAlgorithm);
 			start = end;
 			end += stepSize;
 		}
@@ -149,7 +150,7 @@ public class Controller {
 			double bestFitness = (int)Math.pow(-2, 31);
 			int bestTeam = 0;
 			
-			MultiThreading.runGameThreads(gameThreads, team1, team1Fitness);
+			multiThreading.runGameThreads(gameThreads, team1, team1Fitness);
 			
 			for (int i = 0; i < numThreads; i++) {
 				totalFitness = totalFitness + gameThreads[i].getTotalFitness();
@@ -187,7 +188,7 @@ public class Controller {
 	}
 	
 	private void runSingleBestTeamGame(int bestTeam) {
-		GameThread bestGameThread = new GameThread(gameState, 0, 1, enemyDifficulty, maxRounds, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty);
+		GameThread bestGameThread = new GameThread(gameState, 0, 1, enemyDifficulty, maxRounds, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty, geneticAlgorithm);
 		final double[][][][] singleBestTeam = new double[1][3][choices+1][information];
 		final double[] singleBestTeamFitness = new double[1];
 		singleBestTeamFitness[0] = bestTeamsFitness[bestTeam];
@@ -200,7 +201,7 @@ public class Controller {
 		}
 
 	private void runBestTeamGames() {
-		GameThread bestGameThread = new GameThread(gameState, 0, gamesCompleted, enemyDifficulty, maxRounds, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty);
+		GameThread bestGameThread = new GameThread(gameState, 0, gamesCompleted, enemyDifficulty, maxRounds, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty, geneticAlgorithm);
 		bestGameThread.setTeam1(bestTeams);
 		bestGameThread.setTeam1Fitness(bestTeamsFitness);
 		Thread lastThread = new Thread(bestGameThread);

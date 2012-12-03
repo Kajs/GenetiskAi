@@ -13,12 +13,19 @@ import model.Hex;
 
 public class GameState extends Observable {
 	private Board board;
-	private ArrayList<Ai> team1Alive = new ArrayList<Ai>();
-	private ArrayList<Ai> team1Dead = new ArrayList<Ai>();
-	private ArrayList<Ai> team2Alive = new ArrayList<Ai>();
-	private ArrayList<Ai> team2Dead = new ArrayList<Ai>();
-	private final int rows;
-	private final int columns;
+	final ArrayList<Ai> team1Alive = new ArrayList<Ai>();
+	final ArrayList<Ai> team1Dead = new ArrayList<Ai>();
+	final ArrayList<Ai> team2Alive = new ArrayList<Ai>();
+	final ArrayList<Ai> team2Dead = new ArrayList<Ai>();
+	final int rows;
+	final int columns;
+	final double boardDiagonal = Controller.boardDiagonal;
+	
+	final boolean allowAngleOutput = Launcher.allowAngleOutput;
+	final boolean allowAreaDamageOutput = Launcher.allowAreaDamageOutput;
+	final boolean allowHealOutput = Launcher.allowHealOutput;
+	final boolean allowNormalDamageOutput = Launcher.allowNormalDamageOutput;
+	
 	private Hex[][] hexMatrix;
 	
 	public GameState(Coordinate startPosition, int rows, int columns, double hexSideSize) {
@@ -239,37 +246,37 @@ public class GameState extends Observable {
 			
 			// SouthEast
 			if (angleToHex >= 0 && angleToHex <= 60) {
-				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at SE: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
+				if(allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at SE: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				southEast.add(targetHex);
 				continue;
 			}
 			//South
 			if (angleToHex >= 60 && angleToHex <= 120) {
-				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at S: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
+				if(allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at S: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				south.add(targetHex);
 				continue;
 			}
 			//SouthWest
 			if (angleToHex >= 120 && angleToHex <= 180) {
-				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at SW: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
+				if(allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at SW: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				southWest.add(targetHex);
 				continue;
 			}
 			//NortEast
 			if (angleToHex <= 0 && angleToHex >= -60) {
-				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at NE: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
+				if(allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at NE: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				northEast.add(targetHex);
 				continue;
 			}
 			//North
 			if (angleToHex <= -60 && angleToHex >= -120) {
-				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at N: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
+				if(allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at N: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				north.add(targetHex);
 				continue;
 			}
 			//NortWest
 			if (angleToHex <= -120 && angleToHex >= -180) {
-				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at NW: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
+				if(allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at NW: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				northWest.add(targetHex);
 				continue;
 			}
@@ -290,37 +297,37 @@ public class GameState extends Observable {
 			
 			// SouthEast
 			if (angleToHex >= 0 && angleToHex <= 60) {
-				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at SE: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
+				if(allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at SE: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				southEast.add(targetHex);
 				continue;
 			}
 			//South
 			if (angleToHex >= 60 && angleToHex <= 120) {
-				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at S: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
+				if(allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at S: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				south.add(targetHex);
 				continue;
 			}
 			//SouthWest
 			if (angleToHex >= 120 && angleToHex <= 180) {
-				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at SW: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
+				if(allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at SW: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				southWest.add(targetHex);
 				continue;
 			}
 			//NortEast
 			if (angleToHex <= 0 && angleToHex >= -60) {
-				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at NE: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
+				if(allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at NE: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				northEast.add(targetHex);
 				continue;
 			}
 			//North
 			if (angleToHex <= -60 && angleToHex >= -120) {
-				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at N: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
+				if(allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at N: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				north.add(targetHex);
 				continue;
 			}
 			//NortWest
 			if (angleToHex <= -120 && angleToHex >= -180) {
-				if(Launcher.allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at NW: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
+				if(allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at NW: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				northWest.add(targetHex);
 				continue;
 			}
@@ -522,8 +529,8 @@ public class GameState extends Observable {
 		int activeY = activeAi.getPosition().getY();
 		
 		for (int h = 0; h < 6; h++) {
-			double team1Distance = Controller.boardDiagonal;
-			double team2Distance = Controller.boardDiagonal;
+			double team1Distance = boardDiagonal;
+			double team2Distance = boardDiagonal;
 			double averageTeam1Distance = 0.0;
 			double averageTeam2Distance = 0.0;
 			
@@ -690,7 +697,7 @@ public class GameState extends Observable {
 			if(extendedType.equals("stun")) {
 				targetAi.setStunned(true); } else {
 			if(extendedType.equals("area")) {
-				if(Launcher.allowAreaDamageOutput) {System.out.println(targetAi.getId() + ":  lost " + ai.getAreaDamage() + " hp to area damage, hp = " + (targetAi.getHp() - ai.getAreaDamage() + " (t)"));}
+				if(allowAreaDamageOutput) {System.out.println(targetAi.getId() + ":  lost " + ai.getAreaDamage() + " hp to area damage, hp = " + (targetAi.getHp() - ai.getAreaDamage() + " (t)"));}
 				doDamage(targetAi, ai.getAreaDamage(), newHex);
 				double enemyTeam = targetAi.getTeam();
 				Hex[] adjacentHexes = adjacentHexes(preferredAction.getPosition());
@@ -700,7 +707,7 @@ public class GameState extends Observable {
 							Ai adjacentAi = hex.getAi();
 							if(adjacentAi.getTeam() == enemyTeam) {
 								double newHp = adjacentAi.getHp() - ai.getAreaDamage();
-								if(Launcher.allowAreaDamageOutput) {System.out.println(adjacentAi.getId() + ":  lost " + ai.getAreaDamage() + " hp to area damage, hp = " + newHp);}
+								if(allowAreaDamageOutput) {System.out.println(adjacentAi.getId() + ":  lost " + ai.getAreaDamage() + " hp to area damage, hp = " + newHp);}
 								doDamage(adjacentAi, ai.getAreaDamage(), hex);
 							}
 						}
@@ -713,7 +720,7 @@ public class GameState extends Observable {
 				}
 				else {
 					double damage = ai.getMeleeDamage();
-					if(Launcher.allowNormalDamageOutput) {System.out.println(targetAi.getId() + ":  took " + damage + " damage, hp = " + (targetAi.getHp() - damage));}
+					if(allowNormalDamageOutput) {System.out.println(targetAi.getId() + ":  took " + damage + " damage, hp = " + (targetAi.getHp() - damage));}
 					doDamage(targetAi, damage, newHex);				
 				}
 			}
@@ -727,7 +734,7 @@ public class GameState extends Observable {
 				double initialHp = targetAi.getInitialHp();
 				if(currentHp < initialHp) {
 					double healAmount = min(currentHp + ai.getHealAmount(), initialHp) - currentHp;
-					if(Launcher.allowHealOutput) {System.out.println(targetAi.getId() + ":  healed " + healAmount + ", hp = " + (currentHp + healAmount));}
+					if(allowHealOutput) {System.out.println(targetAi.getId() + ":  healed " + healAmount + ", hp = " + (currentHp + healAmount));}
 					targetAi.setHp(currentHp + healAmount);
 				}} else {
 			if(extendedType.equals("boost")) {

@@ -1,6 +1,6 @@
 package model;
 
-import static model.GeneticAlgorithm.nextDouble;
+import java.util.Random;
 
 public class KeepPopulationThread implements Runnable {
 	private double[][][][] population;
@@ -14,6 +14,7 @@ public class KeepPopulationThread implements Runnable {
 	
 	private int start;
 	private int end;
+	final Random randomGenerator = new Random();
 	
 	public KeepPopulationThread(int start, int end, boolean alwaysKeepBest, int populationLimit, int choices, int information) {
 		this.start = start;
@@ -58,4 +59,6 @@ public class KeepPopulationThread implements Runnable {
 		}		
 		return parents;
 	}
+
+	private double nextDouble() { return randomGenerator.nextDouble(); }
 }
