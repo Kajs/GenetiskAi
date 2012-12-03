@@ -24,7 +24,7 @@ public class Controller {
 	final Coordinate startPosition = new Coordinate(sin(toRadians(30)) * hexSideSize, 1);
 	
 	final int maxRounds = 100;
-	static final int maxGames = 10000;
+	static final int maxGames = 100;
 	public static int gamesCompleted = 0;
 	
 	final int populationSize = 1000;
@@ -59,7 +59,7 @@ public class Controller {
 	private static Scenario[] scenarios;
 	final boolean bothTeamsStart = false;
 	final boolean alsoReversedPositions = false;
-	final boolean testingStatics = false;
+	final boolean testingStatics = true;
 	final int testStaticDifficulty = 2;
 	
 	// ____Scenario Section____
