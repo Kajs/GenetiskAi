@@ -35,7 +35,7 @@ public class Controller {
 	final double mutateLikelihood = 0.9;
 	final boolean elitism = true;
 	final boolean skipZeroFitnessScaling = true;
-	final boolean alwaysKeepBest = false;
+	final boolean alwaysKeepBest = true;
 	
 	
 	static Coordinate[][] geneticPositions;
@@ -65,7 +65,7 @@ public class Controller {
 	// ____Scenario Section____
 	
 	//_______________Thread Section________
-	static int numThreads = 100;
+	static int numThreads = 4;
 	private GameThread[] gameThreads;
 	
 	//_______________Thread Section________
