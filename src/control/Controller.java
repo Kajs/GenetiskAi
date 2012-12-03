@@ -35,7 +35,7 @@ public class Controller {
 	static double mutateLikelihood = 0.9;
 	public boolean elitism = true;
 	public boolean skipZeroFitnessScaling = true;
-	public boolean alwaysKeepBest = true;
+	public boolean alwaysKeepBest = false;
 	
 	
 	static Coordinate[][] geneticPositions;
@@ -65,19 +65,22 @@ public class Controller {
 	// ____Scenario Section____
 	
 	//_______________Thread Section________
-	private static int numThreads = 4;
-	private Thread[] threads;
+	private static int numThreads = 100;
 	private GameThread[] gameThreads;
 	
 	//_______________Thread Section________
 	
 	public Controller(boolean automatic, boolean displayAutomatic) {
-		//setTeamPositions(false);
-		Launcher.allowActionOutput = false;
 		
+		Launcher.allowActionOutput = false;
 		setupScenarios();
 		
-		threads = new Thread[numThreads];
+		if(numThreads > populationSize) { 
+			numThreads = populationSize; 
+			System.out.println("Warning: there are more threads than population size, threads set to populationSize"); 
+			}
+		
+		MultiThreading.newThreadArray(numThreads);
 		gameThreads = new GameThread[numThreads];
 		
 		int stepSize = populationSize/numThreads;
@@ -86,7 +89,7 @@ public class Controller {
 		int end = stepSize;
 		for (int i = 0; i < numThreads; i++) {
 			if(i == numThreads - 1 || end > populationSize) {end = populationSize;}
-			gameThreads[i] = new GameThread(new GameState(startPosition, rows, columns, hexSideSize), start, end, enemyDifficulty, maxRounds, geneticAlgorithm, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty);
+			gameThreads[i] = new GameThread(new GameState(startPosition, rows, columns, hexSideSize), start, end, enemyDifficulty, maxRounds, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty);
 			start = end;
 			end += stepSize;
 		}
@@ -145,14 +148,7 @@ public class Controller {
 			double bestFitness = (int)Math.pow(-2, 31);
 			int bestTeam = 0;
 			
-			for (int i = 0; i < numThreads; i++) {
-				gameThreads[i].setTeam1(team1);
-				gameThreads[i].setTeam1Fitness(team1Fitness);
-				threads[i] = new Thread(gameThreads[i], Integer.toString(i));
-				threads[i].start();
-			}
-			
-			sync(threads);
+			MultiThreading.runGameThreads(gameThreads, team1, team1Fitness);
 			
 			for (int i = 0; i < numThreads; i++) {
 				totalFitness = totalFitness + gameThreads[i].getTotalFitness();
@@ -165,7 +161,6 @@ public class Controller {
 					bestTeam = gameThreadBestTeam;
 				}
 			}
-			
 			
 			gamesCompleted += 1;
 			
@@ -184,8 +179,6 @@ public class Controller {
 		    System.out.println("Game " + (game + 1) + " bestFit: " + round(bestFitness, 2) + ", tm1AvrFit = " + round(tm1AvrFit, 2)  + ", tm2AvrFit = " + round(tm2AvrFit, 2));
 			
 			team1 = geneticAlgorithm.newPopulation(team1, team1Fitness, elitism, bestTeam);
-			
-			checkTeam(team1);
 		}
 		
 		tm1FinalAvrFit = tm1FinalAvrFit/(lastGame + 1);
@@ -196,76 +189,31 @@ public class Controller {
 		return bestTeams;
 	}
 	
-	public void checkTeam(double[][][][] team) {
-		int l1 = team.length;
-		int l2 = team[0].length;
-		int l3 = team[0][0].length;
-		int l4 = team[0][0][0].length;
-		for (int a = 0; a < l1; a++) {
-			for (int b = 0; b < l2; b++) {
-				for (int c = 0; c < l3; c++) {
-					for (int d = 0; d < l4; d++) {
-						if(team[a][b][c][d] == 0) { System.out.println("Checking team 1 values: " + team[a][b][c][d]); }
-					}
-				}
-			}
-			
+	private void runSingleBestTeamGame(int bestTeam) {
+		GameThread bestGameThread = new GameThread(gameState, 0, 1, enemyDifficulty, maxRounds, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty);
+		final double[][][][] singleBestTeam = new double[1][3][choices+1][information];
+		final double[] singleBestTeamFitness = new double[1];
+		singleBestTeamFitness[0] = bestTeamsFitness[bestTeam];
+		singleBestTeam[0] = bestTeams[bestTeam];
+		
+		bestGameThread.setTeam1(singleBestTeam);
+		bestGameThread.setTeam1Fitness(singleBestTeamFitness);
+		Thread lastThread = new Thread(bestGameThread);
+		lastThread.start();
 		}
+
+	private void runBestTeamGames() {
+		GameThread bestGameThread = new GameThread(gameState, 0, gamesCompleted, enemyDifficulty, maxRounds, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty);
+		bestGameThread.setTeam1(bestTeams);
+		bestGameThread.setTeam1Fitness(bestTeamsFitness);
+		Thread lastThread = new Thread(bestGameThread);
+		lastThread.start();
 	}
-	
-	
-	
-	
-	//------------------------- check best team games after evolve() finishes
-	
-		private void runSingleBestTeamGame(int bestTeam) {
-			GameThread bestGameThread = new GameThread(gameState, 0, 1, enemyDifficulty, maxRounds, geneticAlgorithm, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty);
-			final double[][][][] singleBestTeam = new double[1][3][choices+1][information];
-			final double[] singleBestTeamFitness = new double[1];
-			singleBestTeamFitness[0] = bestTeamsFitness[bestTeam];
-			singleBestTeam[0] = bestTeams[bestTeam];
-			
-			bestGameThread.setTeam1(singleBestTeam);
-			bestGameThread.setTeam1Fitness(singleBestTeamFitness);
-			Thread lastThread = new Thread(bestGameThread);
-			lastThread.start();
-			}
-
-		private void runBestTeamGames() {
-			GameThread bestGameThread = new GameThread(gameState, 0, gamesCompleted, enemyDifficulty, maxRounds, geneticAlgorithm, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty);
-			bestGameThread.setTeam1(bestTeams);
-			bestGameThread.setTeam1Fitness(bestTeamsFitness);
-			Thread lastThread = new Thread(bestGameThread);
-			lastThread.start();
-		}
-
 		
 	public void setupScenarios() {
 		
 		scenarios = new Scenario[4];
 		int scenarioCounter = 0;
-		
-		
-		/*
-		//TestScenario 0: Distance test
-		
-		geneticPositions = new Coordinate[3][3];
-		geneticPositions[0][0] = new Coordinate(10, 20);
-		geneticPositions[0][1] = new Coordinate(0, 0);
-		geneticPositions[0][2] = new Coordinate(19, 39);
-		geneticPositions[1][2] = new Coordinate(19, 0);
-		geneticPositions[2][2] = new Coordinate(0, 39);
-
-		staticPositions = new Coordinate[3][3];
-		staticPositions[0][0] = new Coordinate(9, 20);
-		staticPositions[0][1] = new Coordinate(11, 20);
-		staticPositions[0][2] = new Coordinate(10, 19);
-		staticPositions[1][0] = new Coordinate(10, 21);
-		staticPositions[1][1] = new Coordinate(9, 19);
-		staticPositions[1][2] = new Coordinate(9, 21);
-		
-		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
-		*/
 		
 		//Scenario 0 3v3 standard, spreadout starting positions
 		
@@ -323,44 +271,6 @@ public class Controller {
 		staticPositions[1][0] = new Coordinate(19, 39);
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);		
-		
-		/*
-		//Scenario 1.1 vs 5 enemies
-		
-		team1Start = true;
-		
-		geneticPositions = new Coordinate[3][3];
-		geneticPositions[0][0] = new Coordinate(9, 3);
-		geneticPositions[0][1] = new Coordinate(7, 2);
-		geneticPositions[0][2] = new Coordinate(11, 2);
-
-		staticPositions = new Coordinate[3][3];
-		staticPositions[0][0] = new Coordinate(7, 35);
-		staticPositions[0][1] = new Coordinate(9, 35);
-		staticPositions[0][2] = new Coordinate(11, 35);
-		staticPositions[1][0] = new Coordinate(7, 34);
-		staticPositions[1][1] = new Coordinate(9, 34);
-		
-		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, team1Start);
-		
-		//Scenario 1.1b other team starts
-		
-		team1Start = false;
-		
-		geneticPositions = new Coordinate[3][3];
-		geneticPositions[0][0] = new Coordinate(9, 3);
-		geneticPositions[0][1] = new Coordinate(7, 2);
-		geneticPositions[0][2] = new Coordinate(11, 2);
-
-		staticPositions = new Coordinate[3][3];
-		staticPositions[0][0] = new Coordinate(7, 35);
-		staticPositions[0][1] = new Coordinate(9, 35);
-		staticPositions[0][2] = new Coordinate(11, 35);
-		staticPositions[1][0] = new Coordinate(7, 34);
-		staticPositions[1][1] = new Coordinate(9, 34);
-		
-		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions, team1Start);
-		*/
 	}
 	
 	
@@ -382,38 +292,6 @@ public class Controller {
 		}
 	}
 	
-	public double[] copyArray(double[] orgArray) {
-		int length = orgArray.length;
-		double[] copy = new double[length];
-		
-		for (int i = 0; i < length; i++) {
-			copy[i] = orgArray[i];
-		}
-		
-		return copy;
-	}
-
-	public double[] copyArrayMultiThreading(double[] orgArray) {
-		int length = orgArray.length;
-		double[] copy = new double[length];
-		CopyArrayThread[] copyArrayThreads = new CopyArrayThread[numThreads];
-		int stepSize = length/numThreads;
-		
-		for (int i = 0; i < numThreads; i++) {
-			int start = stepSize*i;
-			int end = start+stepSize;
-			if(i == numThreads - 1 || end > length) { end = length;}
-			
-			copyArrayThreads[i] = new CopyArrayThread(orgArray, copy, start, end); 
-			threads[i] = new Thread(copyArrayThreads[i]);
-			threads[i].start();
-		}
-		
-		sync(threads);
-		
-		return copy;
-	}
-	
 	public static double round(double value, int places) {
 	    if (places < 0) throw new IllegalArgumentException();
 
@@ -425,13 +303,6 @@ public class Controller {
 	
 	public double[][][][] getBestTeams() {
 		return bestTeams;
-	}
-	
-	public void sync(Thread[] threads) {
-		for (int i = 0; i < threads.length; i++) {
-			try { threads[i].join(); } 
-			catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
-		}
 	}
 	
 	//_________________________________JFreeChart section

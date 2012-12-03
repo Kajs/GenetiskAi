@@ -16,7 +16,6 @@ public class GeneticAlgorithm {
 	private int crossAmount;
 	private int mutateAmount;
 	
-	private int numThreads;
 	private boolean allwaysKeepBest;
 	private boolean skipZeroFitnessScaling;
 	private Random randomGenerator = new Random(); 	
@@ -24,19 +23,14 @@ public class GeneticAlgorithm {
 	private CrossPopulationThread[] crossPopulationThreads;
 	private MutatePopulationThread[] mutatePopulationThreads;
 	
-	private Thread[][] threads;
-	
 	
 	
 	public GeneticAlgorithm (int populationSize, int choices, int information, double keepPercent, double crossPercent, double mutateLikelihood, boolean skipZeroFitnessScaling, boolean allwaysKeepBest, int numThreads) {
 		this.populationSize = populationSize;
 		this.choices = choices;
 		this.information = information;
-		this.numThreads = numThreads;
 		this.allwaysKeepBest = allwaysKeepBest;
 		this.skipZeroFitnessScaling = skipZeroFitnessScaling;
-		
-		threads = new Thread[3][numThreads];
 		
 		keepAmount = (int)floor(populationSize * keepPercent);
 		crossAmount = (int)floor(populationSize * crossPercent);
@@ -149,24 +143,13 @@ public class GeneticAlgorithm {
 		double[][][][] newPopulation = new double[populationSize][3][choices+1][information];
 		double[] scaledFitness;
 		
-		//scaledFitness = fitness;
 		scaledFitness = linearTransformationScaling(fitness, 0.9, 1.0/populationSize);
 		//scaledFitness = exponentialScaling(fitness);
 		double totalFitness = getTotalFitness(scaledFitness, populationLimit);
 		
-		for (int i = 0; i < numThreads; i++) {
-			keepPopulationThreads[i].setVariables(population, newPopulation, scaledFitness, totalFitness);
-			threads[0][i] = new Thread(keepPopulationThreads[i], "[0][" + i + "]");
-			threads[0][i].start();
-			crossPopulationThreads[i].setVariables(population, newPopulation, scaledFitness, totalFitness);
-			threads[1][i] = new Thread(crossPopulationThreads[i], "[1][" + i + "]");
-			threads[1][i].start();
-			mutatePopulationThreads[i].setVariables(population, newPopulation, scaledFitness, totalFitness);
-			threads[2][i] = new Thread(mutatePopulationThreads[i], "[2][" + i + "]");
-			threads[2][i].start();
-		}
-		
-		for (int i = 0; i < 3; i++) { sync(threads[i]); }
+		MultiThreading.runKeepPopulationThreads(keepPopulationThreads, population, newPopulation, scaledFitness, totalFitness);
+		MultiThreading.runCrossPopulationThreads(crossPopulationThreads, population, newPopulation, scaledFitness, totalFitness);
+		MultiThreading.runMutatePopulationThreads(mutatePopulationThreads, population, newPopulation, scaledFitness, totalFitness);
 		
 		if(elitism) {
 			newPopulation[0] = bestAi;
@@ -185,7 +168,7 @@ public class GeneticAlgorithm {
 	
 	
 	
-	public double fitness (double[] results) {
+	public static double fitness (double[] results) {
 		double teamInitialHp = results[0];
 		double teamHp = results[1];
 		double teamAlive = results[2];
@@ -264,13 +247,6 @@ public class GeneticAlgorithm {
 			totalFitness = totalFitness + fitness[i];
 		}
 		return totalFitness;
-	}
-	
-	public void sync(Thread[] threads) {
-		for (int i = 0; i < threads.length; i++) {
-			try { threads[i].join(); } 
-			catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
-		}
 	}
 	
 	private boolean coinFlip() { return randomGenerator.nextDouble() <= 0.5; }

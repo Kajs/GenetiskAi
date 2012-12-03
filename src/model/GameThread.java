@@ -12,7 +12,6 @@ public class GameThread implements Runnable {
 	private final int maxRounds;
 	private Coordinate[][] geneticPositions;
 	private Coordinate[][] staticPositions;
-	private final GeneticAlgorithm geneticAlgorithm;
 	private double[] team1Fitness;
 	private boolean fitnessOutput;
 	private int choices;
@@ -37,13 +36,12 @@ public class GameThread implements Runnable {
 	
 	private Scenario[] scenarios;
 	
-	public GameThread(GameState gameState, int firstTeam, int lastTeam, int enemyDifficulty, int maxRounds, GeneticAlgorithm geneticAlgorithm, int choices, int information, boolean fitnessOutput, Scenario[] scenarios, boolean alsoReversedPositions, boolean bothTeamsStart, boolean testingStatics, int testStaticDifficulty) {
+	public GameThread(GameState gameState, int firstTeam, int lastTeam, int enemyDifficulty, int maxRounds, int choices, int information, boolean fitnessOutput, Scenario[] scenarios, boolean alsoReversedPositions, boolean bothTeamsStart, boolean testingStatics, int testStaticDifficulty) {
 		this.gameState = gameState;
 		this.firstTeam = firstTeam;
 		this.lastTeam = lastTeam;
 		this.enemyDifficulty = enemyDifficulty;
 		this.maxRounds = maxRounds;
-		this.geneticAlgorithm = geneticAlgorithm;
 		this.fitnessOutput = fitnessOutput;
 		this.choices = choices;
 		this.information = information;
@@ -261,8 +259,8 @@ public class GameThread implements Runnable {
 		else { insertStaticAis(enemyDifficulty, staticPositions, 2); }
 		
 		double[][] results = gameState.newGame(maxRounds, switchStartTeam);
-		double tm1Result = geneticAlgorithm.fitness(results[0]);
-		double tm2Result = geneticAlgorithm.fitness(results[1]);
+		double tm1Result = GeneticAlgorithm.fitness(results[0]);
+		double tm2Result = GeneticAlgorithm.fitness(results[1]);
 	    
 	    tm1ScenarioSummedFit += tm1Result;
 	    tm2ScenarioSummedFit += tm2Result;
