@@ -35,7 +35,7 @@ public class HardWizard extends Ai {
 					}
 					
 					// Area on two or more enemies
-					if (adjacentHexEnemies >= 1) {
+					if (adjacentHexEnemies >= 1 && enemiesAliveGlobal > 1) {
 						weight = 900;
 						weight += 1.0/nearestEnemyHp;
 						weight += adjacentHexEnemies;
@@ -99,16 +99,22 @@ public class HardWizard extends Ai {
 				
 				if(adjacentLocalAllies == 2 && alliesAliveGlobal >= 3) {
 					weight = 240;
-					weight += 1.0/nearestEnemyDistanceGlobal;
-					weight -= 0.0001/averageEnemyDistance;
+					//weight += 0.1/nearestEnemyDistanceGlobal;
+					weight += 1.0/averageEnemyDistance;
 					compareAction(weight, adjacentPosition, "move", "move5"); 
 				}  
 				
 				if(adjacentLocalEnemies == 0 && adjacentHexEnemies >= 1 && hp == initialHp) {
 					weight = 250;
 					weight += adjacentHexAllies;
-					compareAction(weight, adjacentPosition, "move", "move5");
+					compareAction(weight, adjacentPosition, "move", "move6");
 				}
+				
+				if(alliesAliveGlobal == 1 && hp == initialHp && adjacentLocalEnemies == 0 && adjacentHexEnemies >= 1) {
+					weight = 260;
+					compareAction(weight, position, "move", "stay");
+				}
+				
 				//System.out.println("weight " + weight + ", nearestEnemyDistance " + nearestEnemyDistance + " at (" + adjacentHex.getPosition().getX() + "," + adjacentHex.getPosition().getY() + ")");
 
 				//System.out.println(result + ", nearestEnemyDistance " + nearestEnemyDistance);

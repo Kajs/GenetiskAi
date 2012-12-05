@@ -25,7 +25,7 @@ public class Controller {
 	
 //____________________Game variables
 	final int maxRounds = 100;
-	static final int maxGames = 10000;
+	static final int maxGames = 1;
 	public static int gamesCompleted = 0;
 //____________________Game variables
 	
@@ -38,7 +38,7 @@ public class Controller {
 	final double mutateLikelihood = 0.9;
 	final boolean elitism = true;
 	final boolean skipZeroFitnessScaling = true;
-	final boolean alwaysKeepBest = false;
+	final boolean alwaysKeepBest = true;
 	
 	final int choices = 6;  //only change if choices have been added/removed from ais
 	public final static int information = 31; //only change if information has been added/removed from ais
@@ -63,8 +63,8 @@ public class Controller {
 	final boolean alsoReversedPositions = true;
 	final boolean testingStatics = false;
 		
-	final int testStaticDifficulty = 0;
-	final int enemyDifficulty = 0;
+	final int testStaticDifficulty = 2;
+	final int enemyDifficulty = 2;
 		
 // ____Scenario Section____
 	
@@ -197,7 +197,7 @@ public class Controller {
 			team1PopulationFitness[game] = tm1AvrFit;
 			team2PopulationFitness[game] = tm2AvrFit;
 			
-		    System.out.println("Game " + (game + 1) + " bestFit: " + round(bestFitness, 2) + ", tm1AvrFit = " + round(tm1AvrFit, 2)  + ", tm2AvrFit = " + round(tm2AvrFit, 2));
+		    System.out.println("Game " + (game + 1) + " t1_best " + round(bestFitness, 2) + ", t1_A = " + round(tm1AvrFit, 2)  + ", t2_A = " + round(tm2AvrFit, 2));
 			
 			team1 = geneticAlgorithm.newPopulation(team1, team1Fitness, elitism, bestTeam);
 		}

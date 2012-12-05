@@ -177,9 +177,9 @@ public class GameThread implements Runnable {
 		case 0:
 			return Color.black;
 		case 1:
-			return Color.cyan;
+			return Color.blue;
 		case 2:
-			return Color.green;
+			return Color.cyan;
 		}
 		return null;
 	}
@@ -193,25 +193,25 @@ public class GameThread implements Runnable {
 			case 1:
 				return Color.PINK;
 			case 2:
-				return Color.YELLOW;
+				return Color.MAGENTA;
 			}
 		case 1:
 			switch(aiType) {
 			case 0:
 				return Color.GRAY;
 			case 1:
-				return Color.MAGENTA;
+				return Color.RED;
 			case 2:
-				return Color.ORANGE;
+				return Color.GREEN;
 			}
 		case 2:
 			switch(aiType) {
 			case 0:
 				return Color.DARK_GRAY;
 			case 1:
-				return Color.BLUE;
+				return Color.ORANGE;
 			case 2:
-				return Color.RED;
+				return Color.YELLOW;
 			}
 		default:
 			return null;

@@ -50,14 +50,14 @@ public class MediumCleric extends Ai {
 					weight += 0.1/nearestAllyDistanceGlobal;
 					weight += 1.0/averageAllyDistance;
 					weight += -0.1/nearestEnemyDistanceGlobal;
-					compareAction(weight, adjacentPosition, "move", "move1");
+					compareAction(weight, adjacentPosition, "move", "move2");
 				}
 				if(adjacentLocalAllies == 1 && adjacentHexEnemies == 0) {  //go to allies
 					weight = 220;
 					weight += 0.1/nearestAllyDistanceGlobal;
 					weight += 1.0/averageAllyDistance;
 					weight += 1.0/nearestEnemyDistanceGlobal;
-					compareAction(weight, adjacentPosition, "move", "move1");
+					compareAction(weight, adjacentPosition, "move", "move3");
 				}
 				
 				if(adjacentLocalAllies >= 2 && adjacentLocalEnemies == 0) {   //stay with allies if safe  måske 2 i vaerdi?
@@ -67,14 +67,14 @@ public class MediumCleric extends Ai {
 				
 				if(adjacentLocalAllies < adjacentHexAllies) {   //go to most allies
 					weight = 900;
-					compareAction(weight, adjacentPosition, "move", "move1");
+					compareAction(weight, adjacentPosition, "move", "move4");
 				}
 				
 				if(adjacentLocalEnemies >= 1) {         //run from enemies
 					weight = 1000;
 					weight -= 10 * adjacentHexEnemies;
 					weight += adjacentHexAllies;
-					compareAction(weight, adjacentPosition, "move", "move1");
+					compareAction(weight, adjacentPosition, "move", "move5");
 				}
 				
 				//System.out.println("weight " + weight + ", nearestEnemyDistance " + nearestEnemyDistance + " at (" + adjacentHex.getPosition().getX() + "," + adjacentHex.getPosition().getY() + ")");

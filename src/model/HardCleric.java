@@ -74,19 +74,19 @@ public class HardCleric extends Ai {
 				compareAction(weight, adjacentPosition, "move", "move1");
 				
 				// Move towards enemies, but try to stay close to allies
-				if(adjacentLocalAllies == 0) {  //go to allies
+				if(adjacentLocalAllies == 0 && alliesAliveGlobal > 1) {  //go to allies
 					weight = 210;
 					weight += 0.1/nearestAllyDistanceGlobal;
 					weight += 1.0/averageAllyDistance;
 					weight += -0.1/nearestEnemyDistanceGlobal;
-					compareAction(weight, adjacentPosition, "move", "move1");
+					compareAction(weight, adjacentPosition, "move", "move2");
 				}
 				if(adjacentLocalAllies == 1 && adjacentHexEnemies == 0) {  //go to allies
 					weight = 220;
 					weight += 0.1/nearestAllyDistanceGlobal;
 					weight += 1.0/averageAllyDistance;
 					weight += 1.0/nearestEnemyDistanceGlobal;
-					compareAction(weight, adjacentPosition, "move", "move1");
+					compareAction(weight, adjacentPosition, "move", "move3");
 				}
 				
 				if(adjacentLocalAllies >= 2 && adjacentLocalEnemies == 0) {   //stay with allies if safe  måske 2 i vaerdi?
@@ -96,14 +96,19 @@ public class HardCleric extends Ai {
 				
 				if(adjacentLocalAllies < adjacentHexAllies) {   //go to most allies
 					weight = 900;
-					compareAction(weight, adjacentPosition, "move", "move1");
+					compareAction(weight, adjacentPosition, "move", "move4");
 				}
 				
-				if(adjacentLocalEnemies >= 1) {         //run from enemies
+				if(adjacentLocalEnemies >= 1 && alliesAliveGlobal > 1 && hp <= 10) {         //run from enemies
 					weight = 1000;
 					weight -= 10 * adjacentHexEnemies;
 					weight += adjacentHexAllies;
-					compareAction(weight, adjacentPosition, "move", "move1");
+					compareAction(weight, adjacentPosition, "move", "move5");
+				}
+				
+				if(alliesAliveGlobal == 1 && hp == initialHp && adjacentLocalEnemies == 0 && adjacentHexEnemies >= 1) {
+					weight = 260;
+					compareAction(weight, position, "move", "stay");
 				}
 				
 				//System.out.println("weight " + weight + ", nearestEnemyDistance " + nearestEnemyDistance + " at (" + adjacentHex.getPosition().getX() + "," + adjacentHex.getPosition().getY() + ")");

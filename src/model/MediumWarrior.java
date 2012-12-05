@@ -80,7 +80,7 @@ public class MediumWarrior extends Ai {
 				if(adjacentLocalEnemies == 0 && adjacentHexEnemies >= 1 && hp == initialHp) {
 					weight = 250;
 					weight += adjacentHexAllies;
-					compareAction(weight, adjacentPosition, "move", "move5");
+					compareAction(weight, adjacentPosition, "move", "move6");
 				}
 				
 				//System.out.println("weight " + weight + ", nearestEnemyDistance " + nearestEnemyDistance + " at (" + adjacentHex.getPosition().getX() + "," + adjacentHex.getPosition().getY() + ")");
