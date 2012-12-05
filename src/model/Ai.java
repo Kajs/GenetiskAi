@@ -141,14 +141,6 @@ public class Ai {
     
     public void newStartId() { startId = aiType + ", " + "team " + getTeam() + " from (" + position.getX() + "," + position.getY() + ")"; }
     
-    public boolean getBoosted() { return boosted; }
-    
-    public Color getColor() { return color; }
-    
-    public void setColor(Color color) { this.color = color; }
-    
-    public void setAiType(String type) { aiType = type; }
-    
     public String getAiType() { return aiType; } 
     
     public double getAreaDamage() {
@@ -156,10 +148,12 @@ public class Ai {
     		boosted = false;
     		return areaDamage * (1.0 + boostFactor);
     	}
-    	else {
-    		return areaDamage;
-    	}
+    	else { return areaDamage; }
     }
+    
+    public boolean getBoosted() { return boosted; }
+    
+    public Color getColor() { return color; }
     
     public double getHealAmount() {
     	if(boosted) {
@@ -167,9 +161,7 @@ public class Ai {
     		boosted = false;
     		return healAmount * (1.0 + boostFactor);
     	}
-    	else {
-    		return healAmount;
-    	}
+    	else { return healAmount; }
     }
 
     public double getHp() { return hp; }
@@ -184,49 +176,35 @@ public class Ai {
     		boosted = false;
     		return meleeDamage * (1.0 + boostFactor);
     	}
-    	else {
-    		return meleeDamage;
-    	}
+    	else { return meleeDamage; }
     }
     
-    public Coordinate getPosition() {
-		return position;
-    }
+    public Coordinate getPosition() { return position; }
     
     public String getPositionAsString() {return "(" + position.getX() + "," + position.getY() + ")";}
     
-    public boolean getShielded() {
-		return shielded;
-	}
+    public boolean getShielded() { return shielded; }
     
-    public String getStartId() {
-    	return startId;
-    }
+    public String getStartId() { return startId; }
     
-    public boolean getStunned() {
-		return stunned;
-	}
+    public boolean getStunned() { return stunned; }
     
-    public String getSupportAction() {
-		return supportAction;
-	}
+    public String getSupportAction() { return supportAction; }
     
-    public int getTeam() {
-		return team;
-	}
+    public int getTeam() { return team; }
     
-    public double[][] getWeights() {
-    	return weightMatrix;
-    }
+    public double[][] getWeights() { return weightMatrix; }
     
-    public boolean isAlive() {
-    	return hp > 0;
-    }
+    public boolean isAlive() { return hp > 0; }
+    
+    public void setAiType(String type) { aiType = type; }
     
     public void setBoosted(boolean status) {
 		if (status && Launcher.allowBoostOutput) { System.out.println(getId() + ":  boosted"); }
 		boosted = status;
 	}
+    
+    public void setColor(Color color) { this.color = color; }
     
     public void setHp(double newHp) {
     	String sign;
@@ -236,13 +214,9 @@ public class Ai {
 		hp = newHp;
 	} 
     
-    public void setMeleeDamage(double damage) {
-    	meleeDamage = damage;
-    }
+    public void setMeleeDamage(double damage) { meleeDamage = damage; }
     
-    public void setPosition(Coordinate newPos) {
-    	position = newPos;
-    }
+    public void setPosition(Coordinate newPos) { position = newPos; }
     
     public void setShielded(boolean status) {
 		if (!status && Launcher.allowShieldOutput) { System.out.println(getId() + ":  lost shield"); }
@@ -251,23 +225,15 @@ public class Ai {
 	}
 
 	public void setStunned(boolean status) {
-		if(status == false && Launcher.allowStunOutput) {
-			System.out.println(getId() + ":  stunned");
-		}
+		if(status == false && Launcher.allowStunOutput) { System.out.println(getId() + ":  stunned"); }
 		stunned = status;
 	}
 	
-	public void setSupportAction(String action) {
-		supportAction = action;
-	}
+	public void setSupportAction(String action) { supportAction = action; }
 	
-	public void setTeam(int team) {
-		this.team = team;
-	}	
+	public void setTeam(int team) { this.team = team; }	
 	
-	public void setWeights(double[][] weights) {
-    	weightMatrix = weights;
-    }
+	public void setWeights(double[][] weights) { weightMatrix = weights; }
 	
     public Ai nearestAi(ArrayList<Ai> ais) {
     	

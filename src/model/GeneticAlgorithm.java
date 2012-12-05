@@ -3,7 +3,6 @@ package model;
 import java.util.Random;
 
 import static java.lang.Math.floor;
-import static java.lang.Math.sqrt;
 
 public class GeneticAlgorithm {
 	int choices;
@@ -21,13 +20,15 @@ public class GeneticAlgorithm {
 	KeepPopulationThread[] keepPopulationThreads;
 	CrossPopulationThread[] crossPopulationThreads;
 	MutatePopulationThread[] mutatePopulationThreads;
+	GetTotalFitnessThread[] getTotalFitnessThreads;
+	ScaleFitnessThread[] scaleFitnessThreads;
 	
     MultiThreading multiThreading;
     final HeapSort heapSort = new HeapSort();
 	
 	
 	
-	public GeneticAlgorithm (int populationSize, int choices, int information, double keepPercent, double crossPercent, double mutateLikelihood, boolean skipZeroFitnessScaling, boolean allwaysKeepBest, int numThreads, MultiThreading multiThreading) {
+	public GeneticAlgorithm (int populationSize, int choices, int information, double keepPercent, double crossPercent, double mutateLikelihood, boolean skipZeroFitnessScaling, boolean allwaysKeepBest, int numThreads, MultiThreading multiThreading, int fitnessScalingType) {
 		this.populationSize = populationSize;
 		this.choices = choices;
 		this.information = information;
@@ -46,6 +47,8 @@ public class GeneticAlgorithm {
 		keepPopulationThreads = new KeepPopulationThread[numThreads];
 		crossPopulationThreads = new CrossPopulationThread[numThreads];
 		mutatePopulationThreads = new MutatePopulationThread[numThreads];
+		getTotalFitnessThreads = new GetTotalFitnessThread[numThreads];
+		scaleFitnessThreads = new ScaleFitnessThread[numThreads];
 		
 		int stepSize = keepAmount/numThreads;
 		if(stepSize < 1) {stepSize = 1;}
@@ -86,6 +89,29 @@ public class GeneticAlgorithm {
 			end += stepSize;
 		}
 		
+		stepSize = populationLimit/numThreads;
+		if(stepSize < 1) {stepSize = 1;}
+		start = 0;
+		end = start + stepSize;
+		
+		for (int i = 0; i < numThreads; i++) {
+			if(i == numThreads - 1 || end > populationLimit) { end = populationLimit;}
+			getTotalFitnessThreads[i] = new GetTotalFitnessThread(start, end);
+			start = end;
+			end += stepSize;
+		}
+		
+		stepSize = populationLimit/numThreads;
+		if(stepSize < 1) {stepSize = 1;}
+		start = 0;
+		end = start + stepSize;
+		
+		for (int i = 0; i < numThreads; i++) {
+			if(i == numThreads - 1 || end > populationLimit) { end = populationLimit;}
+			scaleFitnessThreads[i] = new ScaleFitnessThread(start, end, fitnessScalingType, 0.9, 1.0/populationLimit, skipZeroFitnessScaling);
+			start = end;
+			end += stepSize;
+		}
 	}
 	
 	
@@ -143,11 +169,10 @@ public class GeneticAlgorithm {
         if(allwaysKeepBest) { heapSort.heapSortHigh(population, fitness, populationSize); }
 		
 		double[][][][] newPopulation = new double[populationSize][3][choices+1][information];
-		double[] scaledFitness;
+		double[] scaledFitness = fitness;
 		
-		scaledFitness = linearTransformationScaling(fitness, 0.9, 1.0/populationSize);
-		//scaledFitness = exponentialScaling(fitness);
-		double totalFitness = getTotalFitness(scaledFitness, populationLimit);
+		multiThreading.runScaleFitnessThreads(scaleFitnessThreads, scaledFitness);
+		double totalFitness = multiThreading.runGetTotalFitnessThreads(getTotalFitnessThreads, scaledFitness);
 		
 		multiThreading.runKeepPopulationThreads(keepPopulationThreads, population, newPopulation, scaledFitness, totalFitness);
 		multiThreading.runCrossPopulationThreads(crossPopulationThreads, population, newPopulation, scaledFitness, totalFitness);
@@ -191,54 +216,12 @@ public class GeneticAlgorithm {
 		fitness = fitness/maxFitness;
 		if(teamHp < 0 || enemiesHp < 0) {System.out.println("Fitness: " + fitness +", " + teamInitialHp + ", " + teamHp + ", " + teamAlive + ", " + teamSize + ", " + enemiesInitialHp + ", " + enemiesHp + ", " + enemiesAlive + ", " + enemiesSize + ", " + maxRounds + ", " + rounds);}
 		return fitness;
-	}
-	
-	
-	
-	
-	
-	//------------------------- scaling functions
-	
-	
-	
-	
-	
-	public double[] exponentialScaling(double[] orgFitness) {
-		int length = orgFitness.length;
-		double[] scaledFitness = new double[length];
-		for (int i = 0; i < length; i++) {
-			double fitValue = orgFitness[i];
-			
-			if(skipZeroFitnessScaling && fitValue == 0) { scaledFitness[i] = 0.0; }
-			else { scaledFitness[i] = sqrt(fitValue + 1.0/populationSize); }
-		}
-		return scaledFitness;
-	}
-	
-	public double[] linearTransformationScaling(double[] orgFitness, double a, double b) {
-		int length = orgFitness.length;
-		double[] scaledFitness = new double[length];
-		for (int i = 0; i < length; i++) {
-			double fitValue = orgFitness[i];
-			
-			if(skipZeroFitnessScaling && fitValue == 0) { scaledFitness[i] = 0.0; }			
-			else { scaledFitness[i] = fitValue * a + b; }
-		}
-		return scaledFitness;
-	}
+	}	
 	
 	
 	
 	
 	//------------------------- misc functions
-	
-	private double getTotalFitness(double[] fitness, int limit) {
-		double totalFitness = 0;
-		for (int i = 0; i < limit; i++) {
-			totalFitness = totalFitness + fitness[i];
-		}
-		return totalFitness;
-	}
 	
 	private boolean coinFlip() { return randomGenerator.nextDouble() <= 0.5; }
 	

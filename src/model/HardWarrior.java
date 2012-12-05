@@ -40,7 +40,7 @@ public class HardWarrior extends Ai {
 						compareAction(weight, adjacentPosition, "attack", "stun");
 					}
 					
-					if(nearestEnemyShielded == 1 && nearestEnemyIsWizard == 1 && adjacentLocalAllies >= 2) {
+					if(nearestEnemyShielded == 1 && nearestEnemyIsWizard == 1 && adjacentLocalAllies >= 1) {
 						weight = 860;
 						weight += nearestEnemyHp;
 						compareAction(weight, adjacentPosition, "attack", "stun");

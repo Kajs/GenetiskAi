@@ -5,7 +5,7 @@ import java.awt.Color;
 public class GameThread implements Runnable {
 	private final GameState gameState;
 	private double[][][][] team1;
-	private double[][][][] currentTeam;
+	private double[][][] currentTeam;
 	private final int firstTeam;
 	private final int lastTeam;
 	private int enemyDifficulty;
@@ -15,13 +15,11 @@ public class GameThread implements Runnable {
 	private Coordinate[][] staticPositions;
 	private double[] team1Fitness;
 	private boolean fitnessOutput;
-	private int choices;
-	private int information;
 	private boolean bothTeamsStart;
 	private boolean alsoReversedPositions;
 	
-	private boolean switchStartTeam = true;  //just used to clarify runGame parameters
-	private boolean reversePositions = true; //just used to clarify runGame parameters
+	private boolean switchStartTeam = true;  //to clarify runGame parameters
+	private boolean reversePositions = true; //to clarify runGame parameters
 	
 	private boolean testingStatics;
 	private int testStaticDifficulty;
@@ -44,8 +42,6 @@ public class GameThread implements Runnable {
 		this.enemyDifficulty = enemyDifficulty;
 		this.maxRounds = maxRounds;
 		this.fitnessOutput = fitnessOutput;
-		this.choices = choices;
-		this.information = information;
 		this.bothTeamsStart = bothTeamsStart;
 		this.alsoReversedPositions = alsoReversedPositions;
 		this.testingStatics = testingStatics;
@@ -53,6 +49,8 @@ public class GameThread implements Runnable {
 		
 		this.scenarios = scenarios;
 		this.geneticAlgorithm = geneticAlgorithm;
+		
+		currentTeam = new double[3][choices+1][information];
 	}
 	
 	public void run() {
@@ -65,18 +63,13 @@ public class GameThread implements Runnable {
 			//System.out.println("Game " + i + ", team number " + lastAi + "_____________________________");
 			tm1ScenarioSummedFit = 0;
 			tm2ScenarioSummedFit = 0;
-			fitScale = 0;			
+			fitScale = 0;	
 			
 			for (int i = 0; i < scenarios.length; i++) {
 				if(scenarios[i] == null) { continue; }
-				this.geneticPositions = scenarios[i].geneticPositions;
-				this.staticPositions = scenarios[i].staticPositions;
-				
-				currentTeam = new double[geneticPositions.length][3][choices+1][information];
-				
-				for (int teamPos = 0; teamPos < geneticPositions.length; teamPos++) {
-					currentTeam[teamPos] = team1[team];
-				}
+				geneticPositions = scenarios[i].geneticPositions;
+				staticPositions = scenarios[i].staticPositions;				
+				currentTeam = team1[team];
 				
 				if(fitnessOutput) {System.out.println("\nTeam " + (team + 1) + " with fitness " + round(team1Fitness[team], 2) + " in scenario " + (i + 1) + "\n");}
 				
@@ -116,18 +109,22 @@ public class GameThread implements Runnable {
 	public double getTeam1AverageFitness() { return tm1GameAvrFit; }
 	public double getTeam2AverageFitness() { return tm2GameAvrFit; }
 	
-	private void insertGeneticAis(double[][][][] geneticAis, Coordinate[][] geneticPositions) {
+	private void insertGeneticAis(double[][][] geneticAis, Coordinate[][] geneticPositions, int team) {
 		for (int teamPos = 0; teamPos < geneticPositions.length; teamPos++) {
 			for (int aiType = 0; aiType < 3; aiType++) {
-				if (geneticPositions[teamPos][aiType] != null) { gameState.insertAi(newGeneticAi(geneticAis[teamPos][aiType], aiType), 1, geneticColors(aiType), geneticPositions[teamPos][aiType]); }
+				if (geneticPositions[teamPos][aiType] != null) { 
+					gameState.insertAi(newGeneticAi(geneticAis[aiType], aiType), team, geneticColors(aiType), geneticPositions[teamPos][aiType]); 
+				}
 			}
 		}
-	}
+	}	
 	
 	private void insertStaticAis(int difficulty, Coordinate[][] staticPositions, int team) {
 		for (int teamPos = 0; teamPos < staticPositions.length; teamPos++) {
 			for (int aiType = 0; aiType < 3; aiType++) {
-				if (staticPositions[teamPos][aiType] != null) {	gameState.insertAi(newStaticAi(difficulty, aiType), team, staticColors(aiType, difficulty), staticPositions[teamPos][aiType]); }
+				if (staticPositions[teamPos][aiType] != null) {	
+					gameState.insertAi(newStaticAi(difficulty, aiType), team, staticColors(aiType, difficulty), staticPositions[teamPos][aiType]); 
+				}
 			}
 		}
 	}
@@ -178,11 +175,11 @@ public class GameThread implements Runnable {
 	private Color geneticColors(int aiType) {
 		switch(aiType) {
 		case 0:
-			return Color.red;
+			return Color.black;
 		case 1:
-			return Color.orange;
+			return Color.cyan;
 		case 2:
-			return Color.yellow;
+			return Color.green;
 		}
 		return null;
 	}
@@ -194,27 +191,27 @@ public class GameThread implements Runnable {
 			case 0:
 				return Color.LIGHT_GRAY;
 			case 1:
-				return Color.CYAN;
-			case 2:
 				return Color.PINK;
+			case 2:
+				return Color.YELLOW;
 			}
 		case 1:
+			switch(aiType) {
+			case 0:
+				return Color.GRAY;
+			case 1:
+				return Color.MAGENTA;
+			case 2:
+				return Color.ORANGE;
+			}
+		case 2:
 			switch(aiType) {
 			case 0:
 				return Color.DARK_GRAY;
 			case 1:
 				return Color.BLUE;
 			case 2:
-				return Color.GREEN;
-			}
-		case 2:
-			switch(aiType) {
-			case 0:
-				return Color.BLACK;
-			case 1:
-				return Color.MAGENTA;
-			case 2:
-				return Color.BLUE;
+				return Color.RED;
 			}
 		default:
 			return null;
@@ -250,8 +247,8 @@ public class GameThread implements Runnable {
 			else { insertStaticAis(testStaticDifficulty, geneticPositions, 1); }
 		}
 		else {
-			if(reversed) { insertGeneticAis(currentTeam, staticPositions); }
-			else { insertGeneticAis(currentTeam, geneticPositions); }
+			if(reversed) { insertGeneticAis(currentTeam, staticPositions, 1); }
+			else { insertGeneticAis(currentTeam, geneticPositions, 1); }
 			 
 		}
 		

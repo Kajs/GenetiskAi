@@ -21,11 +21,6 @@ public class GameState extends Observable {
 	final int columns;
 	final double boardDiagonal = Controller.boardDiagonal;
 	
-	final boolean allowAngleOutput = Launcher.allowAngleOutput;
-	final boolean allowAreaDamageOutput = Launcher.allowAreaDamageOutput;
-	final boolean allowHealOutput = Launcher.allowHealOutput;
-	final boolean allowNormalDamageOutput = Launcher.allowNormalDamageOutput;
-	
 	private Hex[][] hexMatrix;
 	
 	public GameState(Coordinate startPosition, int rows, int columns, double hexSideSize) {
@@ -213,6 +208,8 @@ public class GameState extends Observable {
 	}
 	
 	private ArrayList<ArrayList<Hex>> hexCakeOptimised(Coordinate origin) {
+		boolean allowAngleOutput = Launcher.allowAngleOutput;
+		
 		ArrayList<ArrayList<Hex>> hexCake = new ArrayList<ArrayList<Hex>>();
 		ArrayList<Hex> north = new ArrayList<Hex>();
 		ArrayList<Hex> northEast = new ArrayList<Hex>();
@@ -537,21 +534,15 @@ public class GameState extends Observable {
 			if(hexes[h] != null){
 				boolean isMyself;
 				for (Ai team1: team1Alive) {
-					int x = team1.getPosition().getX();
-					int y = team1.getPosition().getY();
-					isMyself = (x == activeX && y == activeY);
-					//Hex targetHex = hexMatrix[x][y];
-					//double aiDistance = hexes[h].physicalDistance(targetHex);
+					isMyself = (activeX == team1.getPosition().getX() && activeY == team1.getPosition().getY());
+					
 					double aiDistance = hexes[h].getPosition().distance(team1.getPosition());
 					if(aiDistance < team1Distance && !isMyself) { team1Distance = aiDistance; }
 					if(!isMyself) { averageTeam1Distance += aiDistance; }
 				}
 				for (Ai team2: team2Alive) {
-					int x = team2.getPosition().getX();
-					int y = team2.getPosition().getY();
-					isMyself = (x == activeX && y == activeY);
-					//Hex targetHex = hexMatrix[x][y];
-					//double aiDistance = hexes[h].physicalDistance(targetHex);
+					isMyself = (activeX == team2.getPosition().getX() && activeY == team2.getPosition().getY());
+					
 					double aiDistance = hexes[h].getPosition().distance(team2.getPosition());
 					if(aiDistance < team2Distance && !isMyself) { team2Distance = aiDistance; }
 					if(!isMyself) { averageTeam2Distance += aiDistance; }
@@ -697,7 +688,7 @@ public class GameState extends Observable {
 			if(extendedType.equals("stun")) {
 				targetAi.setStunned(true); } else {
 			if(extendedType.equals("area")) {
-				if(allowAreaDamageOutput) {System.out.println(targetAi.getId() + ":  lost " + ai.getAreaDamage() + " hp to area damage, hp = " + (targetAi.getHp() - ai.getAreaDamage() + " (t)"));}
+				if(Launcher.allowAreaDamageOutput) {System.out.println(targetAi.getId() + ":  lost " + ai.getAreaDamage() + " hp to area damage, hp = " + (targetAi.getHp() - ai.getAreaDamage() + " (t)"));}
 				doDamage(targetAi, ai.getAreaDamage(), newHex);
 				double enemyTeam = targetAi.getTeam();
 				Hex[] adjacentHexes = adjacentHexes(preferredAction.getPosition());
@@ -707,7 +698,7 @@ public class GameState extends Observable {
 							Ai adjacentAi = hex.getAi();
 							if(adjacentAi.getTeam() == enemyTeam) {
 								double newHp = adjacentAi.getHp() - ai.getAreaDamage();
-								if(allowAreaDamageOutput) {System.out.println(adjacentAi.getId() + ":  lost " + ai.getAreaDamage() + " hp to area damage, hp = " + newHp);}
+								if(Launcher.allowAreaDamageOutput) {System.out.println(adjacentAi.getId() + ":  lost " + ai.getAreaDamage() + " hp to area damage, hp = " + newHp);}
 								doDamage(adjacentAi, ai.getAreaDamage(), hex);
 							}
 						}
@@ -720,7 +711,7 @@ public class GameState extends Observable {
 				}
 				else {
 					double damage = ai.getMeleeDamage();
-					if(allowNormalDamageOutput) {System.out.println(targetAi.getId() + ":  took " + damage + " damage, hp = " + (targetAi.getHp() - damage));}
+					if(Launcher.allowNormalDamageOutput) {System.out.println(targetAi.getId() + ":  took " + damage + " damage, hp = " + (targetAi.getHp() - damage));}
 					doDamage(targetAi, damage, newHex);				
 				}
 			}
@@ -734,9 +725,10 @@ public class GameState extends Observable {
 				double initialHp = targetAi.getInitialHp();
 				if(currentHp < initialHp) {
 					double healAmount = min(currentHp + ai.getHealAmount(), initialHp) - currentHp;
-					if(allowHealOutput) {System.out.println(targetAi.getId() + ":  healed " + healAmount + ", hp = " + (currentHp + healAmount));}
+					if(Launcher.allowHealOutput) {System.out.println(targetAi.getId() + ":  healed " + healAmount + ", hp = " + (currentHp + healAmount));}
 					targetAi.setHp(currentHp + healAmount);
-				}} else {
+				}} 
+			else {
 			if(extendedType.equals("boost")) {
 				targetAi.setBoosted(true);
 			} 

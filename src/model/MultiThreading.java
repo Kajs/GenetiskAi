@@ -31,6 +31,18 @@ public class MultiThreading {
 		runThreads();
 	}
 	
+	public double runGetTotalFitnessThreads(GetTotalFitnessThread[] getTotalFitnessThreads, double[] scaledFitness) {
+		for (int i = 0; i < numThreads; i++) {
+			getTotalFitnessThreads[i].setVariables(scaledFitness);
+			threads[i] = new Thread(getTotalFitnessThreads[i]);
+		}
+		runThreads();
+		
+		double result = 0;
+		for (int i = 0; i < numThreads; i++) { result += getTotalFitnessThreads[i].getTotalFitness(); }
+		return result;
+	}
+	
 	public void runKeepPopulationThreads(KeepPopulationThread[] keepPopulationThreads, double[][][][] population, double[][][][] newPopulation, double[] scaledFitness, double totalFitness) {
 		for (int i = 0; i < numThreads; i++) {
 			keepPopulationThreads[i].setVariables(population, newPopulation, scaledFitness, totalFitness);
@@ -45,6 +57,14 @@ public class MultiThreading {
 			threads[i] = new Thread(mutatePopulationThreads[i]);
 		}
 		runThreads();		
+	}
+	
+	public void runScaleFitnessThreads(ScaleFitnessThread[] scaleFitnessThreads, double[] scaledFitness) {
+		for (int i = 0; i < numThreads; i++) {
+			scaleFitnessThreads[i].setVariables(scaledFitness);
+			threads[i] = new Thread(scaleFitnessThreads[i]);
+		}
+		runThreads();
 	}
 	
 	private void sync() {

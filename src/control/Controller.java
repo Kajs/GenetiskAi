@@ -13,35 +13,74 @@ import view.XyDeviationChart;
 import view.XySplineChart;
 
 public class Controller {
-	
+//____________Board and window dimensions
 	final int width = 930;
 	final int height = 600;
 	static final int rows = 20;
 	static final int columns = 40;
 	public static final double boardDiagonal = rows + columns;
 	final double hexSideSize = scaledHexSideSize();
-	public static int roundDelay = 1000;  // in milliseconds
-	final Coordinate startPosition = new Coordinate(sin(toRadians(30)) * hexSideSize, 1);
+//____________Board and window dimensions
+
 	
+//____________________Game variables
 	final int maxRounds = 100;
-	static final int maxGames = 100;
+	static final int maxGames = 10000;
 	public static int gamesCompleted = 0;
+//____________________Game variables
 	
+	
+	
+//____________________Genetic Algorithm variables
 	final int populationSize = 1000;
-	final int choices = 6;
-	public final static int information = 31;
 	final double keepPercent = 0.25;
     final double crossPercent = 0.25;
 	final double mutateLikelihood = 0.9;
 	final boolean elitism = true;
 	final boolean skipZeroFitnessScaling = true;
-	final boolean alwaysKeepBest = true;
+	final boolean alwaysKeepBest = false;
+	
+	final int choices = 6;  //only change if choices have been added/removed from ais
+	public final static int information = 31; //only change if information has been added/removed from ais
+//____________________Genetic Algorithm variables
 	
 	
+	
+//__________________Scaling section
+	final int linearTransformationScaling = 0;
+	final int exponentialScaling = 1;
+	final int scalingType = linearTransformationScaling;	
+//__________________Scaling section
+	
+	
+	
+// ____Scenario Section____
+	private static Scenario[] scenarios;
 	static Coordinate[][] geneticPositions;
 	static Coordinate[][] staticPositions;
+		
+	final boolean bothTeamsStart = true;
+	final boolean alsoReversedPositions = true;
+	final boolean testingStatics = false;
+		
+	final int testStaticDifficulty = 0;
 	final int enemyDifficulty = 0;
+		
+// ____Scenario Section____
 	
+	
+		
+//_______________Thread Section________
+	static int numThreads = 4;
+	final MultiThreading multiThreading = new MultiThreading(numThreads);
+	final GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(populationSize, choices, information, keepPercent, crossPercent, mutateLikelihood, skipZeroFitnessScaling, alwaysKeepBest, numThreads, multiThreading, scalingType);
+	private GameThread[] gameThreads;
+//_______________Thread Section________
+	
+	
+	
+	final Coordinate startPosition = new Coordinate(sin(toRadians(30)) * hexSideSize, 1);
+	public static int roundDelay = 1000;  // in milliseconds
 	public static GameState gameState;
 	public static BoardRenderer boardRenderer;
 	WindowManager window;
@@ -53,24 +92,6 @@ public class Controller {
 	public static double[] bestTeamsFitness = new double[maxGames];
 	private static double[] team1PopulationFitness = new double[maxGames];
 	private static double[] team2PopulationFitness = new double[maxGames];
-	
-	
-	// ____Scenario Section____
-	private static Scenario[] scenarios;
-	final boolean bothTeamsStart = false;
-	final boolean alsoReversedPositions = false;
-	final boolean testingStatics = true;
-	final int testStaticDifficulty = 2;
-	
-	// ____Scenario Section____
-	
-	//_______________Thread Section________
-	static int numThreads = 4;
-	final MultiThreading multiThreading = new MultiThreading(numThreads);
-	final GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(populationSize, choices, information, keepPercent, crossPercent, mutateLikelihood, skipZeroFitnessScaling, alwaysKeepBest, numThreads, multiThreading);
-	private GameThread[] gameThreads;
-	
-	//_______________Thread Section________
 	
 	public Controller(boolean automatic, boolean displayAutomatic) {
 		
@@ -140,12 +161,12 @@ public class Controller {
 		double tm1FinalAvrFit = 0;
 		double tm2FinalAvrFit = 0;
 		int lastGame = 0;
+		double[] team1Fitness = new double[populationSize];
 		
 		for (int game = 0; game < maxGames && !Launcher.stop; game++) {
 			lastGame = game;
 			double tm1AvrFit = 0;
 			double tm2AvrFit = 0;
-			double[] team1Fitness = new double[populationSize];
 			double totalFitness = 0;
 			double bestFitness = (int)Math.pow(-2, 31);
 			int bestTeam = 0;
@@ -210,65 +231,141 @@ public class Controller {
 		
 	public void setupScenarios() {
 		
-		scenarios = new Scenario[4];
+		scenarios = new Scenario[10];
 		int scenarioCounter = 0;
 		
-		//Scenario 0 3v3 standard, spreadout starting positions
+		//Scenario 1 3v3 standard starting positions
 		
-		geneticPositions = new Coordinate[3][3];
-		geneticPositions[0][0] = new Coordinate(13, 2);
-		geneticPositions[0][1] = new Coordinate(7, 2);
-		geneticPositions[0][2] = new Coordinate(1, 2);
+		geneticPositions = new Coordinate[1][3];
+		geneticPositions[0][0] = new Coordinate(9, 4);
+		geneticPositions[0][1] = new Coordinate(10, 4);
+		geneticPositions[0][2] = new Coordinate(11, 4);
 
-		staticPositions = new Coordinate[3][3];
-		staticPositions[0][0] = new Coordinate(6, 20);
-		staticPositions[0][1] = new Coordinate(5, 20);
-		staticPositions[0][2] = new Coordinate(7, 20);		
+		staticPositions = new Coordinate[1][3];
+		staticPositions[0][0] = new Coordinate(9, 35);
+		staticPositions[0][1] = new Coordinate(10, 35);
+		staticPositions[0][2] = new Coordinate(11, 35);		
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);	
 		
-		//Scenario 0.1 3v3 standard, close starting positions
+		//Scenario 2 3v3 up close
 		
-		geneticPositions = new Coordinate[3][3];
-		geneticPositions[0][0] = new Coordinate(9, 2);
-		geneticPositions[0][1] = new Coordinate(7, 2);
-		geneticPositions[0][2] = new Coordinate(5, 2);
+		geneticPositions = new Coordinate[1][3];
+		geneticPositions[0][0] = new Coordinate(9, 20);
+		geneticPositions[0][1] = new Coordinate(10, 20);
+		geneticPositions[0][2] = new Coordinate(11, 20);
 
-		staticPositions = new Coordinate[3][3];
-		staticPositions[0][0] = new Coordinate(6, 20);
-		staticPositions[0][1] = new Coordinate(5, 20);
-		staticPositions[0][2] = new Coordinate(7, 20);		
+		staticPositions = new Coordinate[1][3];
+		staticPositions[0][0] = new Coordinate(9, 21);
+		staticPositions[0][1] = new Coordinate(10, 21);
+		staticPositions[0][2] = new Coordinate(11, 21);		
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
 		
-		//Scenario 0.2 positioned in the middle of map
+		//Scenario 3 3v3 spread vs spread
 		
-		geneticPositions = new Coordinate[3][3];
-		geneticPositions[0][0] = new Coordinate(18, 15);
-		geneticPositions[0][1] = new Coordinate(18, 13);
-		geneticPositions[0][2] = new Coordinate(18, 17);
+		geneticPositions = new Coordinate[1][3];
+		geneticPositions[0][0] = new Coordinate(0, 0);
+		geneticPositions[0][1] = new Coordinate(4, 4);
+		geneticPositions[0][2] = new Coordinate(10, 2);
 
-		staticPositions = new Coordinate[3][3];
-		staticPositions[0][0] = new Coordinate(2, 14);
-		staticPositions[0][1] = new Coordinate(2, 12);
-		staticPositions[0][2] = new Coordinate(2, 16);		
+		staticPositions = new Coordinate[1][3];
+		staticPositions[0][0] = new Coordinate(10, 18);
+		staticPositions[0][1] = new Coordinate(12, 21);
+		staticPositions[0][2] = new Coordinate(15, 25);		
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);		
 		
-		//Scenario 1 surrounded
+		//Scenario 4 3v3 spread bottom vs standard top
 		
-		geneticPositions = new Coordinate[3][3];
+		geneticPositions = new Coordinate[1][3];
+		geneticPositions[0][0] = new Coordinate(17, 15);
+		geneticPositions[0][1] = new Coordinate(17, 19);
+		geneticPositions[0][2] = new Coordinate(17, 23);
+
+		staticPositions = new Coordinate[1][3];
+		staticPositions[0][0] = new Coordinate(4, 19);
+		staticPositions[0][1] = new Coordinate(4, 20);
+		staticPositions[0][2] = new Coordinate(4, 21);		
+		
+		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);		
+
+		//Scenario 5 3 vs 4 in corners
+		
+		geneticPositions = new Coordinate[1][3];
 		geneticPositions[0][0] = new Coordinate(10, 20);
 		geneticPositions[0][1] = new Coordinate(10, 21);
 		geneticPositions[0][2] = new Coordinate(11, 20);
 
-		staticPositions = new Coordinate[3][3];
+		staticPositions = new Coordinate[2][3];
 		staticPositions[0][0] = new Coordinate(1, 1);
 		staticPositions[0][1] = new Coordinate(1, 39);
 		staticPositions[0][2] = new Coordinate(19, 1);
 		staticPositions[1][0] = new Coordinate(19, 39);
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);		
+		
+		//Scenario 6 3 vs 2 + 2 in corners
+		
+		geneticPositions = new Coordinate[1][3];
+		geneticPositions[0][0] = new Coordinate(10, 20);
+		geneticPositions[0][1] = new Coordinate(10, 21);
+		geneticPositions[0][2] = new Coordinate(11, 20);
+
+		staticPositions = new Coordinate[2][3];
+		staticPositions[0][0] = new Coordinate(1, 1);
+		staticPositions[0][1] = new Coordinate(1, 2);
+		staticPositions[0][2] = new Coordinate(19, 38);
+		staticPositions[1][0] = new Coordinate(19, 39);
+		
+		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);	
+				
+
+         //Scenario 7 3 vs 2 + 3 sides
+		
+		geneticPositions = new Coordinate[1][3];
+		geneticPositions[0][0] = new Coordinate(9, 20);
+		geneticPositions[0][1] = new Coordinate(10, 20);
+		geneticPositions[0][2] = new Coordinate(11, 20);
+
+		staticPositions = new Coordinate[2][3];
+		staticPositions[0][0] = new Coordinate(9, 9);
+		staticPositions[0][1] = new Coordinate(10, 9);
+		staticPositions[0][2] = new Coordinate(9, 28);
+		staticPositions[1][0] = new Coordinate(10, 28);
+		staticPositions[1][2] = new Coordinate(11, 28);
+		
+		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
+		
+		//Scenario 8 warrior 1v1
+		
+		geneticPositions = new Coordinate[1][3];
+		geneticPositions[0][0] = new Coordinate(10, 15);
+
+		staticPositions = new Coordinate[1][3];
+		staticPositions[0][0] = new Coordinate(10, 25);
+		
+		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
+		
+		//Scenario 9 wizard 1v1
+		
+		geneticPositions = new Coordinate[1][3];
+		geneticPositions[0][1] = new Coordinate(10, 15);
+
+		staticPositions = new Coordinate[1][3];
+		staticPositions[0][1] = new Coordinate(10, 25);
+		
+		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
+		
+		//Scenario 10 cleric 1v1
+		
+		geneticPositions = new Coordinate[1][3];
+		geneticPositions[0][2] = new Coordinate(10, 15);
+
+		staticPositions = new Coordinate[1][3];
+		staticPositions[0][2] = new Coordinate(10, 25);
+		
+		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
 	}
 	
 	
