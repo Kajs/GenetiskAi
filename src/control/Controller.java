@@ -34,7 +34,7 @@ public class Controller {
 	
 	
 //____________________Genetic Algorithm variables
-	final int populationSize = 100;
+	final int populationSize = 1000;
 	final double keepPercent = 0.25;
     final double crossPercent = 0.25;
 	final double mutateLikelihood = 0.9;
@@ -60,12 +60,13 @@ public class Controller {
 	private static Scenario[] scenarios;
 	static Coordinate[][] geneticPositions;
 	static Coordinate[][] staticPositions;		
-	final boolean bothTeamsStart = false;
 	final boolean alsoReversedPositions = false;
+	final boolean bothTeamsStart = false;
+	final static boolean allDifficulties = true;
 	
 	final boolean testingStatics = false;		
 	final int testStaticDifficulty = 2;
-	final int enemyDifficulty = 2;
+	final static int enemyDifficulty = 2;
 		
 // ____Scenario Section____
 	
@@ -91,9 +92,9 @@ public class Controller {
 	public static boolean runSingleBestTeamGame = false;
 	public static int singleBestTeamNumber;
 	public static double[] bestTeamsFitness = new double[maxGames];
-	public static double[] vsBestTeamsFitness = new double[maxGames];
+	public static double[][] vsBestTeamsFitness = new double[maxGames][3];
 	private static double[] team1PopulationFitness = new double[maxGames];
-	private static double[] team2PopulationFitness = new double[maxGames];
+	private static double[][] team2PopulationFitness = new double[maxGames][3];
 	
 	public Controller(boolean automatic, boolean displayAutomatic) {
 		
@@ -114,7 +115,7 @@ public class Controller {
 		int end = stepSize;
 		for (int i = 0; i < numThreads; i++) {
 			if(i == numThreads - 1 || end > populationSize) {end = populationSize;}
-			gameThreads[i] = new GameThread(new GameState(startPosition, rows, columns, hexSideSize), start, end, enemyDifficulty, maxRounds, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty, geneticAlgorithm);
+			gameThreads[i] = new GameThread(new GameState(startPosition, rows, columns, hexSideSize), start, end, enemyDifficulty, maxRounds, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty, geneticAlgorithm, allDifficulties);
 			start = end;
 			end += stepSize;
 		}
@@ -161,23 +162,23 @@ public class Controller {
 		bestTeams = new double[maxGames][3][choices+1][information];
 		
 		double tm1FinalAvrFit = 0;
-		double tm2FinalAvrFit = 0;
+		double[] tm2FinalAvrFit = new double[3];
 		int lastGame = 0;
 		double[] team1Fitness = new double[populationSize];
 		
 		for (int game = 0; game < maxGames && !Launcher.stop; game++) {
 			lastGame = game;
 			double tm1AvrFit = 0;
-			double tm2AvrFit = 0;
+			double[] tm2AvrFit = new double[3];
 			double bestFitness = (int)Math.pow(-2, 31);
-			double vsBestFitness = (int)Math.pow(-2, 31);
+			double[] vsBestFitness = new double[3];
 			int bestTeam = 0;
 			
 			multiThreading.runGameThreads(gameThreads, team1, team1Fitness);
 			
 			for (int i = 0; i < numThreads; i++) {
 				tm1AvrFit += gameThreads[i].getTeam1AverageFitness() / numThreads;
-				tm2AvrFit += gameThreads[i].getTeam2AverageFitness() / numThreads;
+				for (int s = 0; s < 3; s++) { tm2AvrFit[s] += gameThreads[i].getTeam2AverageFitness()[s] / numThreads; }
 				double gameThreadBestFitness = gameThreads[i].getBestFitness();
 				int gameThreadBestTeam = gameThreads[i].getBestTeam();
 				if(gameThreadBestFitness > bestFitness) {
@@ -195,24 +196,41 @@ public class Controller {
 			vsBestTeamsFitness[game] = vsBestFitness;
 
 			tm1FinalAvrFit = tm1FinalAvrFit + tm1AvrFit;
-			tm2FinalAvrFit = tm2FinalAvrFit + tm2AvrFit;
+			for (int s = 0; s < 3; s++) { tm2FinalAvrFit[s] += tm2AvrFit[s]; }
 			
 			team1PopulationFitness[game] = tm1AvrFit;
 			team2PopulationFitness[game] = tm2AvrFit;
 			
-		    System.out.println("Game " + (game + 1) + " t1B " + round(bestFitness, 3) + ", t2VsB " + round(vsBestFitness, 3) + ", t1_A = " + round(tm1AvrFit, 3)  + ", t2_A = " + round(tm2AvrFit, 3));
+			gameOutput(game, bestFitness, vsBestFitness, tm1AvrFit, tm2AvrFit);
 			
 			team1 = geneticAlgorithm.newPopulation(team1, team1Fitness, elitism, bestTeam);
 		}
 		
 		tm1FinalAvrFit = tm1FinalAvrFit/(lastGame + 1);
-		tm2FinalAvrFit = tm2FinalAvrFit/(lastGame + 1);
+		for (int s = 0; s < 3; s++) { tm2FinalAvrFit[s] = tm2FinalAvrFit[s]/(lastGame + 1); }
+		System.out.println("Final average fitness team1: " + tm1FinalAvrFit);
+}
 		
-		System.out.println("Final average fitness team1: " + tm1FinalAvrFit + ", team2: " + tm2FinalAvrFit);
+	public void gameOutput(int game, double bestFitness, double[] vsBestFitness, double tm1AvrFit, double[] tm2AvrFit) {
+		String output = "Game " + (game + 1) + " t1B " + round(bestFitness, 3);
+		if (!allDifficulties) { output += ", vsB " + round(vsBestFitness[enemyDifficulty], 3); }
+		else {
+			output += ", vsB_B " + round(vsBestFitness[0], 3);
+			output += ", vsB_M " + round(vsBestFitness[1], 3);
+			output += ", vsB_H " + round(vsBestFitness[2], 3);
+		}
+		output += ", t1_A = " + round(tm1AvrFit, 3);
+		if (!allDifficulties) { output += ", t2_A = " + round(tm2AvrFit[enemyDifficulty], 3); }
+		else {
+			output += ", t2_A_B = " + round(tm2AvrFit[0], 3);
+			output += ", t2_A_M = " + round(tm2AvrFit[1], 3);
+			output += ", t2_A_H = " + round(tm2AvrFit[2], 3);
+		}
+		System.out.println(output);
 	}
 	
 	private void runSingleBestTeamGame(int bestTeam) {
-		GameThread bestGameThread = new GameThread(gameState, 0, 1, enemyDifficulty, maxRounds, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty, geneticAlgorithm);
+		GameThread bestGameThread = new GameThread(gameState, 0, 1, enemyDifficulty, maxRounds, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty, geneticAlgorithm, allDifficulties);
 		final double[][][][] singleBestTeam = new double[1][3][choices+1][information];
 		final double[] singleBestTeamFitness = new double[1];
 		singleBestTeamFitness[0] = bestTeamsFitness[bestTeam];
@@ -225,7 +243,7 @@ public class Controller {
 		}
 
 	private void runBestTeamGames() {
-		GameThread bestGameThread = new GameThread(gameState, 0, gamesCompleted, enemyDifficulty, maxRounds, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty, geneticAlgorithm);
+		GameThread bestGameThread = new GameThread(gameState, 0, gamesCompleted, enemyDifficulty, maxRounds, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty, geneticAlgorithm, allDifficulties);
 		bestGameThread.setTeam1(bestTeams);
 		bestGameThread.setTeam1Fitness(bestTeamsFitness);
 		Thread lastThread = new Thread(bestGameThread);
@@ -250,6 +268,8 @@ public class Controller {
 		staticPositions[0][2] = new Coordinate(11, 35);		
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
+		
+		/*
 		
 		//Scenario 2 3v3 up close
 		
@@ -384,6 +404,7 @@ public class Controller {
 		staticPositions[3][2] = new Coordinate(13, 25);
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
+		*/
 	}
 	
 	
@@ -420,14 +441,31 @@ public class Controller {
 	
 	//_________________________________JFreeChart section
 	
-	public static int numChartLines = 4;
+	public static int numChartLines;
+	
+	public static void calculateNumChartLines() {
+		if (!allDifficulties) { numChartLines = 4; }
+		else { numChartLines = 8; }
+	}
 	
 	public static String[] fitnessChartNames() {
 		String[] names = new String[numChartLines];
-		names[0] = "Team 1 best";
-		names[1] = "Team 2 vs best";
-		names[2] = "Team 1 average";
-		names[3] = "Team 2 average";
+		if(!allDifficulties) {
+			names[0] = "Team 1 best";
+			names[1] = "Team 2 vs best";
+			names[2] = "Team 1 average";
+			names[3] = "Team 2 average";
+		}
+		else {
+			names[0] = "Team 1 best";
+			names[1] = "Team 2 basic vs best";
+			names[2] = "Team 2 medium vs best";
+			names[3] = "Team 2 hard vs best";
+			names[4] = "Team 1 average";
+			names[5] = "Team 2 basic average";
+			names[6] = "Team 2 medium average";
+			names[7] = "Team 2 hard average";
+		}
 		return names;
 	}
 	
@@ -445,26 +483,43 @@ public class Controller {
 	
 	public static double[][] fitnessChartData() {
 		double[][] fitnessMatrix = new double[numChartLines][gamesCompleted];
-		for (int i = 0; i < gamesCompleted; i++) {
-			fitnessMatrix[0][i] = bestTeamsFitness[i];
-			fitnessMatrix[1][i] = vsBestTeamsFitness[i];
-			fitnessMatrix[2][i] = team1PopulationFitness[i];
-			fitnessMatrix[3][i] = team2PopulationFitness[i];
+		if(!allDifficulties) {
+			for (int i = 0; i < gamesCompleted; i++) {
+				fitnessMatrix[0][i] = bestTeamsFitness[i];
+				fitnessMatrix[1][i] = vsBestTeamsFitness[i][enemyDifficulty];
+				fitnessMatrix[2][i] = team1PopulationFitness[i];
+				fitnessMatrix[3][i] = team2PopulationFitness[i][enemyDifficulty];
+			}
+		}
+		else {
+			for (int i = 0; i < gamesCompleted; i++) {
+				fitnessMatrix[0][i] = bestTeamsFitness[i];
+				fitnessMatrix[1][i] = vsBestTeamsFitness[i][0];
+				fitnessMatrix[2][i] = vsBestTeamsFitness[i][1];
+				fitnessMatrix[3][i] = vsBestTeamsFitness[i][2];
+				fitnessMatrix[4][i] = team1PopulationFitness[i];
+				fitnessMatrix[5][i] = team2PopulationFitness[i][0];
+				fitnessMatrix[6][i] = team2PopulationFitness[i][1];
+				fitnessMatrix[7][i] = team2PopulationFitness[i][2];
+			}
 		}
 		return fitnessMatrix;
 	}
 	
 	public static void showFitnessXyChart() {
+		calculateNumChartLines();
 		XyChart fitnessChart = new XyChart("Xy Chart", fitnessChartData(), fitnessChartNames());
 		fitnessChart.showResults();
 	}
 	
 	public static void showFitnessXySplineChart() {
+		calculateNumChartLines();
 		XySplineChart fitnessChart = new XySplineChart("Xy Spline Chart", fitnessChartData(), fitnessChartNames());
 		fitnessChart.showResults();
 	}
 	
 	public static void showFitnessXyDeviationChart() {
+		calculateNumChartLines();
 		XyDeviationChart fitnessChart = new XyDeviationChart("Xy Standard Deviation Chart", fitnessChartData(), fitnessChartNames());
 		fitnessChart.showResults();
 	}

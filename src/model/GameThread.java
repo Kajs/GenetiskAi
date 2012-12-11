@@ -23,19 +23,20 @@ public class GameThread implements Runnable {
 	
 	private boolean testingStatics;
 	private int testStaticDifficulty;
+	private boolean allDifficulties;
 	
 	private double bestFitness;
-	private double vsBestFitness;
+	private double[] vsBestFitness;
 	private int bestTeam;
 	private double tm1GameAvrFit;
-	private double tm2GameAvrFit;
+	private double[] tm2GameAvrFit;
 	private double tm1ScenarioSummedFit;
-	private double tm2ScenarioSummedFit;
+	private double[] tm2ScenarioSummedFit;
 	private double fitScale;
 	
 	private Scenario[] scenarios;
 	
-	public GameThread(GameState gameState, int firstTeam, int lastTeam, int enemyDifficulty, int maxRounds, int choices, int information, boolean fitnessOutput, Scenario[] scenarios, boolean alsoReversedPositions, boolean bothTeamsStart, boolean testingStatics, int testStaticDifficulty, GeneticAlgorithm geneticAlgorithm) {
+	public GameThread(GameState gameState, int firstTeam, int lastTeam, int enemyDifficulty, int maxRounds, int choices, int information, boolean fitnessOutput, Scenario[] scenarios, boolean alsoReversedPositions, boolean bothTeamsStart, boolean testingStatics, int testStaticDifficulty, GeneticAlgorithm geneticAlgorithm, boolean allDifficulties) {
 		this.gameState = gameState;
 		this.firstTeam = firstTeam;
 		this.lastTeam = lastTeam;
@@ -46,6 +47,7 @@ public class GameThread implements Runnable {
 		this.alsoReversedPositions = alsoReversedPositions;
 		this.testingStatics = testingStatics;
 		this.testStaticDifficulty = testStaticDifficulty;
+		this.allDifficulties = allDifficulties;
 		
 		this.scenarios = scenarios;
 		this.geneticAlgorithm = geneticAlgorithm;
@@ -55,15 +57,16 @@ public class GameThread implements Runnable {
 	
 	public void run() {
 		bestFitness = (int)Math.pow(-2, 31);
-		vsBestFitness = (int)Math.pow(-2, 31);
+		vsBestFitness = new double[3];
+		for (int b = 0; b < 3; b++) { vsBestFitness[b] = (int)Math.pow(-2, 31); }
 		bestTeam = 0;
 		double tm1GameSummedFitness = 0;
-		double tm2GameSummedFitness = 0;
+		double[] tm2GameSummedFitness = new double[3];
 		
 		for (int team = firstTeam; team < lastTeam; team++) {
 			//System.out.println("Game " + i + ", team number " + lastAi + "_____________________________");
 			tm1ScenarioSummedFit = 0;
-			tm2ScenarioSummedFit = 0;
+			tm2ScenarioSummedFit = new double[3];
 			fitScale = 0;	
 			
 			for (int i = 0; i < scenarios.length; i++) {
@@ -74,21 +77,24 @@ public class GameThread implements Runnable {
 				
 				if(fitnessOutput) {System.out.println("\nTeam " + (team + 1) + " with fitness " + round(team1Fitness[team], 2) + " in scenario " + (i + 1) + "\n");}
 				
-				runGame(!reversePositions, !switchStartTeam); // not reversed, team 1 starts
-			    if(bothTeamsStart) { runGame(!reversePositions, switchStartTeam); } 
-			    if(alsoReversedPositions) {
-					runGame(reversePositions, !switchStartTeam); //reversed, team 1 starts				    
-				    if(bothTeamsStart) { runGame(reversePositions, switchStartTeam); }
+				if(!allDifficulties) { runAllGames(enemyDifficulty); }
+				else {
+					runAllGames(0);
+					runAllGames(1);
+					runAllGames(2);
 				}
 			    
 			} //not reversed team 2 starts
 				
 				tm1GameSummedFitness = tm1GameSummedFitness + tm1ScenarioSummedFit/fitScale;
-				tm2GameSummedFitness = tm2GameSummedFitness + tm2ScenarioSummedFit/fitScale;
+				
+				double staticFitScale = fitScale;
+				if (allDifficulties) {staticFitScale = staticFitScale / 3; }
+				for (int s = 0; s < 3; s++) { tm2GameSummedFitness[s] += tm2ScenarioSummedFit[s]/staticFitScale; }
 				
 				if(tm1ScenarioSummedFit/fitScale >= bestFitness) {
 					bestFitness = tm1ScenarioSummedFit/fitScale;
-					vsBestFitness = tm2ScenarioSummedFit/fitScale;
+					for (int s = 0; s < 3; s++) { vsBestFitness[s] = tm2ScenarioSummedFit[s]/staticFitScale; }
 					bestTeam = team;
 				}
 				
@@ -96,7 +102,8 @@ public class GameThread implements Runnable {
 		}
 		
 		tm1GameAvrFit = tm1GameSummedFitness / (lastTeam - firstTeam);
-		tm2GameAvrFit = tm2GameSummedFitness / (lastTeam - firstTeam);
+		tm2GameAvrFit = new double[3];
+		for (int s = 0; s < 3; s++) { tm2GameAvrFit[s] = tm2GameSummedFitness[s] / (lastTeam - firstTeam); }
 		
 		//System.out.println("totalFit " + totalFitness + ", tm1Avr " + tm1GameAvrFit + ", tm2Avr " + tm2GameAvrFit);
     }
@@ -107,8 +114,8 @@ public class GameThread implements Runnable {
 	public double getBestFitness() { return bestFitness; }
 	public int getBestTeam() { return bestTeam; }
 	public double getTeam1AverageFitness() { return tm1GameAvrFit; }
-	public double getTeam2AverageFitness() { return tm2GameAvrFit; }
-	public double getVsBestFitness() { return vsBestFitness; }
+	public double[] getTeam2AverageFitness() { return tm2GameAvrFit; }
+	public double[] getVsBestFitness() { return vsBestFitness; }
 	
 	private void insertGeneticAis(double[][][] geneticAis, Coordinate[][] geneticPositions, int team) {
 		for (int teamPos = 0; teamPos < geneticPositions.length; teamPos++) {
@@ -127,6 +134,15 @@ public class GameThread implements Runnable {
 					gameState.insertAi(newStaticAi(difficulty, aiType), team, staticColors(aiType, difficulty), staticPositions[teamPos][aiType]); 
 				}
 			}
+		}
+	}
+	
+	public void runAllGames(int enemyDifficulty) {
+		runGame(!reversePositions, !switchStartTeam, enemyDifficulty); // not reversed, team 1 starts
+	    if(bothTeamsStart) { runGame(!reversePositions, switchStartTeam, enemyDifficulty); } 
+	    if(alsoReversedPositions) {
+			runGame(reversePositions, !switchStartTeam, enemyDifficulty); //reversed, team 1 starts				    
+		    if(bothTeamsStart) { runGame(reversePositions, switchStartTeam, enemyDifficulty); }
 		}
 	}
 	
@@ -229,7 +245,7 @@ public class GameThread implements Runnable {
 	    return (double) tmp / factor;
 	}
 	
-	public void runGame(boolean reversed, boolean switchStartTeam) {
+	public void runGame(boolean reversed, boolean switchStartTeam, int enemyDifficulty) {
 		if(fitnessOutput) {
 			String gameDescription = "    ";
 			if(!reversed) { gameDescription += "normal game"; }
@@ -263,6 +279,6 @@ public class GameThread implements Runnable {
 		double tm2Result = geneticAlgorithm.fitness(results[1]);
 	    
 	    tm1ScenarioSummedFit += tm1Result;
-	    tm2ScenarioSummedFit += tm2Result;
+	    tm2ScenarioSummedFit[enemyDifficulty] += tm2Result;
 	}
 }
