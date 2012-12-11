@@ -34,7 +34,7 @@ public class Controller {
 	
 	
 //____________________Genetic Algorithm variables
-	final int populationSize = 1000;
+	final int populationSize = 100;
 	final double keepPercent = 0.25;
     final double crossPercent = 0.25;
 	final double mutateLikelihood = 0.9;
@@ -60,8 +60,8 @@ public class Controller {
 	private static Scenario[] scenarios;
 	static Coordinate[][] geneticPositions;
 	static Coordinate[][] staticPositions;		
-	final boolean alsoReversedPositions = false;
-	final boolean bothTeamsStart = false;
+	final boolean alsoReversedPositions = true;
+	final boolean bothTeamsStart = true;
 	final static boolean allDifficulties = true;
 	
 	final boolean testingStatics = false;		
@@ -269,8 +269,6 @@ public class Controller {
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
 		
-		/*
-		
 		//Scenario 2 3v3 up close
 		
 		geneticPositions = new Coordinate[1][3];
@@ -404,7 +402,6 @@ public class Controller {
 		staticPositions[3][2] = new Coordinate(13, 25);
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
-		*/
 	}
 	
 	
