@@ -234,7 +234,7 @@ public class Controller {
 		
 	public void setupScenarios() {
 		
-		scenarios = new Scenario[10];
+		scenarios = new Scenario[9];
 		int scenarioCounter = 0;
 		
 		//Scenario 1 3v3 standard starting positions
@@ -251,21 +251,7 @@ public class Controller {
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
 		
-		//Scenario 2 3v3 up close
-		
-		geneticPositions = new Coordinate[1][3];
-		geneticPositions[0][0] = new Coordinate(9, 20);
-		geneticPositions[0][1] = new Coordinate(10, 20);
-		geneticPositions[0][2] = new Coordinate(11, 20);
-
-		staticPositions = new Coordinate[1][3];
-		staticPositions[0][0] = new Coordinate(9, 21);
-		staticPositions[0][1] = new Coordinate(10, 21);
-		staticPositions[0][2] = new Coordinate(11, 21);		
-		
-		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
-		
-		//Scenario 3 3v3 spread vs spread
+		//Scenario 2 3v3 spread vs spread
 		
 		geneticPositions = new Coordinate[1][3];
 		geneticPositions[0][0] = new Coordinate(0, 0);
@@ -279,7 +265,7 @@ public class Controller {
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);		
 		
-		//Scenario 4 3v3 spread bottom vs standard top
+		//Scenario 3 3v3 spread bottom vs standard top
 		
 		geneticPositions = new Coordinate[1][3];
 		geneticPositions[0][0] = new Coordinate(17, 15);
@@ -293,7 +279,7 @@ public class Controller {
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);		
 
-		//Scenario 5 3 vs 4 in corners
+		//Scenario 4 3 vs 4 in corners
 		
 		geneticPositions = new Coordinate[1][3];
 		geneticPositions[0][0] = new Coordinate(10, 20);
@@ -308,7 +294,7 @@ public class Controller {
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);		
 		
-		//Scenario 6 3 vs 2 + 2 in corners
+		//Scenario 5 3 vs 2 + 2 in corners
 		
 		geneticPositions = new Coordinate[1][3];
 		geneticPositions[0][0] = new Coordinate(10, 20);
@@ -324,7 +310,7 @@ public class Controller {
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);	
 				
 
-         //Scenario 7 3 vs 2 + 3 sides
+         //Scenario 6 3 vs 2 + 3 sides
 		
 		geneticPositions = new Coordinate[1][3];
 		geneticPositions[0][0] = new Coordinate(9, 20);
@@ -340,7 +326,7 @@ public class Controller {
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
 		
-		//Scenario 8 3vs 4 warrior
+		//Scenario 7 3vs 4 warrior
 		
 		geneticPositions = new Coordinate[1][3];
 		geneticPositions[0][0] = new Coordinate(8, 5);
@@ -355,7 +341,7 @@ public class Controller {
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
 		
-		//Scenario 9 3 vs 4 wizard 
+		//Scenario 8 3 vs 4 wizard 
 		
 		geneticPositions = new Coordinate[1][3];
 		geneticPositions[0][0] = new Coordinate(8, 5);
@@ -370,7 +356,7 @@ public class Controller {
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
 		
-		//Scenario 10 3 vs 4 cleric
+		//Scenario 9 3 vs 4 cleric
 		
 		geneticPositions = new Coordinate[1][3];
 		geneticPositions[0][0] = new Coordinate(8, 5);

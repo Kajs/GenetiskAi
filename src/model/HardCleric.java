@@ -54,14 +54,12 @@ public class HardCleric extends Ai {
 					
 					if(healPotential > 0) {
 						weight += healPotential;
-						weight += 1.0/hp;
 						compareAction(weight, adjacentPosition, "support", "heal");
 					}
 					
-					if(nearestAllyHp > 0 && nearestAllyHp < 10) {
+					if(nearestAllyHp < 10) {
 						weight = 1100;
 						weight += healPotential;
-						weight += 1.0/hp;
 						compareAction(weight, adjacentPosition, "support", "heal");
 					}
 				}
