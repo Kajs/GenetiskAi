@@ -79,12 +79,15 @@ public class GeneticAlgorithm {
 		if(stepSize < 1) {stepSize = 1;}
 		start = keepAmount + crossAmount;
 		end = start + stepSize;
-		double drasticStart = 0;
-		double drasticEnd = 1;
+		double mutateLikelihoodStart = 0.0;
+		double mutateLikelihoodEnd = 0.0;
 		
 		for (int i = 0; i < numThreads; i++) {
 			if(i == numThreads - 1 || end > populationSize) { end = populationSize;}
-			mutatePopulationThreads[i] = new MutatePopulationThread(start, end, populationLimit, choices, information, drasticStart, drasticEnd, mutateLikelihood);
+			mutateLikelihoodStart = 100 / numThreads * i;
+			mutateLikelihoodEnd = 100 / numThreads * (i+1);
+			//System.out.println("Mutate %: " + mutateLikelihoodStart + " to " + mutateLikelihoodEnd);
+			mutatePopulationThreads[i] = new MutatePopulationThread(start, end, populationLimit, choices, information, mutateLikelihoodStart, mutateLikelihoodEnd);
 			start = end;
 			end += stepSize;
 		}
