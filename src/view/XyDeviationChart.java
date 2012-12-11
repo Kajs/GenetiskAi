@@ -59,7 +59,7 @@ public class XyDeviationChart extends ApplicationFrame
 
 	private JFreeChart createChart(XYDataset xydataset)
 	{
-		JFreeChart jfreechart = ChartFactory.createScatterPlot("Pojected Fitness Results", "game", "fitness", xydataset, PlotOrientation.VERTICAL, true, false, false);
+		JFreeChart jfreechart = ChartFactory.createScatterPlot("Projected Fitness Results", "game", "fitness", xydataset, PlotOrientation.VERTICAL, true, false, false);
 		XYPlot xyplot = (XYPlot)jfreechart.getPlot();
 		DeviationRenderer deviationrenderer = new DeviationRenderer(true, false);
 		xyplot.setRenderer(deviationrenderer);

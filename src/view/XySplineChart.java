@@ -14,6 +14,8 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 
+import control.Controller;
+
 /**
  * This demo shows a simple bar chart created using the {@link XYSeriesCollection} dataset.
  *
@@ -91,12 +93,10 @@ public class XySplineChart extends ApplicationFrame {
         );
         XYPlot plot = (XYPlot) chart.getPlot();
         XYSplineRenderer renderer = new XYSplineRenderer();
-        renderer.setSeriesLinesVisible(0, true);
-        renderer.setSeriesShapesVisible(0, false);
-        renderer.setSeriesLinesVisible(1, true);
-        renderer.setSeriesShapesVisible(1, false);
-        renderer.setSeriesLinesVisible(2, true);
-        renderer.setSeriesShapesVisible(2, false);
+        for (int i = 0; i < Controller.numChartLines; i++) {
+        	renderer.setSeriesLinesVisible(i, true);
+            renderer.setSeriesShapesVisible(i, false);
+        }
         plot.setRenderer(renderer);
         return chart;    
     }

@@ -233,6 +233,28 @@ public class WindowManager {
 	    	}
 	    });
 	   
+	   JMenuItem showXyWeightChart = new JMenuItem("Show xy weight chart");
+	   showXyWeightChart.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		String str = JOptionPane.showInputDialog(null, "Game Number : ", "Xy Weight Chart", 1);
+	    		if(str != null) {
+	    			int bestTeam = new Integer(str) - 1;
+	    			Controller.showXyWeightChart(bestTeam);
+	    		}
+	    	}
+	    });
+	   
+	   JMenuItem showScatterWeightChart = new JMenuItem("Show scatter weight chart");
+	   showScatterWeightChart.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		String str = JOptionPane.showInputDialog(null, "Game Number : ", "Xy Scatter Chart", 1);
+	    		if(str != null) {
+	    			int bestTeam = new Integer(str) - 1;
+	    			Controller.showScatterWeightChart(bestTeam);
+	    		}
+	    	}
+	    });
+	   
 	   JMenu automatic = new JMenu("Automatic");
 	   automatic.add(newBestTeamGame);
 	   automatic.add(runBestTeamGames);
@@ -267,6 +289,8 @@ public class WindowManager {
 	   charts.add(showXyChart);
 	   charts.add(showXySplineChart);
 	   charts.add(showXyDeviationChart);
+	   charts.add(showXyWeightChart);
+	   charts.add(showScatterWeightChart);
 	   
 	   menuBar.add(automatic);
 	   menuBar.add(output);

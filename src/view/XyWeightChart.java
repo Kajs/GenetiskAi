@@ -20,7 +20,7 @@ import control.Controller;
  * This demo shows a simple bar chart created using the {@link XYSeriesCollection} dataset.
  *
  */
-public class XyChart extends ApplicationFrame {
+public class XyWeightChart extends ApplicationFrame {
 	
     /**
 	 * 
@@ -37,7 +37,7 @@ public class XyChart extends ApplicationFrame {
 		 if(evt.getWindow() == this){ dispose(); }
 	}
 	
-    public XyChart(final String title, double[][] dataMatrix, String[] names) {
+    public XyWeightChart(final String title, double[][] dataMatrix, String[] names) {
         super(title);
         IntervalXYDataset dataset = createDataset(dataMatrix, names);
         JFreeChart chart = createChart(dataset);
@@ -81,10 +81,10 @@ public class XyChart extends ApplicationFrame {
      */
     private JFreeChart createChart(IntervalXYDataset dataset) {
         final JFreeChart chart = ChartFactory.createXYBarChart(
-            "Fitness Results",
-            "game", 
+            "Weight Values",
+            "weight", 
             false,
-            "fitness", 
+            "value", 
             dataset,
             PlotOrientation.VERTICAL,
             true,
@@ -93,9 +93,9 @@ public class XyChart extends ApplicationFrame {
         );
         XYPlot plot = (XYPlot) chart.getPlot();
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-        for (int i = 0; i < Controller.numChartLines; i++) {
+        for (int i = 0; i < Controller.choices + 1; i++) {
         	renderer.setSeriesLinesVisible(i, true);
-            renderer.setSeriesShapesVisible(i, false);
+            renderer.setSeriesShapesVisible(i, true);
         }
         plot.setRenderer(renderer);
         return chart;    

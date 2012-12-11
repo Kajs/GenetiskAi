@@ -7,10 +7,12 @@ import static java.lang.Math.toRadians;
 
 import model.*;
 import view.BoardRenderer;
+import view.ScatterWeightChart;
 import view.XyChart;
 import view.WindowManager;
 import view.XyDeviationChart;
 import view.XySplineChart;
+import view.XyWeightChart;
 
 public class Controller {
 //____________Board and window dimensions
@@ -25,14 +27,14 @@ public class Controller {
 	
 //____________________Game variables
 	final int maxRounds = 100;
-	static final int maxGames = 1;
+	static final int maxGames = 10000;
 	public static int gamesCompleted = 0;
 //____________________Game variables
 	
 	
 	
 //____________________Genetic Algorithm variables
-	final int populationSize = 1000;
+	final int populationSize = 100;
 	final double keepPercent = 0.25;
     final double crossPercent = 0.25;
 	final double mutateLikelihood = 0.9;
@@ -40,7 +42,7 @@ public class Controller {
 	final boolean skipZeroFitnessScaling = true;
 	final boolean alwaysKeepBest = true;
 	
-	final int choices = 6;  //only change if choices have been added/removed from ais
+	public static final int choices = 6;  //only change if choices have been added/removed from ais
 	public final static int information = 31; //only change if information has been added/removed from ais
 //____________________Genetic Algorithm variables
 	
@@ -49,7 +51,7 @@ public class Controller {
 //__________________Scaling section
 	final int linearTransformationScaling = 0;
 	final int exponentialScaling = 1;
-	final int scalingType = linearTransformationScaling;	
+	final int scalingType = exponentialScaling;	
 //__________________Scaling section
 	
 	
@@ -57,12 +59,11 @@ public class Controller {
 // ____Scenario Section____
 	private static Scenario[] scenarios;
 	static Coordinate[][] geneticPositions;
-	static Coordinate[][] staticPositions;
-		
-	final boolean bothTeamsStart = true;
-	final boolean alsoReversedPositions = true;
-	final boolean testingStatics = false;
-		
+	static Coordinate[][] staticPositions;		
+	final boolean bothTeamsStart = false;
+	final boolean alsoReversedPositions = false;
+	
+	final boolean testingStatics = false;		
 	final int testStaticDifficulty = 2;
 	final int enemyDifficulty = 2;
 		
@@ -90,6 +91,7 @@ public class Controller {
 	public static boolean runSingleBestTeamGame = false;
 	public static int singleBestTeamNumber;
 	public static double[] bestTeamsFitness = new double[maxGames];
+	public static double[] vsBestTeamsFitness = new double[maxGames];
 	private static double[] team1PopulationFitness = new double[maxGames];
 	private static double[] team2PopulationFitness = new double[maxGames];
 	
@@ -167,20 +169,20 @@ public class Controller {
 			lastGame = game;
 			double tm1AvrFit = 0;
 			double tm2AvrFit = 0;
-			double totalFitness = 0;
 			double bestFitness = (int)Math.pow(-2, 31);
+			double vsBestFitness = (int)Math.pow(-2, 31);
 			int bestTeam = 0;
 			
 			multiThreading.runGameThreads(gameThreads, team1, team1Fitness);
 			
 			for (int i = 0; i < numThreads; i++) {
-				totalFitness = totalFitness + gameThreads[i].getTotalFitness();
-				tm1AvrFit = tm1AvrFit + gameThreads[i].getTeam1AverageFitness() / numThreads;
-				tm2AvrFit = tm2AvrFit + gameThreads[i].getTeam2AverageFitness() / numThreads;
+				tm1AvrFit += gameThreads[i].getTeam1AverageFitness() / numThreads;
+				tm2AvrFit += gameThreads[i].getTeam2AverageFitness() / numThreads;
 				double gameThreadBestFitness = gameThreads[i].getBestFitness();
 				int gameThreadBestTeam = gameThreads[i].getBestTeam();
 				if(gameThreadBestFitness > bestFitness) {
 					bestFitness = gameThreadBestFitness;
+					vsBestFitness = gameThreads[i].getVsBestFitness();
 					bestTeam = gameThreadBestTeam;
 				}
 			}
@@ -190,6 +192,7 @@ public class Controller {
 			bestTeams[game] = team1[bestTeam];
 			
 			bestTeamsFitness[game] = bestFitness;
+			vsBestTeamsFitness[game] = vsBestFitness;
 
 			tm1FinalAvrFit = tm1FinalAvrFit + tm1AvrFit;
 			tm2FinalAvrFit = tm2FinalAvrFit + tm2AvrFit;
@@ -197,7 +200,7 @@ public class Controller {
 			team1PopulationFitness[game] = tm1AvrFit;
 			team2PopulationFitness[game] = tm2AvrFit;
 			
-		    System.out.println("Game " + (game + 1) + " t1_best " + round(bestFitness, 2) + ", t1_A = " + round(tm1AvrFit, 2)  + ", t2_A = " + round(tm2AvrFit, 2));
+		    System.out.println("Game " + (game + 1) + " t1B " + round(bestFitness, 3) + ", t2VsB " + round(vsBestFitness, 3) + ", t1_A = " + round(tm1AvrFit, 3)  + ", t2_A = " + round(tm2AvrFit, 3));
 			
 			team1 = geneticAlgorithm.newPopulation(team1, team1Fitness, elitism, bestTeam);
 		}
@@ -246,7 +249,7 @@ public class Controller {
 		staticPositions[0][1] = new Coordinate(10, 35);
 		staticPositions[0][2] = new Coordinate(11, 35);		
 		
-		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);	
+		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
 		
 		//Scenario 2 3v3 up close
 		
@@ -402,39 +405,67 @@ public class Controller {
 	
 	//_________________________________JFreeChart section
 	
-	public static int numChartLines = 3;
+	public static int numChartLines = 4;
 	
-	public static String[] chartNames() {
+	public static String[] fitnessChartNames() {
 		String[] names = new String[numChartLines];
 		names[0] = "Team 1 best";
-		names[1] = "Team 1 average";
-		names[2] = "Team 2 average";
+		names[1] = "Team 2 vs best";
+		names[2] = "Team 1 average";
+		names[3] = "Team 2 average";
 		return names;
 	}
 	
-	public static double[][] chartData() {
+	public static String[] weightChartNames(String type) {
+		String[] names = new String[choices + 1];
+		names[0] = type + " final choice weights";
+		names[1] = "Normal attack";
+		names[2] = "Special attack";
+		names[3] = "Support";
+		names[4] = "Move 1";
+		names[5] = "Move 2";
+		names[6] = "Move, stay";
+		return names;
+	}
+	
+	public static double[][] fitnessChartData() {
 		double[][] fitnessMatrix = new double[numChartLines][gamesCompleted];
 		for (int i = 0; i < gamesCompleted; i++) {
 			fitnessMatrix[0][i] = bestTeamsFitness[i];
-			fitnessMatrix[1][i] = team1PopulationFitness[i];
-			fitnessMatrix[2][i] = team2PopulationFitness[i];
+			fitnessMatrix[1][i] = vsBestTeamsFitness[i];
+			fitnessMatrix[2][i] = team1PopulationFitness[i];
+			fitnessMatrix[3][i] = team2PopulationFitness[i];
 		}
 		return fitnessMatrix;
 	}
 	
 	public static void showFitnessXyChart() {
-		XyChart fitnessChart = new XyChart("Xy Chart", chartData(), chartNames());
+		XyChart fitnessChart = new XyChart("Xy Chart", fitnessChartData(), fitnessChartNames());
 		fitnessChart.showResults();
 	}
 	
 	public static void showFitnessXySplineChart() {
-		XySplineChart fitnessChart = new XySplineChart("Xy Spline Chart", chartData(), chartNames());
+		XySplineChart fitnessChart = new XySplineChart("Xy Spline Chart", fitnessChartData(), fitnessChartNames());
 		fitnessChart.showResults();
 	}
 	
 	public static void showFitnessXyDeviationChart() {
-		XyDeviationChart fitnessChart = new XyDeviationChart("Xy Standard Deviation Chart", chartData(), chartNames());
+		XyDeviationChart fitnessChart = new XyDeviationChart("Xy Standard Deviation Chart", fitnessChartData(), fitnessChartNames());
 		fitnessChart.showResults();
+	}
+	
+	public static void showXyWeightChart(int team) {
+		XyWeightChart weightChartWarrior = new XyWeightChart("Xy Weight Chart, Warrior", bestTeams[team][0], weightChartNames("Warrior"));
+		weightChartWarrior.showResults();
+		XyWeightChart weightChartWizard = new XyWeightChart("Xy Weight Chart, Wizard", bestTeams[team][1], weightChartNames("Wizard"));
+		weightChartWizard.showResults();
+		XyWeightChart weightChartCleric = new XyWeightChart("Xy Weight Chart, Cleric", bestTeams[team][2], weightChartNames("Cleric"));
+		weightChartCleric.showResults();
+	}
+	
+	public static void showScatterWeightChart(int team) {
+		ScatterWeightChart scatterWeightChartWarrior = new ScatterWeightChart("Xy Weight Chart, Warrior", bestTeams[team][0], weightChartNames("Warrior"));
+		scatterWeightChartWarrior.showResults();
 	}
 	
 	//_________________________________JFreeChart section

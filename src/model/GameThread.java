@@ -24,8 +24,8 @@ public class GameThread implements Runnable {
 	private boolean testingStatics;
 	private int testStaticDifficulty;
 	
-	private double totalFitness;
 	private double bestFitness;
+	private double vsBestFitness;
 	private int bestTeam;
 	private double tm1GameAvrFit;
 	private double tm2GameAvrFit;
@@ -55,6 +55,7 @@ public class GameThread implements Runnable {
 	
 	public void run() {
 		bestFitness = (int)Math.pow(-2, 31);
+		vsBestFitness = (int)Math.pow(-2, 31);
 		bestTeam = 0;
 		double tm1GameSummedFitness = 0;
 		double tm2GameSummedFitness = 0;
@@ -87,13 +88,13 @@ public class GameThread implements Runnable {
 				
 				if(tm1ScenarioSummedFit/fitScale >= bestFitness) {
 					bestFitness = tm1ScenarioSummedFit/fitScale;
+					vsBestFitness = tm2ScenarioSummedFit/fitScale;
 					bestTeam = team;
 				}
 				
 				team1Fitness[team] = tm1ScenarioSummedFit/fitScale;
 		}
 		
-		totalFitness = tm1GameSummedFitness;
 		tm1GameAvrFit = tm1GameSummedFitness / (lastTeam - firstTeam);
 		tm2GameAvrFit = tm2GameSummedFitness / (lastTeam - firstTeam);
 		
@@ -103,11 +104,11 @@ public class GameThread implements Runnable {
 	public void setTeam1(double[][][][] team1) {this.team1 = team1; }
 	public void setTeam1Fitness(double[] team1Fitness) { this.team1Fitness = team1Fitness; }
 	
-	public double getTotalFitness() { return totalFitness; }
 	public double getBestFitness() { return bestFitness; }
 	public int getBestTeam() { return bestTeam; }
 	public double getTeam1AverageFitness() { return tm1GameAvrFit; }
 	public double getTeam2AverageFitness() { return tm2GameAvrFit; }
+	public double getVsBestFitness() { return vsBestFitness; }
 	
 	private void insertGeneticAis(double[][][] geneticAis, Coordinate[][] geneticPositions, int team) {
 		for (int teamPos = 0; teamPos < geneticPositions.length; teamPos++) {
@@ -230,11 +231,11 @@ public class GameThread implements Runnable {
 	
 	public void runGame(boolean reversed, boolean switchStartTeam) {
 		if(fitnessOutput) {
-			String gameDescription = "";
-			if(!reversed) { gameDescription += "normal game, "; }
-			else { gameDescription += "reversed game, "; }
-			if(!switchStartTeam) { gameDescription += "team 1 starts"; }
-			else { gameDescription += "team 2 starts"; }
+			String gameDescription = "    ";
+			if(!reversed) { gameDescription += "normal game"; }
+			else { gameDescription += "reversed game"; }
+			if(!switchStartTeam) { gameDescription += ", team 1 starts"; }
+			else { gameDescription += ", team 2 starts"; }
 			System.out.println(gameDescription);
 		}
 		
