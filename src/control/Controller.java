@@ -7,12 +7,11 @@ import static java.lang.Math.toRadians;
 
 import model.*;
 import view.BoardRenderer;
-import view.ScatterWeightChart;
+import view.DualAxisWeightChart;
 import view.XyChart;
 import view.WindowManager;
 import view.XyDeviationChart;
 import view.XySplineChart;
-import view.XyWeightChart;
 
 public class Controller {
 //____________Board and window dimensions
@@ -34,7 +33,7 @@ public class Controller {
 	
 	
 //____________________Genetic Algorithm variables
-	final int populationSize = 100;
+	final int populationSize = 1000;
 	final double keepPercent = 0.25;
     final double crossPercent = 0.25;
 	final double mutateLikelihood = 0.9;
@@ -466,9 +465,9 @@ public class Controller {
 		return names;
 	}
 	
-	public static String[] weightChartNames(String type) {
+	public static String[] weightChartNames() {
 		String[] names = new String[choices + 1];
-		names[0] = type + " final choice weights";
+		names[0] = "Choice weights";
 		names[1] = "Normal attack";
 		names[2] = "Special attack";
 		names[3] = "Support";
@@ -521,18 +520,13 @@ public class Controller {
 		fitnessChart.showResults();
 	}
 	
-	public static void showXyWeightChart(int team) {
-		XyWeightChart weightChartWarrior = new XyWeightChart("Xy Weight Chart, Warrior", bestTeams[team][0], weightChartNames("Warrior"));
-		weightChartWarrior.showResults();
-		XyWeightChart weightChartWizard = new XyWeightChart("Xy Weight Chart, Wizard", bestTeams[team][1], weightChartNames("Wizard"));
-		weightChartWizard.showResults();
-		XyWeightChart weightChartCleric = new XyWeightChart("Xy Weight Chart, Cleric", bestTeams[team][2], weightChartNames("Cleric"));
-		weightChartCleric.showResults();
-	}
-	
-	public static void showScatterWeightChart(int team) {
-		ScatterWeightChart scatterWeightChartWarrior = new ScatterWeightChart("Xy Weight Chart, Warrior", bestTeams[team][0], weightChartNames("Warrior"));
-		scatterWeightChartWarrior.showResults();
+	public static void showDualAxisWeightChart(int team) {
+		DualAxisWeightChart dualAxisWeightChartWarrior = new DualAxisWeightChart("Dual Axis Weight Chart (Warrior)", bestTeams[team][0], weightChartNames(), "Warrior");
+		dualAxisWeightChartWarrior.showResults();
+		DualAxisWeightChart dualAxisWeightChartWizard = new DualAxisWeightChart("Dual Axis Weight Chart (Wizard)", bestTeams[team][0], weightChartNames(), "Wizard");
+		dualAxisWeightChartWizard.showResults();
+		DualAxisWeightChart dualAxisWeightChartCleric = new DualAxisWeightChart("Dual Axis Weight Chart (Cleric)", bestTeams[team][0], weightChartNames(), "Cleric");
+		dualAxisWeightChartCleric.showResults();
 	}
 	
 	//_________________________________JFreeChart section

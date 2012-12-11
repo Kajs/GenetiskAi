@@ -42,7 +42,7 @@ public class WindowManager {
 	   newBestTeamGame.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		String str = JOptionPane.showInputDialog(null, "Game Number : ", "New Best Team Game", 1);
-	    		if(str != null) {
+	    		if(!str.equals(null) && !str.equals("")) {
 	    			int bestTeam = new Integer(str);
 	    			Launcher.allowRoundDelay = true;
 		    		Launcher.allowBestTeamsFitnessOutput = true;
@@ -233,24 +233,15 @@ public class WindowManager {
 	    	}
 	    });
 	   
-	   JMenuItem showXyWeightChart = new JMenuItem("Show xy weight chart");
-	   showXyWeightChart.addActionListener(new ActionListener() {
+	   JMenuItem showDualAxisWeightChart = new JMenuItem("Show dual axis weight chart");
+	   showDualAxisWeightChart.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
-	    		String str = JOptionPane.showInputDialog(null, "Game Number : ", "Xy Weight Chart", 1);
-	    		if(str != null) {
+	    		String str = "";
+	    		str = JOptionPane.showInputDialog(null, "Game Number : ", "Dual axis weight chart", 1);
+	    		if(!str.equals(null) && !str.equals("")) {
+	    			System.out.println(str);
 	    			int bestTeam = new Integer(str) - 1;
-	    			Controller.showXyWeightChart(bestTeam);
-	    		}
-	    	}
-	    });
-	   
-	   JMenuItem showScatterWeightChart = new JMenuItem("Show scatter weight chart");
-	   showScatterWeightChart.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) {
-	    		String str = JOptionPane.showInputDialog(null, "Game Number : ", "Xy Scatter Chart", 1);
-	    		if(str != null) {
-	    			int bestTeam = new Integer(str) - 1;
-	    			Controller.showScatterWeightChart(bestTeam);
+	    			Controller.showDualAxisWeightChart(bestTeam);
 	    		}
 	    	}
 	    });
@@ -289,8 +280,7 @@ public class WindowManager {
 	   charts.add(showXyChart);
 	   charts.add(showXySplineChart);
 	   charts.add(showXyDeviationChart);
-	   charts.add(showXyWeightChart);
-	   charts.add(showScatterWeightChart);
+	   charts.add(showDualAxisWeightChart);
 	   
 	   menuBar.add(automatic);
 	   menuBar.add(output);
