@@ -15,16 +15,14 @@ public class MutatePopulationThread implements Runnable {
 	private int end;
 	final Random randomGenerator = new Random();
 	
-	private double drasticStart;
-	private double drasticEnd;
-	private double mutateLikelihood;
+	private double mutateLikelihoodStart;
+	private double mutateLikelihoodEnd;
 	
-	public MutatePopulationThread(int start, int end, int populationLimit, int choices, int information, double drasticStart, double drasticEnd, double mutateLikelihood) {
+	public MutatePopulationThread(int start, int end, int populationLimit, int choices, int information, double mutateLikelihoodStart, double mutateLikelihoodEnd) {
 		this.start = start;
 		this.end = end;
-		this.drasticStart = drasticStart;
-		this.drasticEnd = drasticEnd;
-		this.mutateLikelihood = mutateLikelihood;
+		this.mutateLikelihoodStart = mutateLikelihoodStart;
+		this.mutateLikelihoodEnd = mutateLikelihoodEnd;
 		
 		this.populationLimit = populationLimit;
 		this.choices = choices;
@@ -32,22 +30,19 @@ public class MutatePopulationThread implements Runnable {
 	}
 	
 	public void run() {
-		
-        if(coinFlip()) {
-			double temp = drasticEnd;
-			drasticEnd = drasticStart;
-			drasticStart = temp;
-		}
-		
-		double stepSize = (drasticEnd - drasticStart) / (end - start);
-		double newDrasticLikelihood = drasticStart;
+
+		double mutateAmount = (end - start);
+		double stepSize = (mutateLikelihoodEnd - mutateLikelihoodStart) / mutateAmount;
+		double newDrasticLikelihood = 0.0;
+		double newMutateLikelihood = mutateLikelihoodStart;
 
 		for (int i = start; i < end; i++) {
 			//System.out.println("Mutate i: " + i + "__________________, end: " + end);
-			if(i == end - 1) { newDrasticLikelihood = drasticEnd; }
 			double[][][][] mutant = choseParents(1, population, scaledFitness, totalFitness, populationLimit);
-			newPopulation[i] = mutate(mutant[0], newDrasticLikelihood, mutateLikelihood, coinFlip());
-			newDrasticLikelihood += stepSize;
+			
+			newPopulation[i] = mutate(mutant[0], newDrasticLikelihood, newMutateLikelihood, coinFlip());
+			newMutateLikelihood += stepSize;
+			//System.out.println("MutateLikelihood %: " + newMutateLikelihood);
 		}
 	}
 	
