@@ -42,7 +42,7 @@ public class XyChart extends ApplicationFrame {
         IntervalXYDataset dataset = createDataset(dataMatrix, names);
         JFreeChart chart = createChart(dataset);
         final ChartPanel chartPanel = new ChartPanel(chart);
-        chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
+        chartPanel.setPreferredSize(new java.awt.Dimension(1280, 800));
         setContentPane(chartPanel);     
     }
     

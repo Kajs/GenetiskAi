@@ -24,7 +24,7 @@ public class XyDeviationChart extends ApplicationFrame
 	{
 		super(s);
 		JPanel jpanel = createDemoPanel(dataMatrix, names);
-		jpanel.setPreferredSize(new Dimension(500, 270));
+		jpanel.setPreferredSize(new Dimension(1280, 800));
 		setContentPane(jpanel);
 	}
 	
