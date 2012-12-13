@@ -17,12 +17,16 @@ public class MutatePopulationThread implements Runnable {
 	
 	private double mutateLikelihoodStart;
 	private double mutateLikelihoodEnd;
+	private double drasticLikelihoodStart;
+	private double drasticLikelihoodEnd;
 	
-	public MutatePopulationThread(int start, int end, int populationLimit, int choices, int information, double mutateLikelihoodStart, double mutateLikelihoodEnd) {
+	public MutatePopulationThread(int start, int end, int populationLimit, int choices, int information, double mutateLikelihoodStart, double mutateLikelihoodEnd, double drasticLikelihoodStart, double drasticLikelihoodEnd) {
 		this.start = start;
 		this.end = end;
 		this.mutateLikelihoodStart = mutateLikelihoodStart;
 		this.mutateLikelihoodEnd = mutateLikelihoodEnd;
+		this.drasticLikelihoodStart = drasticLikelihoodStart;
+		this.drasticLikelihoodEnd = drasticLikelihoodEnd;
 		
 		this.populationLimit = populationLimit;
 		this.choices = choices;
@@ -34,18 +38,29 @@ public class MutatePopulationThread implements Runnable {
 		double mutateAmount = (end - start);
 		double stepSize = (mutateLikelihoodEnd - mutateLikelihoodStart) / mutateAmount;
 		double newMutateLikelihood = mutateLikelihoodStart;
+		
+		if(coinFlip()) {
+			double temp = drasticLikelihoodStart;
+			drasticLikelihoodStart = drasticLikelihoodEnd;
+			drasticLikelihoodEnd = temp;
+		}
+		
+		double drasticStepSize = (drasticLikelihoodEnd - drasticLikelihoodStart) / mutateAmount;
+		double newDrasticLikelihood = drasticLikelihoodStart;
 
 		for (int i = start; i < end; i++) {
 			//System.out.println("Mutate i: " + i + "__________________, end: " + end);
 			double[][][][] mutant = choseParents(1, population, scaledFitness, totalFitness, populationLimit);
 			
-			newPopulation[i] = mutate(mutant[0], newMutateLikelihood, coinFlip());
+			newPopulation[i] = mutate(mutant[0], newMutateLikelihood, newDrasticLikelihood, coinFlip());
 			newMutateLikelihood += stepSize;
-			//System.out.println("MutateLikelihood %: " + newMutateLikelihood);
+			newDrasticLikelihood += drasticStepSize;
+		    //System.out.println("MutateLikelihood %: " + newMutateLikelihood);
+			//System.out.println("DrasticLikelihood %: " + newDrasticLikelihood);
 		}
 	}
 	
-	public double[][][] mutate (double[][][] child, double mutateLikelihood, boolean wholeTeam) {
+	public double[][][] mutate (double[][][] child, double mutateLikelihood, double drasticLikelihood, boolean wholeTeam) {
 		double[][][] mutant = new double[3][choices+1][information];
 		int aiType = nextInt(3);
 		
@@ -55,7 +70,6 @@ public class MutatePopulationThread implements Runnable {
 					boolean mutate = nextDouble() <= mutateLikelihood;
 					
 					if(mutate && (wholeTeam || !wholeTeam && aiType == t)) {
-						double drasticLikelihood = nextDouble();
 						boolean drasticMutation = nextDouble() <= drasticLikelihood;
 						double value;
 						

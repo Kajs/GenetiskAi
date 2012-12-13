@@ -239,7 +239,6 @@ public class WindowManager {
 	    		String str = "";
 	    		str = JOptionPane.showInputDialog(null, "Game Number : ", "Dual axis weight chart", 1);
 	    		if(!str.equals(null) && !str.equals("")) {
-	    			System.out.println(str);
 	    			int bestTeam = new Integer(str) - 1;
 	    			Controller.showDualAxisWeightChart(bestTeam);
 	    		}

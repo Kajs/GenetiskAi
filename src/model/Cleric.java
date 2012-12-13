@@ -37,20 +37,4 @@ public class Cleric extends Ai {
 			}
 		}
 	}
-    
-    public double totalWeight(int action) {
-    	double result = 0.0;
-    	for (int i = 0; i < information.length; i++) {
-    		result = result + weightMatrix[action + 1][i] * information[i];
-    	}
-    	result = result * weightMatrix[0][action];
-    	return result;
-    }
-    
-    public void compareAction(double result, Coordinate position, String baseType, String extendedType) {
-		if (result > bestWeight) {
-			bestAction = new Action(position, baseType, extendedType);
-			bestWeight = result;
-		}
-	}
 }

@@ -15,7 +15,7 @@ public class GameThread implements Runnable {
 	private Coordinate[][] staticPositions;
 	private double[] team1Fitness;
 	private boolean fitnessOutput;
-	private boolean bothTeamsStart;
+	//private boolean bothTeamsStart;
 	private boolean alsoReversedPositions;
 	
 	private boolean switchStartTeam = true;  //to clarify runGame parameters
@@ -43,7 +43,7 @@ public class GameThread implements Runnable {
 		this.enemyDifficulty = enemyDifficulty;
 		this.maxRounds = maxRounds;
 		this.fitnessOutput = fitnessOutput;
-		this.bothTeamsStart = bothTeamsStart;
+		//this.bothTeamsStart = bothTeamsStart;
 		this.alsoReversedPositions = alsoReversedPositions;
 		this.testingStatics = testingStatics;
 		this.testStaticDifficulty = testStaticDifficulty;
@@ -138,12 +138,17 @@ public class GameThread implements Runnable {
 	}
 	
 	public void runAllGames(int enemyDifficulty) {
+		/*
 		runGame(!reversePositions, !switchStartTeam, enemyDifficulty); // not reversed, team 1 starts
 	    if(bothTeamsStart) { runGame(!reversePositions, switchStartTeam, enemyDifficulty); } 
 	    if(alsoReversedPositions) {
 			runGame(reversePositions, !switchStartTeam, enemyDifficulty); //reversed, team 1 starts				    
 		    if(bothTeamsStart) { runGame(reversePositions, switchStartTeam, enemyDifficulty); }
 		}
+		*/
+		
+		runGame(!reversePositions, !switchStartTeam, enemyDifficulty); // not reversed, team 1 starts
+		if(alsoReversedPositions) { runGame(reversePositions, switchStartTeam, enemyDifficulty); } // reversed, team 2 starts
 	}
 	
 	private Ai newGeneticAi(double[][] weights, int type) {

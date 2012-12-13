@@ -122,11 +122,4 @@ public class HardWizard extends Ai {
 			}
 		}
 	}
-	
-    public void compareAction(double result, Coordinate position, String baseType, String extendedType) {
-		if (result > bestWeight) {
-			bestAction = new Action(position, baseType, extendedType);
-			bestWeight = result;
-		}
-	}
 }

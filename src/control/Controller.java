@@ -36,7 +36,6 @@ public class Controller {
 	final int populationSize = 1000;
 	final double keepPercent = 0.25;
     final double crossPercent = 0.25;
-	final double mutateLikelihood = 0.9;
 	final boolean elitism = true;
 	final boolean skipZeroFitnessScaling = true;
 	final boolean alwaysKeepBest = true;
@@ -74,7 +73,7 @@ public class Controller {
 //_______________Thread Section________
 	static int numThreads = 4;
 	final MultiThreading multiThreading = new MultiThreading(numThreads);
-	final GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(populationSize, choices, information, keepPercent, crossPercent, mutateLikelihood, skipZeroFitnessScaling, alwaysKeepBest, numThreads, multiThreading, scalingType);
+	final GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(populationSize, choices, information, keepPercent, crossPercent, skipZeroFitnessScaling, alwaysKeepBest, numThreads, multiThreading, scalingType);
 	private GameThread[] gameThreads;
 //_______________Thread Section________
 	
@@ -251,7 +250,7 @@ public class Controller {
 		
 	public void setupScenarios() {
 		
-		scenarios = new Scenario[9];
+		scenarios = new Scenario[8];
 		int scenarioCounter = 0;
 		
 		//Scenario 1 3v3 standard starting positions
@@ -281,22 +280,8 @@ public class Controller {
 		staticPositions[0][2] = new Coordinate(15, 25);		
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);		
-		
-		//Scenario 3 3v3 spread bottom vs standard top
-		
-		geneticPositions = new Coordinate[1][3];
-		geneticPositions[0][0] = new Coordinate(17, 15);
-		geneticPositions[0][1] = new Coordinate(17, 19);
-		geneticPositions[0][2] = new Coordinate(17, 23);
 
-		staticPositions = new Coordinate[1][3];
-		staticPositions[0][0] = new Coordinate(4, 19);
-		staticPositions[0][1] = new Coordinate(4, 20);
-		staticPositions[0][2] = new Coordinate(4, 21);		
-		
-		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);		
-
-		//Scenario 4 3 vs 4 in corners
+		//Scenario 3 3 vs 4 in corners
 		
 		geneticPositions = new Coordinate[1][3];
 		geneticPositions[0][0] = new Coordinate(10, 20);
@@ -311,7 +296,7 @@ public class Controller {
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);		
 		
-		//Scenario 5 3 vs 2 + 2 in corners
+		//Scenario 4 3 vs 2 + 2 in corners
 		
 		geneticPositions = new Coordinate[1][3];
 		geneticPositions[0][0] = new Coordinate(10, 20);
@@ -327,7 +312,7 @@ public class Controller {
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);	
 				
 
-         //Scenario 6 3 vs 2 + 3 sides
+         //Scenario 5 3 vs 2 + 3 sides
 		
 		geneticPositions = new Coordinate[1][3];
 		geneticPositions[0][0] = new Coordinate(9, 20);
@@ -343,7 +328,7 @@ public class Controller {
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
 		
-		//Scenario 7 3vs 4 warrior
+		//Scenario 6 3vs 4 warrior
 		
 		geneticPositions = new Coordinate[1][3];
 		geneticPositions[0][0] = new Coordinate(8, 5);
@@ -358,7 +343,7 @@ public class Controller {
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
 		
-		//Scenario 8 3 vs 4 wizard 
+		//Scenario 7 3 vs 4 wizard 
 		
 		geneticPositions = new Coordinate[1][3];
 		geneticPositions[0][0] = new Coordinate(8, 5);
@@ -373,7 +358,7 @@ public class Controller {
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
 		
-		//Scenario 9 3 vs 4 cleric
+		//Scenario 8 3 vs 4 cleric
 		
 		geneticPositions = new Coordinate[1][3];
 		geneticPositions[0][0] = new Coordinate(8, 5);

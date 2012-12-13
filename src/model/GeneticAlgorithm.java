@@ -28,7 +28,7 @@ public class GeneticAlgorithm {
 	
 	
 	
-	public GeneticAlgorithm (int populationSize, int choices, int information, double keepPercent, double crossPercent, double mutateLikelihood, boolean skipZeroFitnessScaling, boolean allwaysKeepBest, int numThreads, MultiThreading multiThreading, int fitnessScalingType) {
+	public GeneticAlgorithm (int populationSize, int choices, int information, double keepPercent, double crossPercent, boolean skipZeroFitnessScaling, boolean allwaysKeepBest, int numThreads, MultiThreading multiThreading, int fitnessScalingType) {
 		this.populationSize = populationSize;
 		this.choices = choices;
 		this.information = information;
@@ -79,15 +79,21 @@ public class GeneticAlgorithm {
 		if(stepSize < 1) {stepSize = 1;}
 		start = keepAmount + crossAmount;
 		end = start + stepSize;
+		
 		double mutateLikelihoodStart = 0.0;
 		double mutateLikelihoodEnd = 0.0;
+		double drasticLikelihoodStart = 0.0;
+		double drasticLikelihoodEnd = 0.0;
 		
 		for (int i = 0; i < numThreads; i++) {
 			if(i == numThreads - 1 || end > populationSize) { end = populationSize;}
-			mutateLikelihoodStart = 100 / numThreads * i;
-			mutateLikelihoodEnd = 100 / numThreads * (i+1);
+			mutateLikelihoodStart = 1.0 / numThreads * i;
+			mutateLikelihoodEnd = 1.0 / numThreads * (i+1);
+			drasticLikelihoodStart = 1.0 / numThreads * i;
+			drasticLikelihoodEnd = 1.0 / numThreads * (i+1);
 			//System.out.println("Mutate %: " + mutateLikelihoodStart + " to " + mutateLikelihoodEnd);
-			mutatePopulationThreads[i] = new MutatePopulationThread(start, end, populationLimit, choices, information, mutateLikelihoodStart, mutateLikelihoodEnd);
+			//System.out.println("Drastic %: " + drasticLikelihoodStart + " to " + drasticLikelihoodEnd);
+			mutatePopulationThreads[i] = new MutatePopulationThread(start, end, populationLimit, choices, information, mutateLikelihoodStart, mutateLikelihoodEnd, drasticLikelihoodStart, drasticLikelihoodEnd);
 			start = end;
 			end += stepSize;
 		}
