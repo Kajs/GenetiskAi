@@ -79,7 +79,7 @@ public class WindowManager {
 	   setSpeed.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		String str = JOptionPane.showInputDialog(null, "Time in milliseconds", "Automatic mode with visual", 1);
-	    		if(str != null) {
+	    		if(!str.equals(null) && !str.equals("")) {
 	    			int roundDelay = new Integer(str);
 	    			Controller.roundDelay = roundDelay;
 	    		}
@@ -236,8 +236,7 @@ public class WindowManager {
 	   JMenuItem showDualAxisWeightChart = new JMenuItem("Show dual axis weight chart");
 	   showDualAxisWeightChart.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
-	    		String str = "";
-	    		str = JOptionPane.showInputDialog(null, "Game Number : ", "Dual axis weight chart", 1);
+	    		String str = JOptionPane.showInputDialog(null, "Game Number : ", "Dual axis weight chart", 1);
 	    		if(!str.equals(null) && !str.equals("")) {
 	    			int bestTeam = new Integer(str) - 1;
 	    			Controller.showDualAxisWeightChart(bestTeam);
