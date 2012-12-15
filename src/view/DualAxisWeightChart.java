@@ -10,7 +10,6 @@ import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.DatasetRenderingOrder;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.ApplicationFrame;
@@ -67,9 +66,6 @@ public class DualAxisWeightChart extends ApplicationFrame {
         final CategoryPlot plot = chart.getCategoryPlot();
         plot.setDomainAxisLocation(AxisLocation.BOTTOM_OR_LEFT);
         plot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);  
-        
-        final CategoryItemRenderer renderer1 = plot.getRenderer();
-        for (int i = 0; i < Controller.information; i++) { renderer1.setSeriesPaint(i, Color.red); }
 
         plot.setDatasetRenderingOrder(DatasetRenderingOrder.REVERSE);
         // OPTIONAL CUSTOMISATION COMPLETED.

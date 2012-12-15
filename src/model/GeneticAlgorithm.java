@@ -89,8 +89,8 @@ public class GeneticAlgorithm {
 			if(i == numThreads - 1 || end > populationSize) { end = populationSize;}
 			mutateLikelihoodStart = 1.0 / numThreads * i;
 			mutateLikelihoodEnd = 1.0 / numThreads * (i+1);
-			drasticLikelihoodStart = 1.0 / numThreads * i;
-			drasticLikelihoodEnd = 1.0 / numThreads * (i+1);
+			drasticLikelihoodStart = 0;
+			drasticLikelihoodEnd = 1.0;
 			//System.out.println("Mutate %: " + mutateLikelihoodStart + " to " + mutateLikelihoodEnd);
 			//System.out.println("Drastic %: " + drasticLikelihoodStart + " to " + drasticLikelihoodEnd);
 			mutatePopulationThreads[i] = new MutatePopulationThread(start, end, populationLimit, choices, information, mutateLikelihoodStart, mutateLikelihoodEnd, drasticLikelihoodStart, drasticLikelihoodEnd);
