@@ -11,6 +11,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.WindowConstants;
 
 import model.HeapSort;
 
@@ -26,13 +27,23 @@ public class WindowManager {
 	
 	public WindowManager(int width, int height, BoardRenderer boardRenderer, Controller controller) {
 		this.controller = controller;
-		JFrame frame = new JFrame();
+		final JFrame frame = new JFrame();
 	    frame.setTitle("GenetiskAIRollespil");
 	    frame.setSize(width, height);
+	    frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 	    frame.addWindowListener(new WindowAdapter() {
-	      public void windowClosing(WindowEvent e) {
-	        System.exit(0);
-	      }
+	    	public void windowClosing(WindowEvent e) {
+	    		boolean previousState = Launcher.isPaused;
+	    		Launcher.isPaused = true;
+	    		
+                int confirm = JOptionPane.showOptionDialog(frame,
+                        "Are You Sure to Close this Application?",
+                        "Exit Confirmation", JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE, null, null, null);
+                if (confirm == JOptionPane.YES_OPTION) { System.exit(1); }
+                
+                Launcher.isPaused = previousState;
+            }
 	    });
 	    
 	    Container contentPane = frame.getContentPane();
