@@ -210,7 +210,7 @@ public class Controller {
 }
 		
 	public void gameOutput(int game, double bestFitness, double[] vsBestFitness, double tm1AvrFit, double[] tm2AvrFit) {
-		String output = "Game " + (game + 1) + " t1B " + round(bestFitness, 3);
+		String output = "Generation " + (game + 1) + " t1B " + round(bestFitness, 3);
 		if (!allDifficulties) { output += ", vsB " + round(vsBestFitness[enemyDifficulty], 3); }
 		else {
 			output += ", vsB_B " + round(vsBestFitness[0], 3);
