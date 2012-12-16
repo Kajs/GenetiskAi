@@ -39,11 +39,11 @@ public class MutatePopulationThread implements Runnable {
 		double stepSize = (mutateLikelihoodEnd - mutateLikelihoodStart) / mutateAmount;
 		double newMutateLikelihood = mutateLikelihoodStart;
 		
-		if(coinFlip()) {
+		//if(coinFlip()) {
 			double temp = drasticLikelihoodStart;
 			drasticLikelihoodStart = drasticLikelihoodEnd;
 			drasticLikelihoodEnd = temp;
-		}
+		//}
 		
 		double drasticStepSize = (drasticLikelihoodEnd - drasticLikelihoodStart) / mutateAmount;
 		double newDrasticLikelihood = drasticLikelihoodStart;
