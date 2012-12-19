@@ -245,37 +245,31 @@ public class GameState extends Observable {
 			if (angleToHex >= 0 && angleToHex <= 60) {
 				if(allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at SE: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				southEast.add(targetHex);
-				continue;
 			}
 			//South
 			if (angleToHex >= 60 && angleToHex <= 120) {
 				if(allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at S: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				south.add(targetHex);
-				continue;
 			}
 			//SouthWest
 			if (angleToHex >= 120 && angleToHex <= 180) {
 				if(allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at SW: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				southWest.add(targetHex);
-				continue;
 			}
 			//NortEast
 			if (angleToHex <= 0 && angleToHex >= -60) {
 				if(allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at NE: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				northEast.add(targetHex);
-				continue;
 			}
 			//North
 			if (angleToHex <= -60 && angleToHex >= -120) {
 				if(allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at N: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				north.add(targetHex);
-				continue;
 			}
 			//NortWest
 			if (angleToHex <= -120 && angleToHex >= -180) {
 				if(allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at NW: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				northWest.add(targetHex);
-				continue;
 			}
 			
 		}
@@ -296,37 +290,31 @@ public class GameState extends Observable {
 			if (angleToHex >= 0 && angleToHex <= 60) {
 				if(allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at SE: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				southEast.add(targetHex);
-				continue;
 			}
 			//South
 			if (angleToHex >= 60 && angleToHex <= 120) {
 				if(allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at S: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				south.add(targetHex);
-				continue;
 			}
 			//SouthWest
 			if (angleToHex >= 120 && angleToHex <= 180) {
 				if(allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at SW: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				southWest.add(targetHex);
-				continue;
 			}
 			//NortEast
 			if (angleToHex <= 0 && angleToHex >= -60) {
 				if(allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at NE: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				northEast.add(targetHex);
-				continue;
 			}
 			//North
 			if (angleToHex <= -60 && angleToHex >= -120) {
 				if(allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at N: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				north.add(targetHex);
-				continue;
 			}
 			//NortWest
 			if (angleToHex <= -120 && angleToHex >= -180) {
 				if(allowAngleOutput) {System.out.println(id + " found " + targetAiType + " at NW: " + Controller.round(angleToHex, 2) + " (" + aiPos.getX() + ", " + aiPos.getY() + ")");}
 				northWest.add(targetHex);
-				continue;
 			}
 		}
 		

@@ -167,6 +167,13 @@ public class WindowManager {
 	    	}
 	    });
 	   
+	   JMenuItem toggleAngleOutput = new JMenuItem("Toggle angle output");
+	   toggleAngleOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.allowAngleOutput = !(Launcher.allowAngleOutput);
+	    	}
+	    });
+	   
 	   JMenuItem pause = new JMenuItem("Pause");
 	   pause.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
@@ -264,6 +271,7 @@ public class WindowManager {
 	   JMenu output = new JMenu("Output");
 	   output.add(toggleActionOutput);
 	   output.add(toggleAdjacentAiOutput);
+	   output.add(toggleAngleOutput);
 	   output.add(toggleAreaDamageOutput);
 	   output.add(toggleBestTeamsFitnessOutput);
 	   output.add(toggleBoostOutput);
