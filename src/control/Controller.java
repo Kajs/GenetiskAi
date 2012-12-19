@@ -47,7 +47,7 @@ public class Controller {
 	
 	
 //__________________Scaling section
-	final int linearTransformationScaling = 0;
+	final int linearScaling = 0;
 	final int exponentialScaling = 1;
 	final int scalingType = exponentialScaling;	
 //__________________Scaling section

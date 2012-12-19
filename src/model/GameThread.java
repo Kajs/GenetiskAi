@@ -75,7 +75,7 @@ public class GameThread implements Runnable {
 				staticPositions = scenarios[i].staticPositions;				
 				currentTeam = team1[team];
 				
-				if(fitnessOutput) {System.out.println("\nTeam " + (team + 1) + " with fitness " + round(team1Fitness[team], 2) + " in scenario " + (i + 1) + "\n");}
+				if(fitnessOutput) {System.out.println("\nTeam " + (team + 1) + " with fitness " + round(team1Fitness[team], 3) + " in scenario " + (i + 1) + "\n");}
 				
 				if(!allDifficulties) { runAllGames(enemyDifficulty); }
 				else {
@@ -257,6 +257,12 @@ public class GameThread implements Runnable {
 			else { gameDescription += "reversed game"; }
 			if(!switchStartTeam) { gameDescription += ", team 1 starts"; }
 			else { gameDescription += ", team 2 starts"; }
+
+			if(enemyDifficulty == 0) { gameDescription += ", basic"; }
+			if(enemyDifficulty == 1) { gameDescription += ", medium"; }
+			if(enemyDifficulty == 2) { gameDescription += ", hard"; }
+			
+			
 			System.out.println(gameDescription);
 		}
 		

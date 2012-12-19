@@ -29,6 +29,7 @@ public class GeneticAlgorithm {
 	
 	
 	public GeneticAlgorithm (int populationSize, int choices, int information, double keepPercent, double crossPercent, boolean skipZeroFitnessScaling, boolean allwaysKeepBest, int numThreads, MultiThreading multiThreading, int fitnessScalingType) {
+		numThreads = 1; //back to singleThreading
 		this.populationSize = populationSize;
 		this.choices = choices;
 		this.information = information;
