@@ -33,7 +33,7 @@ public class Controller {
 	
 	
 //____________________Genetic Algorithm variables
-	final int populationSize = 100;
+	final int populationSize = 1000;
 	final double keepPercent = 0.25;
     final double crossPercent = 0.25;
 	final boolean elitism = true;
