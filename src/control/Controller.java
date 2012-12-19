@@ -33,7 +33,7 @@ public class Controller {
 	
 	
 //____________________Genetic Algorithm variables
-	final int populationSize = 1000;
+	final int populationSize = 100;
 	final double keepPercent = 0.25;
     final double crossPercent = 0.25;
 	final boolean elitism = true;
@@ -71,7 +71,7 @@ public class Controller {
 	
 		
 //_______________Thread Section________
-	static int numThreads = 4;
+	static int numThreads = 2;
 	final MultiThreading multiThreading = new MultiThreading(numThreads);
 	final GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(populationSize, choices, information, keepPercent, crossPercent, skipZeroFitnessScaling, alwaysKeepBest, numThreads, multiThreading, scalingType);
 	private GameThread[] gameThreads;
@@ -494,9 +494,9 @@ public class Controller {
 	public static void showDualAxisWeightChart(int team) {
 		DualAxisWeightChart dualAxisWeightChartWarrior = new DualAxisWeightChart("Dual Axis Weight Chart (Warrior)", bestTeams[team][0], weightChartNames(), "Warrior");
 		dualAxisWeightChartWarrior.showResults();
-		DualAxisWeightChart dualAxisWeightChartWizard = new DualAxisWeightChart("Dual Axis Weight Chart (Wizard)", bestTeams[team][0], weightChartNames(), "Wizard");
+		DualAxisWeightChart dualAxisWeightChartWizard = new DualAxisWeightChart("Dual Axis Weight Chart (Wizard)", bestTeams[team][1], weightChartNames(), "Wizard");
 		dualAxisWeightChartWizard.showResults();
-		DualAxisWeightChart dualAxisWeightChartCleric = new DualAxisWeightChart("Dual Axis Weight Chart (Cleric)", bestTeams[team][0], weightChartNames(), "Cleric");
+		DualAxisWeightChart dualAxisWeightChartCleric = new DualAxisWeightChart("Dual Axis Weight Chart (Cleric)", bestTeams[team][2], weightChartNames(), "Cleric");
 		dualAxisWeightChartCleric.showResults();
 	}
 	
