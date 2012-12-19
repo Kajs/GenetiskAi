@@ -217,12 +217,15 @@ public class GeneticAlgorithm {
 		double maxRounds = results[8];
 		double rounds = results[9];
 		
-		double bonusFactor = 0.0;
-		double speedBonus = bonusFactor * (maxRounds - rounds)/maxRounds;
-		double fitness = (teamHp/teamInitialHp) * (teamAlive * 2);
-		fitness = fitness + ((enemiesInitialHp-enemiesHp)/enemiesInitialHp)*((enemiesSize-enemiesAlive) * 2);
+		double speedFactor = 0.0;
+		double damageFactor = 1.0;
+		double killFactor = 2.0;
+		double speedBonus = speedFactor * (maxRounds - rounds)/maxRounds;
+		
+		double fitness = (teamHp/teamInitialHp) * (teamAlive * killFactor);
+		fitness = fitness + (enemiesInitialHp-enemiesHp)/enemiesInitialHp * (damageFactor + ((enemiesSize-enemiesAlive) * killFactor));
 		fitness = fitness * (1 + speedBonus);
-		double maxFitness = (teamSize + enemiesSize) * 2 * (1 + bonusFactor);
+		double maxFitness = (teamSize + enemiesSize) * killFactor * (1 + speedFactor) + damageFactor;
 		fitness = fitness/maxFitness;
 		if(teamHp < 0 || enemiesHp < 0) {System.out.println("Fitness: " + fitness +", " + teamInitialHp + ", " + teamHp + ", " + teamAlive + ", " + teamSize + ", " + enemiesInitialHp + ", " + enemiesHp + ", " + enemiesAlive + ", " + enemiesSize + ", " + maxRounds + ", " + rounds);}
 		return fitness;

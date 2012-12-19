@@ -33,6 +33,7 @@ public class MediumCleric extends Ai {
 					
 					if(healPotential > 0) {
 						weight = 400;
+						weight += healPotential;
 						compareAction(weight, adjacentPosition, "support", "heal");
 					}
 				}
