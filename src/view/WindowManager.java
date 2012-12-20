@@ -53,8 +53,7 @@ public class WindowManager {
 	   newBestTeamGame.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		String str = JOptionPane.showInputDialog(null, "Game Number : ", "New Best Team Game", 1);
-	    		if(str != null && !str.equals("")) {
-	    			System.out.println("test");
+	    		if(str != null && !str.equals("") && checkIntString(str)) {
 	    			int bestTeam = new Integer(str);
 	    			Launcher.allowRoundDelay = true;
 		    		Launcher.allowBestTeamsFitnessOutput = true;
@@ -77,7 +76,7 @@ public class WindowManager {
 	   jumpToBestTeam.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		String str = JOptionPane.showInputDialog(null, "Best team number", "New best team", 1);
-	    		if(str != null && !str.equals("")) {
+	    		if(str != null && !str.equals("") && checkIntString(str)) {
 	    			int newBestTeam = new Integer(str);
 	    			Launcher.switchBestTeamNumber = newBestTeam - 1;
 	    			Launcher.switchBestTeam = true;
@@ -103,7 +102,7 @@ public class WindowManager {
 	   setSpeed.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		String str = JOptionPane.showInputDialog(null, "Time in milliseconds", "Automatic mode with visual", 1);
-	    		if(str != null && !str.equals("")) {
+	    		if(str != null && !str.equals("") && checkIntString(str)) {
 	    			int roundDelay = new Integer(str);
 	    			Controller.roundDelay = roundDelay;
 	    		}
@@ -268,7 +267,7 @@ public class WindowManager {
 	   showDualAxisWeightChart.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		String str = JOptionPane.showInputDialog(null, "Game Number : ", "Dual axis weight chart", 1);
-	    		if(str != null && !str.equals("")) {
+	    		if(str != null && !str.equals("") && checkIntString(str)) {
 	    			int bestTeam = new Integer(str) - 1;
 	    			Controller.showDualAxisWeightChart(bestTeam);
 	    		}
@@ -330,5 +329,21 @@ public class WindowManager {
 			copy[i] = orgArray[i];
 		}
 		return copy;
+	}
+	
+	public boolean checkIntString(String str) {
+		boolean isInteger = true;
+		for (int i = 0; i < str.length(); i++) {
+			char c = str.charAt(i);
+			if(c == '0' || c == '1' || c == '2' || c == '3' || c == '4' || c == '5' || c == '6' || c == '7' || c == '8' || c == '9') {
+				continue;
+			}
+			else {
+				isInteger = false;
+				break;
+			}
+		}
+		if(!isInteger) { System.out.println("Input was not a positive integer"); }
+		return isInteger;
 	}
 }
