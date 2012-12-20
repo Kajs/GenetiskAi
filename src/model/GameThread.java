@@ -2,6 +2,8 @@ package model;
 
 import java.awt.Color;
 
+import control.Launcher;
+
 public class GameThread implements Runnable {
 	private final GameState gameState;
 	private double[][][][] team1;
@@ -64,6 +66,15 @@ public class GameThread implements Runnable {
 		double[] tm2GameSummedFitness = new double[3];
 		
 		for (int team = firstTeam; team < lastTeam; team++) {
+			
+			if(Launcher.switchBestTeam) { 
+				int newTeam = Launcher.switchBestTeamNumber;
+				if(newTeam < firstTeam) { newTeam = firstTeam; }
+				if(newTeam > lastTeam) { newTeam = lastTeam; }
+				team = newTeam;
+				Launcher.switchBestTeam = false;
+			}
+			
 			//System.out.println("Game " + i + ", team number " + lastAi + "_____________________________");
 			tm1ScenarioSummedFit = 0;
 			tm2ScenarioSummedFit = new double[3];

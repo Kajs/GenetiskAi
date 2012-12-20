@@ -22,6 +22,8 @@ public class Launcher {
 	public static boolean isAutomatic = true;
 	public static boolean isPaused = false;
 	public static boolean stop = false;	
+	public static boolean switchBestTeam = false;
+	public static int switchBestTeamNumber = 0;
 	public static boolean toggleRoundSeparator = false;
 	
 	public static void main(String[] args) {

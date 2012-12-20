@@ -49,11 +49,12 @@ public class WindowManager {
 	    Container contentPane = frame.getContentPane();
 	    contentPane.add(boardRenderer);
 	   
-	   JMenuItem newBestTeamGame = new JMenuItem("Chose best team");
+	   JMenuItem newBestTeamGame = new JMenuItem("Run single best team game");
 	   newBestTeamGame.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		String str = JOptionPane.showInputDialog(null, "Game Number : ", "New Best Team Game", 1);
-	    		if(!str.equals(null) && !str.equals("")) {
+	    		if(str != null && !str.equals("")) {
+	    			System.out.println("test");
 	    			int bestTeam = new Integer(str);
 	    			Launcher.allowRoundDelay = true;
 		    		Launcher.allowBestTeamsFitnessOutput = true;
@@ -63,12 +64,24 @@ public class WindowManager {
 	    	}
 	    });
 	   
-	   JMenuItem runBestTeamGames = new JMenuItem("Run best team games");
+	   JMenuItem runBestTeamGames = new JMenuItem("Run all best team games");
 	   runBestTeamGames.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		Launcher.allowRoundDelay = true;
 	    		Launcher.allowBestTeamsFitnessOutput = true;
 	    		Controller.runBestTeamGames = true;
+	    	}
+	    });
+	   
+	   JMenuItem jumpToBestTeam = new JMenuItem("Jump to best team");
+	   jumpToBestTeam.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		String str = JOptionPane.showInputDialog(null, "Best team number", "New best team", 1);
+	    		if(str != null && !str.equals("")) {
+	    			int newBestTeam = new Integer(str);
+	    			Launcher.switchBestTeamNumber = newBestTeam - 1;
+	    			Launcher.switchBestTeam = true;
+	    		}
 	    	}
 	    });
 	   
@@ -90,7 +103,7 @@ public class WindowManager {
 	   setSpeed.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		String str = JOptionPane.showInputDialog(null, "Time in milliseconds", "Automatic mode with visual", 1);
-	    		if(!str.equals(null) && !str.equals("")) {
+	    		if(str != null && !str.equals("")) {
 	    			int roundDelay = new Integer(str);
 	    			Controller.roundDelay = roundDelay;
 	    		}
@@ -255,7 +268,7 @@ public class WindowManager {
 	   showDualAxisWeightChart.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		String str = JOptionPane.showInputDialog(null, "Game Number : ", "Dual axis weight chart", 1);
-	    		if(!str.equals(null) && !str.equals("")) {
+	    		if(str != null && !str.equals("")) {
 	    			int bestTeam = new Integer(str) - 1;
 	    			Controller.showDualAxisWeightChart(bestTeam);
 	    		}
@@ -265,6 +278,7 @@ public class WindowManager {
 	   JMenu automatic = new JMenu("Automatic");
 	   automatic.add(newBestTeamGame);
 	   automatic.add(runBestTeamGames);
+	   automatic.add(jumpToBestTeam);
 	   automatic.add(sortBestTeamsLowToHigh);
 	   automatic.add(sortBestTeamsHighToLow);
 	   
