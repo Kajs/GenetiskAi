@@ -14,25 +14,25 @@ import view.XyDeviationChart;
 import view.XySplineChart;
 
 public class Controller {
-//____________Board and window dimensions
+//____________________________________________________________BOARD and WINDOW
 	final int width = 930;
 	final int height = 600;
 	static final int rows = 20;
 	static final int columns = 40;
 	public static final double boardDiagonal = rows + columns;
 	final double hexSideSize = scaledHexSideSize();
-//____________Board and window dimensions
+//------------------------------------------------------------BOARD and WINDOW
 
 	
-//____________________Game variables
+//____________________________________________________________SIMULATION
 	final int maxRounds = 100;
 	static final int maxGenerations = 10000;
 	public static int generationsCompleted = 0;
-//____________________Game variables
+//------------------------------------------------------------SIMULATION
 	
 	
 	
-//____________________Genetic Algorithm variables
+//____________________________________________________________GENETIC ALGORITHM
 	final int populationSize = 1000;
 	final double keepPercent = 0.25;
     final double crossPercent = 0.25;
@@ -42,19 +42,19 @@ public class Controller {
 	
 	public static final int choices = 6;  //only change if choices have been added/removed from ais
 	public final static int information = 31; //only change if information has been added/removed from ais
-//____________________Genetic Algorithm variables
+//------------------------------------------------------------GENETIC ALGORITHM
 	
 	
 	
-//__________________Scaling section
+//____________________________________________________________SCALING
 	final int linearScaling = 0;
 	final int exponentialScaling = 1;
 	final int scalingType = exponentialScaling;	
-//__________________Scaling section
+//------------------------------------------------------------SCALING
 	
 	
 	
-// ____Scenario Section____
+//____________________________________________________________SCENARIO
 	private static Scenario[] scenarios;
 	static Coordinate[][] geneticPositions;
 	static Coordinate[][] staticPositions;		
@@ -66,16 +66,16 @@ public class Controller {
 	final int testStaticDifficulty = 2;
 	final static int enemyDifficulty = 2;
 		
-// ____Scenario Section____
+//------------------------------------------------------------SCENARIO
 	
 	
 		
-//_______________Thread Section________
+//____________________________________________________________THREAD
 	static int numThreads = 2;
 	final MultiThreading multiThreading = new MultiThreading(numThreads);
 	final GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(populationSize, choices, information, keepPercent, crossPercent, skipZeroFitnessScaling, alwaysKeepBest, numThreads, multiThreading, scalingType);
 	private GameThread[] gameThreads;
-//_______________Thread Section________
+//------------------------------------------------------------THREAD
 	
 	
 	
