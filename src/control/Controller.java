@@ -21,14 +21,14 @@ public class Controller {
 	static final int columns = 40;
 	public static final double boardDiagonal = rows + columns;
 	final double hexSideSize = scaledHexSideSize();
-//------------------------------------------------------------BOARD and WINDOW
+//----------------------------------------------------------------------------Board and Window
 
 	
 //____________________________________________________________SIMULATION
 	final int maxRounds = 100;
 	static final int maxGenerations = 10000;
 	public static int generationsCompleted = 0;
-//------------------------------------------------------------SIMULATION
+//----------------------------------------------------------------------Simulation
 	
 	
 	
@@ -42,7 +42,8 @@ public class Controller {
 	
 	public static final int choices = 6;  //only change if choices have been added/removed from ais
 	public final static int information = 31; //only change if information has been added/removed from ais
-//------------------------------------------------------------GENETIC ALGORITHM
+
+//-----------------------------------------------------------------------------Genetic Algorithm
 	
 	
 	
@@ -50,7 +51,7 @@ public class Controller {
 	final int linearScaling = 0;
 	final int exponentialScaling = 1;
 	final int scalingType = exponentialScaling;	
-//------------------------------------------------------------SCALING
+//-------------------------------------------------------------------Scaling
 	
 	
 	
@@ -64,9 +65,8 @@ public class Controller {
 	
 	final boolean testingStatics = false;		
 	final int testStaticDifficulty = 2;
-	final static int enemyDifficulty = 2;
-		
-//------------------------------------------------------------SCENARIO
+	final static int enemyDifficulty = 2;		
+//--------------------------------------------------------------------Scenario
 	
 	
 		
@@ -75,7 +75,7 @@ public class Controller {
 	final MultiThreading multiThreading = new MultiThreading(numThreads);
 	final GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(populationSize, choices, information, keepPercent, crossPercent, skipZeroFitnessScaling, alwaysKeepBest, numThreads, multiThreading, scalingType);
 	private GameThread[] gameThreads;
-//------------------------------------------------------------THREAD
+//------------------------------------------------------------------Thread
 	
 	
 	
