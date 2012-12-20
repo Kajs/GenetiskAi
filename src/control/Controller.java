@@ -41,7 +41,7 @@ public class Controller {
 	final boolean alwaysKeepBest = true;
 	
 	public static final int choices = 6;  //only change if choices have been added/removed from ais
-	public final static int information = 31; //only change if information has been added/removed from ais
+	public final static int information = 33; //only change if information has been added/removed from ais
 
 //-----------------------------------------------------------------------------Genetic Algorithm
 	

@@ -86,6 +86,8 @@ public class Ai {
 	public double nearestAllyIsCleric;
 	public Ai nearestEnemy;
 	public Ai nearestAlly;
+	public double iAmBoosted;
+	public double iAmShielded;
 	//__________________ information variables section
 	
     public Ai() {
@@ -271,6 +273,10 @@ public class Ai {
 		nearestAllyIsCleric = 0;
 		nearestEnemy = nearestAi(enemies);
 		nearestAlly = nearestAi(allies);
+		if(boosted) {iAmBoosted = 1; }
+		else {iAmBoosted = 0; }
+		if(shielded) { iAmShielded = 1; }
+		else { iAmShielded = 0; }
 		
 		if(nearestEnemy != null) {
 			nearestEnemyHp = nearestEnemy.getHp();
@@ -333,6 +339,8 @@ public class Ai {
 		information[28] = adjacentLocalAllies;
 		information[29] = averageEnemyDistance;
 		information[30] = averageAllyDistance;
+		information[31] = iAmBoosted;
+		information[32] = iAmShielded;
 		
 		
 		if(Launcher.allowAdjacentAiOutput) {
