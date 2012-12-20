@@ -26,8 +26,8 @@ public class Controller {
 	
 //____________________Game variables
 	final int maxRounds = 100;
-	static final int maxGames = 10000;
-	public static int gamesCompleted = 0;
+	static final int maxGenerations = 10000;
+	public static int generationsCompleted = 0;
 //____________________Game variables
 	
 	
@@ -89,10 +89,10 @@ public class Controller {
 	public static boolean runBestTeamGames = false;
 	public static boolean runSingleBestTeamGame = false;
 	public static int singleBestTeamNumber;
-	public static double[] bestTeamsFitness = new double[maxGames];
-	public static double[][] vsBestTeamsFitness = new double[maxGames][3];
-	private static double[] team1PopulationFitness = new double[maxGames];
-	private static double[][] team2PopulationFitness = new double[maxGames][3];
+	public static double[] bestTeamsFitness = new double[maxGenerations];
+	public static double[][] vsBestTeamsFitness = new double[maxGenerations][3];
+	private static double[] team1PopulationFitness = new double[maxGenerations];
+	private static double[][] team2PopulationFitness = new double[maxGenerations][3];
 	
 	public Controller(boolean automatic, boolean displayAutomatic) {
 		
@@ -123,7 +123,7 @@ public class Controller {
     		boardRenderer.setBackground(Color.white);
     		gameState.addObserver(boardRenderer);
     		window = new WindowManager(width, height, boardRenderer, this);
-    		evolve(maxRounds, maxGames, populationSize);
+    		simulate(maxRounds, maxGenerations, populationSize);
     		
     		Launcher.stop = false;
     		while(!Launcher.stop) {
@@ -141,7 +141,7 @@ public class Controller {
     	}
 		else {
 			Launcher.allowRoundDelay = false;
-			evolve(maxRounds, maxGames, populationSize);
+			simulate(maxRounds, maxGenerations, populationSize);
 		}        	
 	}
 	
@@ -155,17 +155,17 @@ public class Controller {
 	
 	
 	
-	public void evolve(int maxRounds, int maxGames, int populationSize) {
+	public void simulate(int maxRounds, int maxGames, int populationSize) {
 		double[][][][] team1 = geneticAlgorithm.initialPopulation(populationSize, choices, information);
 		bestTeams = new double[maxGames][3][choices+1][information];
 		
 		double tm1FinalAvrFit = 0;
 		double[] tm2FinalAvrFit = new double[3];
-		int lastGame = 0;
+		int lastGeneration = 0;
 		double[] team1Fitness = new double[populationSize];
 		
-		for (int game = 0; game < maxGames && !Launcher.stop; game++) {
-			lastGame = game;
+		for (int generation = 0; generation < maxGenerations && !Launcher.stop; generation++) {
+			lastGeneration = generation;
 			double tm1AvrFit = 0;
 			double[] tm2AvrFit = new double[3];
 			double bestFitness = (int)Math.pow(-2, 31);
@@ -186,31 +186,31 @@ public class Controller {
 				}
 			}
 			
-			gamesCompleted += 1;
+			generationsCompleted += 1;
 			
-			bestTeams[game] = team1[bestTeam];
+			bestTeams[generation] = team1[bestTeam];
 			
-			bestTeamsFitness[game] = bestFitness;
-			vsBestTeamsFitness[game] = vsBestFitness;
+			bestTeamsFitness[generation] = bestFitness;
+			vsBestTeamsFitness[generation] = vsBestFitness;
 
 			tm1FinalAvrFit = tm1FinalAvrFit + tm1AvrFit;
 			for (int s = 0; s < 3; s++) { tm2FinalAvrFit[s] += tm2AvrFit[s]; }
 			
-			team1PopulationFitness[game] = tm1AvrFit;
-			team2PopulationFitness[game] = tm2AvrFit;
+			team1PopulationFitness[generation] = tm1AvrFit;
+			team2PopulationFitness[generation] = tm2AvrFit;
 			
-			gameOutput(game, bestFitness, vsBestFitness, tm1AvrFit, tm2AvrFit);
+			generationOutput(generation, bestFitness, vsBestFitness, tm1AvrFit, tm2AvrFit);
 			
 			team1 = geneticAlgorithm.newPopulation(team1, team1Fitness, elitism, bestTeam);
 		}
 		
-		tm1FinalAvrFit = tm1FinalAvrFit/(lastGame + 1);
-		for (int s = 0; s < 3; s++) { tm2FinalAvrFit[s] = tm2FinalAvrFit[s]/(lastGame + 1); }
+		tm1FinalAvrFit = tm1FinalAvrFit/(lastGeneration + 1);
+		for (int s = 0; s < 3; s++) { tm2FinalAvrFit[s] = tm2FinalAvrFit[s]/(lastGeneration + 1); }
 		System.out.println("Final average fitness team1: " + tm1FinalAvrFit);
 }
 		
-	public void gameOutput(int game, double bestFitness, double[] vsBestFitness, double tm1AvrFit, double[] tm2AvrFit) {
-		String output = "Generation " + (game + 1) + " t1B " + round(bestFitness, 3);
+	public void generationOutput(int generation, double bestFitness, double[] vsBestFitness, double tm1AvrFit, double[] tm2AvrFit) {
+		String output = "Generation " + (generation + 1) + " t1B " + round(bestFitness, 3);
 		if (!allDifficulties) { output += ", vsB " + round(vsBestFitness[enemyDifficulty], 3); }
 		else {
 			output += ", vsB_B " + round(vsBestFitness[0], 3);
@@ -241,7 +241,7 @@ public class Controller {
 		}
 
 	private void runBestTeamGames() {
-		GameThread bestGameThread = new GameThread(gameState, 0, gamesCompleted, enemyDifficulty, maxRounds, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty, geneticAlgorithm, allDifficulties);
+		GameThread bestGameThread = new GameThread(gameState, 0, generationsCompleted, enemyDifficulty, maxRounds, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty, geneticAlgorithm, allDifficulties);
 		bestGameThread.setTeam1(bestTeams);
 		bestGameThread.setTeam1Fitness(bestTeamsFitness);
 		Thread lastThread = new Thread(bestGameThread);
@@ -449,9 +449,9 @@ public class Controller {
 	}
 	
 	public static double[][] fitnessChartData() {
-		double[][] fitnessMatrix = new double[numChartLines][gamesCompleted];
+		double[][] fitnessMatrix = new double[numChartLines][generationsCompleted];
 		if(!allDifficulties) {
-			for (int i = 0; i < gamesCompleted; i++) {
+			for (int i = 0; i < generationsCompleted; i++) {
 				fitnessMatrix[0][i] = bestTeamsFitness[i];
 				fitnessMatrix[1][i] = vsBestTeamsFitness[i][enemyDifficulty];
 				fitnessMatrix[2][i] = team1PopulationFitness[i];
@@ -459,7 +459,7 @@ public class Controller {
 			}
 		}
 		else {
-			for (int i = 0; i < gamesCompleted; i++) {
+			for (int i = 0; i < generationsCompleted; i++) {
 				fitnessMatrix[0][i] = bestTeamsFitness[i];
 				fitnessMatrix[1][i] = vsBestTeamsFitness[i][0];
 				fitnessMatrix[2][i] = vsBestTeamsFitness[i][1];
