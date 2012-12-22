@@ -5,6 +5,8 @@ import java.util.Random;
 import static java.lang.Math.floor;
 
 public class GeneticAlgorithm {
+	public static int geneticThreads;
+	
 	int choices;
 	int information;
 	int populationSize;
@@ -30,6 +32,8 @@ public class GeneticAlgorithm {
 	
 	public GeneticAlgorithm (int populationSize, int choices, int information, double keepPercent, double crossPercent, boolean skipZeroFitnessScaling, boolean allwaysKeepBest, int numThreads, MultiThreading multiThreading, int fitnessScalingType) {
 		numThreads = 1; //back to singleThreading
+		geneticThreads = numThreads;
+		
 		this.populationSize = populationSize;
 		this.choices = choices;
 		this.information = information;
@@ -89,7 +93,7 @@ public class GeneticAlgorithm {
 		for (int i = 0; i < numThreads; i++) {
 			if(i == numThreads - 1 || end > populationSize) { end = populationSize;}
 			mutateLikelihoodStart = 1.0 / numThreads * i;
-			mutateLikelihoodEnd = 1.0 / numThreads * (i+1);
+			mutateLikelihoodEnd = 1.0 / numThreads * (i + 1);
 			drasticLikelihoodStart = 0;
 			drasticLikelihoodEnd = 1.0;
 			//System.out.println("Mutate %: " + mutateLikelihoodStart + " to " + mutateLikelihoodEnd);
@@ -239,4 +243,12 @@ public class GeneticAlgorithm {
 	private boolean coinFlip() { return randomGenerator.nextDouble() <= 0.5; }
 	
 	private double nextDouble() { return randomGenerator.nextDouble(); }
+	
+	public void updateMutateProbability() { for (int i = 0; i < mutatePopulationThreads.length; i++) {
+		mutatePopulationThreads[i].updateMutateLikelihood();
+	}}
+	
+	public void resetMutateProbability() { for (int i = 0; i < mutatePopulationThreads.length; i++) {
+		mutatePopulationThreads[i].resetMutateLikelihood();
+	}}
 }

@@ -17,6 +17,10 @@ public class MutatePopulationThread implements Runnable {
 	
 	private double mutateLikelihoodStart;
 	private double mutateLikelihoodEnd;
+	//private double mutateLikelihoodStepSize;
+	private double updateStepSize = 0.025 / GeneticAlgorithm.geneticThreads;
+	private int updateCounter = 0;
+	public boolean updateMutateLikelihood = false;
 	private double drasticLikelihoodStart;
 	private double drasticLikelihoodEnd;
 	
@@ -35,25 +39,23 @@ public class MutatePopulationThread implements Runnable {
 	
 	public void run() {
 
-		double mutateAmount = (end - start);
-		double stepSize = (mutateLikelihoodEnd - mutateLikelihoodStart) / mutateAmount;
 		double newMutateLikelihood = mutateLikelihoodStart;
+		if (updateMutateLikelihood) { increaseMutateLikelihood(); }
+		double mutateLikelihoodStepSize = (mutateLikelihoodEnd - (mutateLikelihoodStart + updateCounter * updateStepSize)) / (end - start);
 		
-		//if(coinFlip()) {
-			double temp = drasticLikelihoodStart;
-			drasticLikelihoodStart = drasticLikelihoodEnd;
-			drasticLikelihoodEnd = temp;
-		//}
+		double temp = drasticLikelihoodStart;
+		drasticLikelihoodStart = drasticLikelihoodEnd;
+		drasticLikelihoodEnd = temp;
 		
-		double drasticStepSize = (drasticLikelihoodEnd - drasticLikelihoodStart) / mutateAmount;
+		double drasticStepSize = (drasticLikelihoodEnd - drasticLikelihoodStart) / (end - start);
 		double newDrasticLikelihood = drasticLikelihoodStart;
 
 		for (int i = start; i < end; i++) {
 			//System.out.println("Mutate i: " + i + "__________________, end: " + end);
 			double[][][][] mutant = choseParents(1, population, scaledFitness, totalFitness, populationLimit);
 			
-			newPopulation[i] = mutate(mutant[0], newMutateLikelihood, newDrasticLikelihood, coinFlip());
-			newMutateLikelihood += stepSize;
+			newMutateLikelihood += mutateLikelihoodStepSize;
+			newPopulation[i] = mutate(mutant[0], newMutateLikelihood + updateCounter * updateStepSize, newDrasticLikelihood, coinFlip());
 			newDrasticLikelihood += drasticStepSize;
 		    //System.out.println("MutateLikelihood %: " + newMutateLikelihood);
 			//System.out.println("DrasticLikelihood %: " + newDrasticLikelihood);
@@ -132,4 +134,16 @@ public class MutatePopulationThread implements Runnable {
 	private double nextDouble() { return randomGenerator.nextDouble(); }
 	
 	private int nextInt(int val) { return randomGenerator.nextInt(val); }
+	
+	private void increaseMutateLikelihood() {
+		updateCounter++;
+		double newStepSize = (mutateLikelihoodEnd - (mutateLikelihoodStart + updateCounter * updateStepSize)) / (end - start);
+		if ((mutateLikelihoodStart + newStepSize + updateCounter * updateStepSize) / mutateLikelihoodEnd > 0.75) { 
+			resetMutateLikelihood(); }
+		updateMutateLikelihood = false;
+	}
+	
+	public void updateMutateLikelihood() { updateMutateLikelihood = true; }
+	
+	public void resetMutateLikelihood() { updateCounter = 0; }
 }

@@ -28,6 +28,7 @@ public class Controller {
 	final int maxRounds = 100;
 	static final int maxGenerations = 10000;
 	public static int generationsCompleted = 0;
+	private double[] fitnessMonitor = new double[10];
 //----------------------------------------------------------------------Simulation
 	
 	
@@ -201,6 +202,7 @@ public class Controller {
 			
 			generationOutput(generation, bestFitness, vsBestFitness, tm1AvrFit, tm2AvrFit);
 			
+			monitorFitness(bestFitness);
 			team1 = geneticAlgorithm.newPopulation(team1, team1Fitness, elitism, bestTeam);
 		}
 		
@@ -208,6 +210,23 @@ public class Controller {
 		for (int s = 0; s < 3; s++) { tm2FinalAvrFit[s] = tm2FinalAvrFit[s]/(lastGeneration + 1); }
 		System.out.println("Final average fitness team1: " + tm1FinalAvrFit);
 }
+	
+	private void monitorFitness(double fitVal) {
+		for (int i = 0; i < fitnessMonitor.length - 1; i++) { fitnessMonitor[i] = fitnessMonitor[i+1]; }
+		fitnessMonitor[fitnessMonitor.length-1] = fitVal;
+		
+		boolean hasChanged = false;
+		for (int i = 0; i < fitnessMonitor.length; i++) {
+			if (fitnessMonitor[i] == fitVal) { continue; }
+			else {
+				hasChanged = true;
+				break; 
+			}
+		}
+		
+		if (hasChanged) { geneticAlgorithm.resetMutateProbability(); }
+		else { geneticAlgorithm.updateMutateProbability(); }
+	}
 		
 	private void generationOutput(int generation, double bestFitness, double[] vsBestFitness, double tm1AvrFit, double[] tm2AvrFit) {
 		String output = "Generation " + (generation + 1) + " t1B " + round(bestFitness, 3);
