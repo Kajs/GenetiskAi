@@ -33,7 +33,7 @@ public class Controller {
 	
 	
 //____________________________________________________________GENETIC ALGORITHM
-	final int populationSize = 1000;
+	int populationSize = 1000;
 	final double keepPercent = 0.25;
     final double crossPercent = 0.25;
 	final boolean elitism = true;
@@ -72,8 +72,8 @@ public class Controller {
 		
 //____________________________________________________________THREAD
 	static int numThreads = 2;
-	final MultiThreading multiThreading = new MultiThreading(numThreads);
-	final GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(populationSize, choices, information, keepPercent, crossPercent, skipZeroFitnessScaling, alwaysKeepBest, numThreads, multiThreading, scalingType);
+	final MultiThreading multiThreading;
+	final GeneticAlgorithm geneticAlgorithm;
 	private GameThread[] gameThreads;
 //------------------------------------------------------------------Thread
 	
@@ -96,17 +96,23 @@ public class Controller {
 	
 	public Controller(boolean automatic, boolean displayAutomatic) {
 		
-		Launcher.allowActionOutput = false;
-		gameState = new GameState(startPosition, rows, columns, hexSideSize);
-		setupScenarios();
+		if(populationSize < 4) {
+			populationSize = 4;
+			System.out.println("Population size changed to 4 (minimum)\n");
+		}
 		
 		if(numThreads > populationSize) { 
 			numThreads = populationSize; 
-			System.out.println("Warning: there are more threads than population size, threads set to populationSize"); 
-			}
-
-		gameThreads = new GameThread[numThreads];
+			System.out.println("There are more threads than population size, threads set to " + populationSize + "\n"); 
+		}
 		
+		setupScenarios();		
+		gameState = new GameState(startPosition, rows, columns, hexSideSize);
+
+		multiThreading = new MultiThreading(numThreads);
+		geneticAlgorithm = new GeneticAlgorithm(populationSize, choices, information, keepPercent, crossPercent, skipZeroFitnessScaling, alwaysKeepBest, numThreads, multiThreading, scalingType);
+		
+		gameThreads = new GameThread[numThreads];
 		int stepSize = populationSize/numThreads;
 		if(stepSize < 1) {stepSize = 1;}
 		int start = 0;
@@ -127,14 +133,7 @@ public class Controller {
     		
     		Launcher.stop = false;
     		while(!Launcher.stop) {
-    			if(runBestTeamGames) {
-    				runBestTeamGames();
-    				runBestTeamGames = false;
-    			}
-    			if(runSingleBestTeamGame) {
-    				runSingleBestTeamGame(singleBestTeamNumber);
-    				runSingleBestTeamGame = false;
-    			}
+    			displayGames();
     			try { Thread.sleep(1000); }
         		catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
     		}
@@ -155,7 +154,7 @@ public class Controller {
 	
 	
 	
-	public void simulate(int maxRounds, int maxGames, int populationSize) {
+	private void simulate(int maxRounds, int maxGames, int populationSize) {
 		double[][][][] team1 = geneticAlgorithm.initialPopulation(populationSize, choices, information);
 		bestTeams = new double[maxGames][3][choices+1][information];
 		
@@ -165,6 +164,7 @@ public class Controller {
 		double[] team1Fitness = new double[populationSize];
 		
 		for (int generation = 0; generation < maxGenerations && !Launcher.stop; generation++) {
+			displayGames();
 			lastGeneration = generation;
 			double tm1AvrFit = 0;
 			double[] tm2AvrFit = new double[3];
@@ -209,7 +209,7 @@ public class Controller {
 		System.out.println("Final average fitness team1: " + tm1FinalAvrFit);
 }
 		
-	public void generationOutput(int generation, double bestFitness, double[] vsBestFitness, double tm1AvrFit, double[] tm2AvrFit) {
+	private void generationOutput(int generation, double bestFitness, double[] vsBestFitness, double tm1AvrFit, double[] tm2AvrFit) {
 		String output = "Generation " + (generation + 1) + " t1B " + round(bestFitness, 3);
 		if (!allDifficulties) { output += ", vsB " + round(vsBestFitness[enemyDifficulty], 3); }
 		else {
@@ -227,6 +227,32 @@ public class Controller {
 		System.out.println(output);
 	}
 	
+	private void displayGames() {
+		if(runBestTeamGames || runSingleBestTeamGame) {
+			boolean previousRoundDelayState = Launcher.allowRoundDelay;
+			Launcher.allowRoundDelay = true;
+    		Launcher.allowBestTeamsFitnessOutput = true;
+    		
+    		if(runSingleBestTeamGame) {
+    			runSingleBestTeamGame(singleBestTeamNumber);
+    			runSingleBestTeamGame = false;
+    		}
+    		
+    		else {
+    			if(runBestTeamGames) {    			
+        			runBestTeamGames();
+        			Launcher.allowRoundDelay = previousRoundDelayState;
+        			Launcher.allowBestTeamsFitnessOutput = false;
+        			runBestTeamGames = false;
+        		}
+    		}
+    		
+    		Launcher.allowRoundDelay = previousRoundDelayState;
+			Launcher.allowBestTeamsFitnessOutput = false;
+		}
+		
+	}
+	
 	private void runSingleBestTeamGame(int bestTeam) {
 		GameThread bestGameThread = new GameThread(gameState, 0, 1, enemyDifficulty, maxRounds, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty, geneticAlgorithm, allDifficulties);
 		final double[][][][] singleBestTeam = new double[1][3][choices+1][information];
@@ -238,6 +264,8 @@ public class Controller {
 		bestGameThread.setTeam1Fitness(singleBestTeamFitness);
 		Thread lastThread = new Thread(bestGameThread);
 		lastThread.start();
+		try { lastThread.join(); } 
+		catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
 		}
 
 	private void runBestTeamGames() {
@@ -246,9 +274,11 @@ public class Controller {
 		bestGameThread.setTeam1Fitness(bestTeamsFitness);
 		Thread lastThread = new Thread(bestGameThread);
 		lastThread.start();
+		try { lastThread.join(); } 
+		catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
 	}
 		
-	public void setupScenarios() {
+	private void setupScenarios() {
 		
 		scenarios = new Scenario[8];
 		int scenarioCounter = 0;
@@ -382,7 +412,7 @@ public class Controller {
 	
 	
 	
-	public double scaledHexSideSize() {
+	private double scaledHexSideSize() {
 		double maxHexHeight = (double)height/((double)rows * cos(toRadians(30)) * (2.0 + 1.0/(double)rows)) * 0.8941;
 		double maxHexWidth = (double)width/((sin(toRadians(30)) + (double)columns * (1.0 + sin(toRadians(30))))) * 0.98;
 		if(maxHexHeight <= maxHexWidth) {
@@ -410,12 +440,12 @@ public class Controller {
 	
 	public static int numChartLines;
 	
-	public static void calculateNumChartLines() {
+	private static void calculateNumChartLines() {
 		if (!allDifficulties) { numChartLines = 4; }
 		else { numChartLines = 8; }
 	}
 	
-	public static String[] fitnessChartNames() {
+	private static String[] fitnessChartNames() {
 		String[] names = new String[numChartLines];
 		if(!allDifficulties) {
 			names[0] = "Team 1 best";
@@ -436,7 +466,7 @@ public class Controller {
 		return names;
 	}
 	
-	public static String[] weightChartNames() {
+	private static String[] weightChartNames() {
 		String[] names = new String[choices + 1];
 		names[0] = "Choice weights";
 		names[1] = "Normal attack";
@@ -448,7 +478,7 @@ public class Controller {
 		return names;
 	}
 	
-	public static double[][] fitnessChartData() {
+	private static double[][] fitnessChartData() {
 		double[][] fitnessMatrix = new double[numChartLines][generationsCompleted];
 		if(!allDifficulties) {
 			for (int i = 0; i < generationsCompleted; i++) {

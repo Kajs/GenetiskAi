@@ -4,7 +4,7 @@ import control.Controller;
 
 public class Launcher {
 	
-	public static boolean allowActionOutput = true;
+	public static boolean allowActionOutput = false;
 	public static boolean allowAdjacentAiOutput = false;
 	public static boolean allowAngleOutput = false;
 	public static boolean allowAreaDamageOutput = false;

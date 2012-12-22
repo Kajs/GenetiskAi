@@ -55,8 +55,6 @@ public class WindowManager {
 	    		String str = JOptionPane.showInputDialog(null, "Game Number : ", "New Best Team Game", 1);
 	    		if(str != null && !str.equals("") && checkIntString(str)) {
 	    			int bestTeam = new Integer(str);
-	    			Launcher.allowRoundDelay = true;
-		    		Launcher.allowBestTeamsFitnessOutput = true;
 	    			Controller.singleBestTeamNumber = bestTeam - 1;
 	    			Controller.runSingleBestTeamGame = true;
 	    		}
@@ -66,8 +64,6 @@ public class WindowManager {
 	   JMenuItem runBestTeamGames = new JMenuItem("Run all best team games");
 	   runBestTeamGames.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
-	    		Launcher.allowRoundDelay = true;
-	    		Launcher.allowBestTeamsFitnessOutput = true;
 	    		Controller.runBestTeamGames = true;
 	    	}
 	    });
