@@ -119,7 +119,7 @@ public class Controller {
 		int end = stepSize;
 		for (int i = 0; i < numThreads; i++) {
 			if(i == numThreads - 1 || end > populationSize) {end = populationSize;}
-			gameThreads[i] = new GameThread(new GameState(startPosition, rows, columns, hexSideSize), start, end, enemyDifficulty, maxRounds, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty, geneticAlgorithm, allDifficulties);
+			gameThreads[i] = new GameThread(new GameState(startPosition, rows, columns, hexSideSize), start, end, enemyDifficulty, maxRounds, choices, information, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty, geneticAlgorithm, allDifficulties);
 			start = end;
 			end += stepSize;
 		}
@@ -133,7 +133,7 @@ public class Controller {
     		
     		Launcher.stop = false;
     		while(!Launcher.stop) {
-    			displayGames();
+    			displayGames(false);
     			try { Thread.sleep(1000); }
         		catch(InterruptedException ex) { Thread.currentThread().interrupt(); }
     		}
@@ -164,7 +164,7 @@ public class Controller {
 		double[] team1Fitness = new double[populationSize];
 		
 		for (int generation = 0; generation < maxGenerations && !Launcher.stop; generation++) {
-			displayGames();
+			displayGames(true);
 			lastGeneration = generation;
 			double tm1AvrFit = 0;
 			double[] tm2AvrFit = new double[3];
@@ -227,11 +227,11 @@ public class Controller {
 		System.out.println(output);
 	}
 	
-	private void displayGames() {
+	private void displayGames(boolean whileSimulating) {
 		if(runBestTeamGames || runSingleBestTeamGame) {
 			boolean previousRoundDelayState = Launcher.allowRoundDelay;
 			Launcher.allowRoundDelay = true;
-    		Launcher.allowBestTeamsFitnessOutput = true;
+    		if(!whileSimulating) { Launcher.allowBestTeamsFitnessOutput = true; }
     		
     		if(runSingleBestTeamGame) {
     			runSingleBestTeamGame(singleBestTeamNumber);
@@ -254,7 +254,7 @@ public class Controller {
 	}
 	
 	private void runSingleBestTeamGame(int bestTeam) {
-		GameThread bestGameThread = new GameThread(gameState, 0, 1, enemyDifficulty, maxRounds, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty, geneticAlgorithm, allDifficulties);
+		GameThread bestGameThread = new GameThread(gameState, 0, 1, enemyDifficulty, maxRounds, choices, information, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty, geneticAlgorithm, allDifficulties);
 		final double[][][][] singleBestTeam = new double[1][3][choices+1][information];
 		final double[] singleBestTeamFitness = new double[1];
 		singleBestTeamFitness[0] = bestTeamsFitness[bestTeam];
@@ -269,7 +269,7 @@ public class Controller {
 		}
 
 	private void runBestTeamGames() {
-		GameThread bestGameThread = new GameThread(gameState, 0, generationsCompleted, enemyDifficulty, maxRounds, choices, information, Launcher.allowBestTeamsFitnessOutput, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty, geneticAlgorithm, allDifficulties);
+		GameThread bestGameThread = new GameThread(gameState, 0, generationsCompleted, enemyDifficulty, maxRounds, choices, information, scenarios, alsoReversedPositions, bothTeamsStart, testingStatics, testStaticDifficulty, geneticAlgorithm, allDifficulties);
 		bestGameThread.setTeam1(bestTeams);
 		bestGameThread.setTeam1Fitness(bestTeamsFitness);
 		Thread lastThread = new Thread(bestGameThread);

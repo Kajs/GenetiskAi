@@ -16,7 +16,6 @@ public class GameThread implements Runnable {
 	private Coordinate[][] geneticPositions;
 	private Coordinate[][] staticPositions;
 	private double[] team1Fitness;
-	private boolean fitnessOutput;
 	//private boolean bothTeamsStart;
 	private boolean alsoReversedPositions;
 	
@@ -38,13 +37,12 @@ public class GameThread implements Runnable {
 	
 	private Scenario[] scenarios;
 	
-	public GameThread(GameState gameState, int firstTeam, int lastTeam, int enemyDifficulty, int maxRounds, int choices, int information, boolean fitnessOutput, Scenario[] scenarios, boolean alsoReversedPositions, boolean bothTeamsStart, boolean testingStatics, int testStaticDifficulty, GeneticAlgorithm geneticAlgorithm, boolean allDifficulties) {
+	public GameThread(GameState gameState, int firstTeam, int lastTeam, int enemyDifficulty, int maxRounds, int choices, int information, Scenario[] scenarios, boolean alsoReversedPositions, boolean bothTeamsStart, boolean testingStatics, int testStaticDifficulty, GeneticAlgorithm geneticAlgorithm, boolean allDifficulties) {
 		this.gameState = gameState;
 		this.firstTeam = firstTeam;
 		this.lastTeam = lastTeam;
 		this.enemyDifficulty = enemyDifficulty;
 		this.maxRounds = maxRounds;
-		this.fitnessOutput = fitnessOutput;
 		//this.bothTeamsStart = bothTeamsStart;
 		this.alsoReversedPositions = alsoReversedPositions;
 		this.testingStatics = testingStatics;
@@ -86,7 +84,7 @@ public class GameThread implements Runnable {
 				staticPositions = scenarios[i].staticPositions;				
 				currentTeam = team1[team];
 				
-				if(fitnessOutput) {System.out.println("\nTeam " + (team + 1) + " with fitness " + round(team1Fitness[team], 3) + " in scenario " + (i + 1) + "\n");}
+				if(Launcher.allowBestTeamsFitnessOutput) {System.out.println("\nTeam " + (team + 1) + " with fitness " + round(team1Fitness[team], 3) + " in scenario " + (i + 1) + "\n");}
 				
 				if(!allDifficulties) { runAllGames(enemyDifficulty); }
 				else {
@@ -262,7 +260,7 @@ public class GameThread implements Runnable {
 	}
 	
 	public void runGame(boolean reversed, boolean switchStartTeam, int enemyDifficulty) {
-		if(fitnessOutput) {
+		if(Launcher.allowBestTeamsFitnessOutput) {
 			String gameDescription = "    ";
 			if(!reversed) { gameDescription += "normal game"; }
 			else { gameDescription += "reversed game"; }
