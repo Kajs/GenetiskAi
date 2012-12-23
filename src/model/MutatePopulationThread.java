@@ -66,7 +66,6 @@ public class MutatePopulationThread implements Runnable {
 	}
 	
 	public double[][][] mutate (double[][][] child, double mutateLikelihood, double drasticLikelihood, boolean wholeTeam) {
-		System.out.println(mutateLikelihood);
 		double[][][] mutant = new double[3][choices+1][information];
 		int aiType = nextInt(3);
 		
