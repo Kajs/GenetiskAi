@@ -173,12 +173,8 @@ public class GeneticAlgorithm {
 	
 	public double[][][][] newPopulation(double[][][][] population, double[] fitness, boolean elitism, int bestTeam) {
 		double[][][] bestAi = null;
-		double bestAiFitness = 0;
 		
-		if(elitism) {
-			bestAi = population[bestTeam];
-			bestAiFitness = fitness[bestTeam];
-		}
+		if(elitism) { bestAi = population[bestTeam]; }
 		
         if(allwaysKeepBest) { heapSort.heapSortHigh(population, fitness, populationSize); }
 		
@@ -213,10 +209,7 @@ public class GeneticAlgorithm {
 		multiThreading.runCrossPopulationThreads(crossPopulationThreads, populationSubset, newPopulation, fitnessSubset, subsetTotalFitness);
 		multiThreading.runMutatePopulationThreads(mutatePopulationThreads, populationSubset, newPopulation, fitnessSubset, subsetTotalFitness);
 		
-		if(elitism) {
-			newPopulation[0] = bestAi;
-			fitness[0] = bestAiFitness;
-		}
+		if(elitism) { newPopulation[0] = bestAi; }
 		
 		return newPopulation;
 	}
@@ -278,7 +271,7 @@ public class GeneticAlgorithm {
 		
 		double chance = nextDouble();
 		double summedFitness = 0.0;
-		for (int i = 0; i < populationSize; i++) {
+		for (int i = 0; i < populationLimit; i++) {
 			summedFitness += fitness[i];
 			if (chance <= summedFitness / totalFitness) { break; }
 			counter++;
