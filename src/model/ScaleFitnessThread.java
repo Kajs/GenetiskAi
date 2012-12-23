@@ -48,8 +48,7 @@ public class ScaleFitnessThread implements Runnable{
 	public void exponentialScaling() {
 		double fitValue;
 		for (int i = start; i < end; i++) {
-			fitValue = fitness[i];
-			
+			fitValue = fitness[i];			
 			if(skipZeroFitnessScaling && fitValue == 0) { fitness[i] = 0.0; }
 			else { fitness[i] = sqrt(fitValue + constant); }
 		}

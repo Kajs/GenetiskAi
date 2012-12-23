@@ -3,6 +3,7 @@ package model;
 import java.util.Random;
 
 import static java.lang.Math.floor;
+import static java.lang.Math.ceil;
 
 public class GeneticAlgorithm {
 	public static int geneticThreads;
@@ -27,6 +28,9 @@ public class GeneticAlgorithm {
 	
     MultiThreading multiThreading;
     final HeapSort heapSort = new HeapSort();
+    
+    double[][][][] populationSubset;
+    double[] fitnessSubset;
 	
 	
 	
@@ -41,13 +45,15 @@ public class GeneticAlgorithm {
 		this.skipZeroFitnessScaling = skipZeroFitnessScaling;
 		this.multiThreading = multiThreading;
 		
-		keepAmount = (int)floor(populationSize * keepPercent);
+		keepAmount = (int)ceil(populationSize * keepPercent);
 		crossAmount = (int)floor(populationSize * crossPercent);
 		crossAmount = crossAmount + (crossAmount % 2);
 		mutateAmount = populationSize - keepAmount - crossAmount;
 		
 		if(allwaysKeepBest) { populationLimit = keepAmount; }
 		else { populationLimit = populationSize; }
+		populationSubset = new double[keepAmount][3][choices+1][information];
+		fitnessSubset = new double[keepAmount];
 		
 		keepPopulationThreads = new KeepPopulationThread[numThreads];
 		crossPopulationThreads = new CrossPopulationThread[numThreads];
@@ -85,44 +91,38 @@ public class GeneticAlgorithm {
 		start = keepAmount + crossAmount;
 		end = start + stepSize;
 		
-		double mutateLikelihoodStart = 0.0;
-		double mutateLikelihoodEnd = 0.0;
-		double drasticLikelihoodStart = 0.0;
-		double drasticLikelihoodEnd = 0.0;
-		
 		for (int i = 0; i < numThreads; i++) {
 			if(i == numThreads - 1 || end > populationSize) { end = populationSize;}
-			mutateLikelihoodStart = 1.0 / numThreads * i;
-			mutateLikelihoodEnd = 1.0 / numThreads * (i + 1);
-			drasticLikelihoodStart = 0;
-			drasticLikelihoodEnd = 1.0;
-			//System.out.println("Mutate %: " + mutateLikelihoodStart + " to " + mutateLikelihoodEnd);
-			//System.out.println("Drastic %: " + drasticLikelihoodStart + " to " + drasticLikelihoodEnd);
+			double mutateLikelihoodStart = 1.0 / numThreads * i;
+			double mutateLikelihoodEnd = 1.0 / numThreads * (i + 1);
+			double drasticLikelihoodStart = 0;
+			double drasticLikelihoodEnd = 1.0;
+			
 			mutatePopulationThreads[i] = new MutatePopulationThread(start, end, populationLimit, choices, information, mutateLikelihoodStart, mutateLikelihoodEnd, drasticLikelihoodStart, drasticLikelihoodEnd);
 			start = end;
 			end += stepSize;
 		}
 		
-		stepSize = populationLimit/numThreads;
+		stepSize = populationSize/numThreads;
 		if(stepSize < 1) {stepSize = 1;}
 		start = 0;
 		end = start + stepSize;
 		
 		for (int i = 0; i < numThreads; i++) {
-			if(i == numThreads - 1 || end > populationLimit) { end = populationLimit;}
+			if(i == numThreads - 1 || end > populationSize) { end = populationSize;}
 			getTotalFitnessThreads[i] = new GetTotalFitnessThread(start, end);
 			start = end;
 			end += stepSize;
 		}
 		
-		stepSize = populationLimit/numThreads;
+		stepSize = populationSize/numThreads;
 		if(stepSize < 1) {stepSize = 1;}
 		start = 0;
 		end = start + stepSize;
 		
 		for (int i = 0; i < numThreads; i++) {
-			if(i == numThreads - 1 || end > populationLimit) { end = populationLimit;}
-			scaleFitnessThreads[i] = new ScaleFitnessThread(start, end, fitnessScalingType, 0.9, 1.0/populationLimit, skipZeroFitnessScaling);
+			if(i == numThreads - 1 || end > populationSize) { end = populationSize;}
+			scaleFitnessThreads[i] = new ScaleFitnessThread(start, end, fitnessScalingType, 0.9, 1.0/populationSize, skipZeroFitnessScaling);
 			start = end;
 			end += stepSize;
 		}
@@ -188,9 +188,30 @@ public class GeneticAlgorithm {
 		multiThreading.runScaleFitnessThreads(scaleFitnessThreads, scaledFitness);
 		double totalFitness = multiThreading.runGetTotalFitnessThreads(getTotalFitnessThreads, scaledFitness);
 		
-		multiThreading.runKeepPopulationThreads(keepPopulationThreads, population, newPopulation, scaledFitness, totalFitness);
-		multiThreading.runCrossPopulationThreads(crossPopulationThreads, population, newPopulation, scaledFitness, totalFitness);
-		multiThreading.runMutatePopulationThreads(mutatePopulationThreads, population, newPopulation, scaledFitness, totalFitness);
+		double subsetTotalFitness = 0;
+		if(allwaysKeepBest) {
+			for (int i = 0; i < keepAmount; i++) {
+				if (i < keepAmount/2 || keepAmount/2 == 0) {
+					populationSubset[i] = population[i]; 
+					fitnessSubset[i] = scaledFitness[i];
+				}
+				else {
+					int pos = choseFitnessPosition(scaledFitness, totalFitness);
+					populationSubset[i] = population[pos];
+					fitnessSubset[i] = scaledFitness[pos];
+				}
+				subsetTotalFitness += fitnessSubset[i];
+			}
+		}
+		else {
+			fitnessSubset = scaledFitness;
+			populationSubset = population;
+			subsetTotalFitness = totalFitness;
+		}
+		
+		multiThreading.runKeepPopulationThreads(keepPopulationThreads, populationSubset, newPopulation, fitnessSubset, subsetTotalFitness);
+		multiThreading.runCrossPopulationThreads(crossPopulationThreads, populationSubset, newPopulation, fitnessSubset, subsetTotalFitness);
+		multiThreading.runMutatePopulationThreads(mutatePopulationThreads, populationSubset, newPopulation, fitnessSubset, subsetTotalFitness);
 		
 		if(elitism) {
 			newPopulation[0] = bestAi;
@@ -249,6 +270,19 @@ public class GeneticAlgorithm {
 	}}
 	
 	public void resetMutateProbability() { for (int i = 0; i < mutatePopulationThreads.length; i++) {
-		mutatePopulationThreads[i].resetMutateLikelihood();
+		mutatePopulationThreads[i].resetMutateLikelihood(false);
 	}}
+	
+	public int choseFitnessPosition(double[] fitness, double totalFitness) {
+		int counter = 0;
+		
+		double chance = nextDouble();
+		double summedFitness = 0.0;
+		for (int i = 0; i < populationSize; i++) {
+			summedFitness += fitness[i];
+			if (chance <= summedFitness / totalFitness) { break; }
+			counter++;
+		}
+		return counter;
+	}
 }

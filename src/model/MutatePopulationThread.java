@@ -20,6 +20,8 @@ public class MutatePopulationThread implements Runnable {
 	//private double mutateLikelihoodStepSize;
 	private double updateStepSize = 0.025 / GeneticAlgorithm.geneticThreads;
 	private int updateCounter = 0;
+	private double updateCeiling;
+	private double updateCeilingStepSize;
 	public boolean updateMutateLikelihood = false;
 	private double drasticLikelihoodStart;
 	private double drasticLikelihoodEnd;
@@ -35,6 +37,9 @@ public class MutatePopulationThread implements Runnable {
 		this.populationLimit = populationLimit;
 		this.choices = choices;
 		this.information = information;
+		
+		updateCeilingStepSize = 0.2 / GeneticAlgorithm.geneticThreads;
+		updateCeiling = mutateLikelihoodStart + updateCeilingStepSize;
 	}
 	
 	public void run() {
@@ -57,12 +62,11 @@ public class MutatePopulationThread implements Runnable {
 			newMutateLikelihood += mutateLikelihoodStepSize;
 			newPopulation[i] = mutate(mutant[0], newMutateLikelihood + updateCounter * updateStepSize, newDrasticLikelihood, coinFlip());
 			newDrasticLikelihood += drasticStepSize;
-		    //System.out.println("MutateLikelihood %: " + newMutateLikelihood);
-			//System.out.println("DrasticLikelihood %: " + newDrasticLikelihood);
 		}
 	}
 	
 	public double[][][] mutate (double[][][] child, double mutateLikelihood, double drasticLikelihood, boolean wholeTeam) {
+		System.out.println(mutateLikelihood);
 		double[][][] mutant = new double[3][choices+1][information];
 		int aiType = nextInt(3);
 		
@@ -138,12 +142,21 @@ public class MutatePopulationThread implements Runnable {
 	private void increaseMutateLikelihood() {
 		updateCounter++;
 		double newStepSize = (mutateLikelihoodEnd - (mutateLikelihoodStart + updateCounter * updateStepSize)) / (end - start);
-		if ((mutateLikelihoodStart + newStepSize + updateCounter * updateStepSize) / mutateLikelihoodEnd > 0.75) { 
-			resetMutateLikelihood(); }
+		if ((mutateLikelihoodStart + newStepSize + updateCounter * updateStepSize) / mutateLikelihoodEnd > updateCeiling) { resetMutateLikelihood(true); }
 		updateMutateLikelihood = false;
 	}
 	
 	public void updateMutateLikelihood() { updateMutateLikelihood = true; }
 	
-	public void resetMutateLikelihood() { updateCounter = 0; }
+	public void resetMutateLikelihood(boolean limitReached) { 
+		updateCounter = 0;
+		if (limitReached) {
+			if (updateCeiling == mutateLikelihoodEnd) { updateCeiling = mutateLikelihoodStart + updateCeilingStepSize; }
+			else {
+				updateCeiling += updateCeilingStepSize;
+				if (updateCeiling > mutateLikelihoodEnd) { updateCeiling = mutateLikelihoodEnd; }
+			}
+		}
+		else { updateCeiling = mutateLikelihoodStart + updateCeilingStepSize; };
+	}
 }

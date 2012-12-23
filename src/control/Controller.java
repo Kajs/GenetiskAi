@@ -28,13 +28,14 @@ public class Controller {
 	final int maxRounds = 100;
 	static final int maxGenerations = 10000;
 	public static int generationsCompleted = 0;
-	private double[] fitnessMonitor = new double[10];
+	private double[] fitnessMonitor = new double[5];
+	private boolean adaptiveMutateLikelihood = true;
 //----------------------------------------------------------------------Simulation
 	
 	
 	
 //____________________________________________________________GENETIC ALGORITHM
-	int populationSize = 1000;
+	int populationSize = 1024;
 	final double keepPercent = 0.25;
     final double crossPercent = 0.25;
 	final boolean elitism = true;
@@ -202,7 +203,7 @@ public class Controller {
 			
 			generationOutput(generation, bestFitness, vsBestFitness, tm1AvrFit, tm2AvrFit);
 			
-			monitorFitness(bestFitness);
+			if(adaptiveMutateLikelihood) { monitorFitness(bestFitness); }
 			team1 = geneticAlgorithm.newPopulation(team1, team1Fitness, elitism, bestTeam);
 		}
 		
