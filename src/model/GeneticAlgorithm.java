@@ -18,6 +18,8 @@ public class GeneticAlgorithm {
 	int mutateAmount;
 	
 	boolean allwaysKeepBest;
+	boolean bestAreHalfRandom;
+	boolean preferUniqueBest;
 	boolean skipZeroFitnessScaling;
 	public final static Random randomGenerator = new Random();
 	KeepPopulationThread[] keepPopulationThreads;
@@ -34,7 +36,7 @@ public class GeneticAlgorithm {
 	
 	
 	
-	public GeneticAlgorithm (int populationSize, int choices, int information, double keepPercent, double crossPercent, boolean skipZeroFitnessScaling, boolean allwaysKeepBest, int numThreads, MultiThreading multiThreading, int fitnessScalingType) {
+	public GeneticAlgorithm (int populationSize, int choices, int information, double keepPercent, double crossPercent, boolean skipZeroFitnessScaling, boolean allwaysKeepBest, boolean bestAreHalfRandom, boolean preferUniqueBest, double preferUniqueBestFactor, int numThreads, MultiThreading multiThreading, int fitnessScalingType) {
 		numThreads = 1; //back to singleThreading
 		geneticThreads = numThreads;
 		
@@ -42,7 +44,9 @@ public class GeneticAlgorithm {
 		this.choices = choices;
 		this.information = information;
 		this.allwaysKeepBest = allwaysKeepBest;
+		this.bestAreHalfRandom = bestAreHalfRandom;
 		this.skipZeroFitnessScaling = skipZeroFitnessScaling;
+		this.preferUniqueBest = preferUniqueBest;
 		this.multiThreading = multiThreading;
 		
 		keepAmount = (int)ceil(populationSize * keepPercent);
@@ -122,7 +126,7 @@ public class GeneticAlgorithm {
 		
 		for (int i = 0; i < numThreads; i++) {
 			if(i == numThreads - 1 || end > populationSize) { end = populationSize;}
-			scaleFitnessThreads[i] = new ScaleFitnessThread(start, end, fitnessScalingType, 0.9, 1.0/populationSize, skipZeroFitnessScaling);
+			scaleFitnessThreads[i] = new ScaleFitnessThread(start, end, fitnessScalingType, 0.9, 1.0/populationSize, skipZeroFitnessScaling, preferUniqueBest, preferUniqueBestFactor);
 			start = end;
 			end += stepSize;
 		}
@@ -176,13 +180,12 @@ public class GeneticAlgorithm {
 		
 		if(elitism) { bestAi = population[bestTeam]; }
 		
-        if(allwaysKeepBest) { heapSort.heapSortHigh(population, fitness, populationSize); }
-		
+		heapSort.heapSortHigh(population, fitness, populationSize);
 		double[][][][] newPopulation = new double[populationSize][3][choices+1][information];
-		double[] scaledFitness = fitness;
-		
+		double[] scaledFitness = fitness;		
 		multiThreading.runScaleFitnessThreads(scaleFitnessThreads, scaledFitness);
-		double totalFitness = multiThreading.runGetTotalFitnessThreads(getTotalFitnessThreads, scaledFitness);
+		double totalFitness = multiThreading.runGetTotalFitnessThreads(getTotalFitnessThreads, scaledFitness);		
+		if(allwaysKeepBest && preferUniqueBest) { heapSort.heapSortHigh(population, scaledFitness, populationSize); } //sort again to move duplicates towards the end of the array;
 		
 		double subsetTotalFitness = 0;
 		if(allwaysKeepBest) {
@@ -192,7 +195,9 @@ public class GeneticAlgorithm {
 					fitnessSubset[i] = scaledFitness[i];
 				}
 				else {
-					int pos = choseFitnessPosition(scaledFitness, totalFitness);
+					int pos;
+					if (bestAreHalfRandom) { pos = choseFitnessPosition(scaledFitness, totalFitness); }
+					else { pos = i; }
 					populationSubset[i] = population[pos];
 					fitnessSubset[i] = scaledFitness[pos];
 				}
@@ -204,6 +209,8 @@ public class GeneticAlgorithm {
 			populationSubset = population;
 			subsetTotalFitness = totalFitness;
 		}
+		
+		//for (int i = 0; i < fitnessSubset.length; i++) { System.out.println(fitnessSubset[i]); }
 		
 		multiThreading.runKeepPopulationThreads(keepPopulationThreads, populationSubset, newPopulation, fitnessSubset, subsetTotalFitness);
 		multiThreading.runCrossPopulationThreads(crossPopulationThreads, populationSubset, newPopulation, fitnessSubset, subsetTotalFitness);
@@ -271,10 +278,11 @@ public class GeneticAlgorithm {
 		
 		double chance = nextDouble();
 		double summedFitness = 0.0;
-		for (int i = 0; i < populationLimit; i++) {
+		for (int i = 0; i < populationSize; i++) {
 			summedFitness += fitness[i];
-			if (chance <= summedFitness / totalFitness) { break; }
-			counter++;
+			if (chance <= summedFitness / totalFitness) { 
+				return counter; }
+			counter++;		
 		}
 		return counter;
 	}

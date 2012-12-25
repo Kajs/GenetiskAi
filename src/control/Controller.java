@@ -28,8 +28,6 @@ public class Controller {
 	final int maxRounds = 100;
 	static final int maxGenerations = 10000;
 	public static int generationsCompleted = 0;
-	private double[] fitnessMonitor = new double[5];
-	private boolean adaptiveMutateLikelihood = true;
 //----------------------------------------------------------------------Simulation
 	
 	
@@ -38,9 +36,12 @@ public class Controller {
 	int populationSize = 1024;
 	final double keepPercent = 0.25;
     final double crossPercent = 0.25;
-	final boolean elitism = true;
-	final boolean skipZeroFitnessScaling = true;
-	final boolean alwaysKeepBest = true;
+    private double[] fitnessMonitor = new double[5];
+	private boolean adaptiveMutateLikelihood = true;  //allow minimum mutate likelihood to increase if best fitness does not change
+	final boolean elitism = true;                     //always carryover single best
+	final boolean skipZeroFitnessScaling = true;      //do not scale 0 fitness values
+	final boolean alwaysKeepBest = true;              //select 25% best
+	final boolean bestAreHalfRandom = true;           //select half of 25%best with fitness based chance
 	
 	public static final int choices = 6;  //only change if choices have been added/removed from ais
 	public final static int information = 33; //only change if information has been added/removed from ais
@@ -53,6 +54,8 @@ public class Controller {
 	final int linearScaling = 0;
 	final int exponentialScaling = 1;
 	final int scalingType = exponentialScaling;	
+	final boolean preferUniqueBest = true;              //multiply duplicates by preferUniqueBestFactor
+	final double preferUniqueBestFactor = 0.01;
 //-------------------------------------------------------------------Scaling
 	
 	
@@ -112,7 +115,7 @@ public class Controller {
 		gameState = new GameState(startPosition, rows, columns, hexSideSize);
 
 		multiThreading = new MultiThreading(numThreads);
-		geneticAlgorithm = new GeneticAlgorithm(populationSize, choices, information, keepPercent, crossPercent, skipZeroFitnessScaling, alwaysKeepBest, numThreads, multiThreading, scalingType);
+		geneticAlgorithm = new GeneticAlgorithm(populationSize, choices, information, keepPercent, crossPercent, skipZeroFitnessScaling, alwaysKeepBest, bestAreHalfRandom, preferUniqueBest, preferUniqueBestFactor, numThreads, multiThreading, scalingType);
 		
 		gameThreads = new GameThread[numThreads];
 		int stepSize = populationSize/numThreads;

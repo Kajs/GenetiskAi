@@ -17,8 +17,7 @@ public class MutatePopulationThread implements Runnable {
 	
 	private double mutateLikelihoodStart;
 	private double mutateLikelihoodEnd;
-	//private double mutateLikelihoodStepSize;
-	private double updateStepSize = 0.025 / GeneticAlgorithm.geneticThreads;
+	private double updateStepSize = 0.05 / GeneticAlgorithm.geneticThreads;
 	private int updateCounter = 0;
 	private double updateCeiling;
 	private double updateCeilingStepSize;
@@ -38,7 +37,7 @@ public class MutatePopulationThread implements Runnable {
 		this.choices = choices;
 		this.information = information;
 		
-		updateCeilingStepSize = 0.2 / GeneticAlgorithm.geneticThreads;
+		updateCeilingStepSize = 0.25 / GeneticAlgorithm.geneticThreads;
 		updateCeiling = mutateLikelihoodStart + updateCeilingStepSize;
 	}
 	
@@ -46,7 +45,7 @@ public class MutatePopulationThread implements Runnable {
 
 		double newMutateLikelihood = mutateLikelihoodStart;
 		if (updateMutateLikelihood) { increaseMutateLikelihood(); }
-		double mutateLikelihoodStepSize = (mutateLikelihoodEnd - (mutateLikelihoodStart + updateCounter * updateStepSize)) / (end - start);
+		double mutateLikelihoodStepSize = (mutateLikelihoodEnd - (mutateLikelihoodStart + updateCounter * updateStepSize / GeneticAlgorithm.geneticThreads)) / (end - start);
 		
 		double temp = drasticLikelihoodStart;
 		drasticLikelihoodStart = drasticLikelihoodEnd;
