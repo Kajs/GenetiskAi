@@ -2,6 +2,8 @@ package model;
 
 import java.util.Random;
 
+import control.Launcher;
+
 import static java.lang.Math.floor;
 import static java.lang.Math.ceil;
 
@@ -182,6 +184,8 @@ public class GeneticAlgorithm {
 		
 		heapSort.heapSortHigh(population, fitness, populationSize);
 		double[][][][] newPopulation = new double[populationSize][3][choices+1][information];
+		
+		if(Launcher.testUnscaledFitness) { for (int i = 0; i < fitness.length; i++) { System.out.println("Unscaled at " + i + ": " + fitness[i]); }}
 		double[] scaledFitness = fitness;		
 		multiThreading.runScaleFitnessThreads(scaleFitnessThreads, scaledFitness);
 		double totalFitness = multiThreading.runGetTotalFitnessThreads(getTotalFitnessThreads, scaledFitness);		
@@ -210,7 +214,7 @@ public class GeneticAlgorithm {
 			subsetTotalFitness = totalFitness;
 		}
 		
-		//for (int i = 0; i < fitnessSubset.length; i++) { System.out.println(fitnessSubset[i]); }
+		if(Launcher.testFitnessSubset) { for (int i = 0; i < fitnessSubset.length; i++) { System.out.println("Subset at " + i + ": " + fitnessSubset[i]); }}
 		
 		multiThreading.runKeepPopulationThreads(keepPopulationThreads, populationSubset, newPopulation, fitnessSubset, subsetTotalFitness);
 		multiThreading.runCrossPopulationThreads(crossPopulationThreads, populationSubset, newPopulation, fitnessSubset, subsetTotalFitness);

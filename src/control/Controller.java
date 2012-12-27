@@ -33,7 +33,7 @@ public class Controller {
 	
 	
 //____________________________________________________________GENETIC ALGORITHM
-	int populationSize = 1024;
+	int populationSize = 1000;
 	final double keepPercent = 0.25;
     final double crossPercent = 0.25;
     private double[] fitnessMonitor = new double[5];
@@ -215,10 +215,7 @@ public class Controller {
 		System.out.println("Final average fitness team1: " + tm1FinalAvrFit);
 }
 	
-	private void monitorFitness(double fitVal) {
-		for (int i = 0; i < fitnessMonitor.length - 1; i++) { fitnessMonitor[i] = fitnessMonitor[i+1]; }
-		fitnessMonitor[fitnessMonitor.length-1] = fitVal;
-		
+	private void monitorFitness(double fitVal) {		
 		boolean hasChanged = false;
 		for (int i = 0; i < fitnessMonitor.length; i++) {
 			if (fitnessMonitor[i] == fitVal) { continue; }
@@ -227,6 +224,9 @@ public class Controller {
 				break; 
 			}
 		}
+		
+		for (int i = 0; i < fitnessMonitor.length - 1; i++) { fitnessMonitor[i] = fitnessMonitor[i+1]; }
+		fitnessMonitor[fitnessMonitor.length-1] = fitVal;
 		
 		if (hasChanged) { geneticAlgorithm.resetMutateProbability(); }
 		else { geneticAlgorithm.updateMutateProbability(); }

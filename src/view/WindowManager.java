@@ -94,105 +94,103 @@ public class WindowManager {
 	    	}
 	    });
 	   
-	   JMenuItem setSpeed = new JMenuItem("Set speed");
-	   setSpeed.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) {
-	    		String str = JOptionPane.showInputDialog(null, "Time in milliseconds", "Automatic mode with visual", 1);
-	    		if(str != null && !str.equals("") && checkIntString(str)) {
-	    			int roundDelay = new Integer(str);
-	    			Controller.roundDelay = roundDelay;
-	    		}
-	    	}
-	    });
+//______________________________Output
 	   
-	   JMenuItem toggleActionOutput = new JMenuItem("Toggle action output");
+	   JMenuItem toggleActionOutput = new JMenuItem("Game - Action");
 	   toggleActionOutput.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		Launcher.allowActionOutput = !(Launcher.allowActionOutput);
 	    	}
 	    });
 	   
-	   JMenuItem toggleAdjacentAiOutput = new JMenuItem("Toggle adjacent ai output");
-	   toggleAdjacentAiOutput.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) {
-	    		Launcher.allowAdjacentAiOutput = !(Launcher.allowAdjacentAiOutput);
-	    	}
-	    });
-	   
-	   JMenuItem toggleBestTeamsFitnessOutput = new JMenuItem("Toggle fitness output");
-	   toggleBestTeamsFitnessOutput.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) {
-	    		Launcher.allowBestTeamsFitnessOutput = !(Launcher.allowBestTeamsFitnessOutput);
-	    	}
-	    });
-	   
-	   JMenuItem toggleHealOutput = new JMenuItem("Toggle heal output");
-	   toggleHealOutput.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) {
-	    		Launcher.allowHealOutput = !(Launcher.allowHealOutput);
-	    	}
-	    });
-	   
-	   JMenuItem toggleHpOutput = new JMenuItem("Toggle hp output");
-	   toggleHpOutput.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) {
-	    		Launcher.allowHpOutput = !(Launcher.allowHpOutput);
-	    	}
-	    });
-	   
-	   JMenuItem toggleNormalDamageOutput = new JMenuItem("Toggle normal damage output");
-	   toggleNormalDamageOutput.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) {
-	    		Launcher.allowNormalDamageOutput = !(Launcher.allowNormalDamageOutput);
-	    	}
-	    });
-	   
-	   JMenuItem toggleShieldOutput = new JMenuItem("Toggle shield output");
-	   toggleShieldOutput.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) {
-	    		Launcher.allowShieldOutput = !(Launcher.allowShieldOutput);
-	    	}
-	    });
-	   
-	   JMenuItem toggleStunOutput = new JMenuItem("Toggle stun output");
-	   toggleStunOutput.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) {
-	    		Launcher.allowStunOutput = !(Launcher.allowStunOutput);
-	    	}
-	    });
-	   
-	   JMenuItem toggleBoostOutput = new JMenuItem("Toggle boost output");
-	   toggleBoostOutput.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) {
-	    		Launcher.allowBoostOutput = !(Launcher.allowBoostOutput);
-	    	}
-	    });
-	   
-	   JMenuItem toggleAreaDamageOutput = new JMenuItem("Toggle area damage output");
+	   JMenuItem toggleAreaDamageOutput = new JMenuItem("Game - Area damage");
 	   toggleAreaDamageOutput.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		Launcher.allowAreaDamageOutput = !(Launcher.allowAreaDamageOutput);
 	    	}
 	    });
 	   
-	   JMenuItem toggleAngleOutput = new JMenuItem("Toggle angle output");
-	   toggleAngleOutput.addActionListener(new ActionListener() {
+	   JMenuItem toggleBoostOutput = new JMenuItem("Game - Boost");
+	   toggleBoostOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.allowBoostOutput = !(Launcher.allowBoostOutput);
+	    	}
+	    });
+	   
+	   JMenuItem toggleBestTeamsFitnessOutput = new JMenuItem("Game - Fitness");
+	   toggleBestTeamsFitnessOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.allowBestTeamsFitnessOutput = !(Launcher.allowBestTeamsFitnessOutput);
+	    	}
+	    });
+	   
+	   JMenuItem toggleHealOutput = new JMenuItem("Game - Heal");
+	   toggleHealOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.allowHealOutput = !(Launcher.allowHealOutput);
+	    	}
+	    });
+	   
+	   JMenuItem toggleHpOutput = new JMenuItem("Game - Hp");
+	   toggleHpOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.allowHpOutput = !(Launcher.allowHpOutput);
+	    	}
+	    });
+	   
+	   JMenuItem toggleNormalDamageOutput = new JMenuItem("Game - Normal damage");
+	   toggleNormalDamageOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.allowNormalDamageOutput = !(Launcher.allowNormalDamageOutput);
+	    	}
+	    });
+	   
+	   JMenuItem toggleRoundSeparator = new JMenuItem("Game - Round separator");
+	   toggleRoundSeparator.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.toggleRoundSeparator = !(Launcher.toggleRoundSeparator);
+	    	}
+	    });
+	   
+	   JMenuItem toggleShieldOutput = new JMenuItem("Game - Shield");
+	   toggleShieldOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.allowShieldOutput = !(Launcher.allowShieldOutput);
+	    	}
+	    });
+	   
+	   JMenuItem toggleStunOutput = new JMenuItem("Game - Stun");
+	   toggleStunOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.allowStunOutput = !(Launcher.allowStunOutput);
+	    	}
+	    });
+	   
+	   JMenuItem testAdjacentAiOutput = new JMenuItem("Test - Adjacent ais");
+	   testAdjacentAiOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.allowAdjacentAiOutput = !(Launcher.allowAdjacentAiOutput);
+	    	}
+	    });
+	   
+	   JMenuItem testAngleOutput = new JMenuItem("Test - Angle");
+	   testAngleOutput.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		Launcher.allowAngleOutput = !(Launcher.allowAngleOutput);
 	    	}
 	    });
 	   
-	   JMenuItem pause = new JMenuItem("Pause");
-	   pause.addActionListener(new ActionListener() {
+	   JMenuItem testFitnessSubsetOutput = new JMenuItem("Test - Fitness subset");
+	   testFitnessSubsetOutput.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
-	    		Launcher.isPaused = !(Launcher.isPaused);
+	    		Launcher.testFitnessSubset = !(Launcher.testFitnessSubset);
 	    	}
 	    });
 	   
-	   JMenuItem toggleRoundSeparator = new JMenuItem("Toggle round separator");
-	   toggleRoundSeparator.addActionListener(new ActionListener() {
+	   JMenuItem testUnscaledFitnessOutput = new JMenuItem("Test - Unscaled fitness");
+	   testUnscaledFitnessOutput.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
-	    		Launcher.toggleRoundSeparator = !(Launcher.toggleRoundSeparator);
+	    		Launcher.testUnscaledFitness = !(Launcher.testUnscaledFitness);
 	    	}
 	    });
 	   
@@ -203,19 +201,11 @@ public class WindowManager {
 	    	}
 	    });
 	   
-	   JMenuItem toggleRoundDelay = new JMenuItem("Toggle round delay");
-	   toggleRoundDelay.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) {
-	    		Launcher.allowRoundDelay = !(Launcher.allowRoundDelay);
-	    	}
-	    });
 	   
-	   JMenuItem stop = new JMenuItem("Stop");
-	   stop.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) {
-	    		Launcher.stop = true;
-	    	}
-	    });
+//----------------------------------Output
+	   
+
+//______________________________Speed
 	   
 	   JMenuItem fast = new JMenuItem("Fast");
 	   fast.addActionListener(new ActionListener() {
@@ -236,7 +226,43 @@ public class WindowManager {
 	    	public void actionPerformed(ActionEvent e) {
 	    		Controller.roundDelay = 5000;
 	    	}
+	    });	   
+	   
+	   JMenuItem pause = new JMenuItem("Pause");
+	   pause.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.isPaused = !(Launcher.isPaused);
+	    	}
 	    });
+	   
+	   JMenuItem setSpeed = new JMenuItem("Set speed");
+	   setSpeed.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		String str = JOptionPane.showInputDialog(null, "Time in milliseconds", "Automatic mode with visual", 1);
+	    		if(str != null && !str.equals("") && checkIntString(str)) {
+	    			int roundDelay = new Integer(str);
+	    			Controller.roundDelay = roundDelay;
+	    		}
+	    	}
+	    });
+	   
+	   JMenuItem stop = new JMenuItem("Stop");
+	   stop.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.stop = true;
+	    	}
+	    });
+	   
+	   JMenuItem toggleRoundDelay = new JMenuItem("Toggle round delay");
+	   toggleRoundDelay.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.allowRoundDelay = !(Launcher.allowRoundDelay);
+	    	}
+	    });
+
+	   
+//----------------------------------Speed
+	   
 	   
 	   JMenuItem showXyChart = new JMenuItem("Show xy chart");
 	   showXyChart.addActionListener(new ActionListener() {
@@ -279,8 +305,6 @@ public class WindowManager {
 	   
 	   JMenu output = new JMenu("Output");
 	   output.add(toggleActionOutput);
-	   output.add(toggleAdjacentAiOutput);
-	   output.add(toggleAngleOutput);
 	   output.add(toggleAreaDamageOutput);
 	   output.add(toggleBestTeamsFitnessOutput);
 	   output.add(toggleBoostOutput);
@@ -290,8 +314,11 @@ public class WindowManager {
 	   output.add(toggleShieldOutput);
 	   output.add(toggleStunOutput);
 	   output.add(toggleRoundSeparator);
+	   output.add(testAdjacentAiOutput);
+	   output.add(testAngleOutput);
+	   output.add(testFitnessSubsetOutput);
+	   output.add(testUnscaledFitnessOutput);
 	   output.add(printLine);
-	   JMenuBar menuBar = new JMenuBar();
 	   
 	   JMenu speed = new JMenu("Speed");
 	   speed.add(fast);
@@ -308,6 +335,7 @@ public class WindowManager {
 	   charts.add(showXyDeviationChart);
 	   charts.add(showDualAxisWeightChart);
 	   
+	   JMenuBar menuBar = new JMenuBar();
 	   menuBar.add(automatic);
 	   menuBar.add(output);
 	   menuBar.add(speed);

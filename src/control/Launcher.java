@@ -24,6 +24,8 @@ public class Launcher {
 	public static boolean stop = false;	
 	public static boolean switchBestTeam = false;
 	public static int switchBestTeamNumber = 0;
+	public static boolean testFitnessSubset = false;
+	public static boolean testUnscaledFitness = false;
 	public static boolean toggleRoundSeparator = false;
 	
 	public static void main(String[] args) {
