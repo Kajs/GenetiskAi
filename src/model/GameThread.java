@@ -108,6 +108,8 @@ public class GameThread implements Runnable {
 				}
 				
 				team1Fitness[team] = tm1ScenarioSummedFit/fitScale;
+				
+				if (Launcher.testPrintCurrentGame) { System.out.println("Completed game " + team); }
 		}
 		
 		tm1GameAvrFit = tm1GameSummedFitness / (lastTeam - firstTeam);

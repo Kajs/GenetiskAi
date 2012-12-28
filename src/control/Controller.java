@@ -56,6 +56,8 @@ public class Controller {
 	final int scalingType = exponentialScaling;	
 	final boolean preferUniqueBest = true;              //multiply duplicates by preferUniqueBestFactor
 	final double preferUniqueBestFactor = 0.01;
+	final boolean cutOffUniqueValues = false;     //allows for rougher separation of unique values 
+	final double cutOffDecimal = 4;        //1 allows 0.x, 2 allows 0.xx
 //-------------------------------------------------------------------Scaling
 	
 	
@@ -115,7 +117,7 @@ public class Controller {
 		gameState = new GameState(startPosition, rows, columns, hexSideSize);
 
 		multiThreading = new MultiThreading(numThreads);
-		geneticAlgorithm = new GeneticAlgorithm(populationSize, choices, information, keepPercent, crossPercent, skipZeroFitnessScaling, alwaysKeepBest, bestAreHalfRandom, preferUniqueBest, preferUniqueBestFactor, numThreads, multiThreading, scalingType);
+		geneticAlgorithm = new GeneticAlgorithm(populationSize, choices, information, keepPercent, crossPercent, skipZeroFitnessScaling, alwaysKeepBest, bestAreHalfRandom, preferUniqueBest, preferUniqueBestFactor, cutOffUniqueValues, cutOffDecimal, numThreads, multiThreading, scalingType);
 		
 		gameThreads = new GameThread[numThreads];
 		int stepSize = populationSize/numThreads;

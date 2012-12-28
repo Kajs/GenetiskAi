@@ -180,10 +180,24 @@ public class WindowManager {
 	    	}
 	    });
 	   
-	   JMenuItem testFitnessSubsetOutput = new JMenuItem("Test - Fitness subset");
+	   JMenuItem testFitnessSubsetOutput = new JMenuItem("Test - Fitness subset (scaled)");
 	   testFitnessSubsetOutput.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		Launcher.testFitnessSubset = !(Launcher.testFitnessSubset);
+	    	}
+	    });
+	   
+	   JMenuItem testMutateLikelihoodOutput = new JMenuItem("Test - Mutate likelihood");
+	   testMutateLikelihoodOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.testMutateLikelihood = !(Launcher.testMutateLikelihood);
+	    	}
+	    });
+	   
+	   JMenuItem testPrintCurrentGameOutput = new JMenuItem("Test - Print current game");
+	   testPrintCurrentGameOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.testPrintCurrentGame = !(Launcher.testPrintCurrentGame);
 	    	}
 	    });
 	   
@@ -264,6 +278,9 @@ public class WindowManager {
 //----------------------------------Speed
 	   
 	   
+//______________________________Charts
+	   
+	   
 	   JMenuItem showXyChart = new JMenuItem("Show xy chart");
 	   showXyChart.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
@@ -296,6 +313,8 @@ public class WindowManager {
 	    	}
 	    });
 	   
+//----------------------------------Charts
+	   
 	   JMenu automatic = new JMenu("Automatic");
 	   automatic.add(newBestTeamGame);
 	   automatic.add(runBestTeamGames);
@@ -317,6 +336,8 @@ public class WindowManager {
 	   output.add(testAdjacentAiOutput);
 	   output.add(testAngleOutput);
 	   output.add(testFitnessSubsetOutput);
+	   output.add(testMutateLikelihoodOutput);
+	   output.add(testPrintCurrentGameOutput);
 	   output.add(testUnscaledFitnessOutput);
 	   output.add(printLine);
 	   

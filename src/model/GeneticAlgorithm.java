@@ -38,7 +38,7 @@ public class GeneticAlgorithm {
 	
 	
 	
-	public GeneticAlgorithm (int populationSize, int choices, int information, double keepPercent, double crossPercent, boolean skipZeroFitnessScaling, boolean allwaysKeepBest, boolean bestAreHalfRandom, boolean preferUniqueBest, double preferUniqueBestFactor, int numThreads, MultiThreading multiThreading, int fitnessScalingType) {
+	public GeneticAlgorithm (int populationSize, int choices, int information, double keepPercent, double crossPercent, boolean skipZeroFitnessScaling, boolean allwaysKeepBest, boolean bestAreHalfRandom, boolean preferUniqueBest, double preferUniqueBestFactor, boolean cutOffUniqueValues, double cutOffDecimal, int numThreads, MultiThreading multiThreading, int fitnessScalingType) {
 		numThreads = 1; //back to singleThreading
 		geneticThreads = numThreads;
 		
@@ -128,7 +128,7 @@ public class GeneticAlgorithm {
 		
 		for (int i = 0; i < numThreads; i++) {
 			if(i == numThreads - 1 || end > populationSize) { end = populationSize;}
-			scaleFitnessThreads[i] = new ScaleFitnessThread(start, end, fitnessScalingType, 0.9, 1.0/populationSize, skipZeroFitnessScaling, preferUniqueBest, preferUniqueBestFactor);
+			scaleFitnessThreads[i] = new ScaleFitnessThread(start, end, fitnessScalingType, 0.9, 1.0/populationSize, skipZeroFitnessScaling, preferUniqueBest, preferUniqueBestFactor, cutOffUniqueValues, cutOffDecimal);
 			start = end;
 			end += stepSize;
 		}

@@ -2,6 +2,8 @@ package model;
 
 import java.util.Random;
 
+import control.Launcher;
+
 public class MutatePopulationThread implements Runnable {
 	private double[][][][] population;
 	private double[][][][] newPopulation;
@@ -65,6 +67,7 @@ public class MutatePopulationThread implements Runnable {
 	}
 	
 	public double[][][] mutate (double[][][] child, double mutateLikelihood, double drasticLikelihood, boolean wholeTeam) {
+		if (Launcher.testMutateLikelihood) { System.out.println("Mutate likelihood: " + mutateLikelihood); }
 		double[][][] mutant = new double[3][choices+1][information];
 		int aiType = nextInt(3);
 		
