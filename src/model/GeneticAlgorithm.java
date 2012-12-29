@@ -101,7 +101,7 @@ public class GeneticAlgorithm {
 			if(i == numThreads - 1 || end > populationSize) { end = populationSize;}
 			double mutateLikelihoodStart = 1.0 / numThreads * i;
 			double mutateLikelihoodEnd = 1.0 / numThreads * (i + 1);
-			double drasticLikelihoodStart = 0;
+			double drasticLikelihoodStart = 0.0;
 			double drasticLikelihoodEnd = 1.0;
 			
 			mutatePopulationThreads[i] = new MutatePopulationThread(start, end, populationLimit, choices, information, mutateLikelihoodStart, mutateLikelihoodEnd, drasticLikelihoodStart, drasticLikelihoodEnd);

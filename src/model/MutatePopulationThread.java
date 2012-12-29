@@ -40,7 +40,7 @@ public class MutatePopulationThread implements Runnable {
 		this.information = information;
 		
 		updateCeilingStepSize = mutateLikelihoodEnd / (10 * GeneticAlgorithm.geneticThreads);
-		updateStepSize = updateCeilingStepSize / 5;
+		updateStepSize = updateCeilingStepSize / 10;
 		updateCeiling = mutateLikelihoodStart + updateCeilingStepSize;
 	}
 	

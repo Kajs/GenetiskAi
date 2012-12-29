@@ -36,12 +36,12 @@ public class Controller {
 	int populationSize = 1000;
 	final double keepPercent = 0.25;
     final double crossPercent = 0.25;
-    private double[] fitnessMonitor = new double[4];
+    private double[] fitnessMonitor = new double[5];
 	private boolean adaptiveMutateLikelihood = true;  //allow minimum mutate likelihood to increase if best fitness does not change
 	final boolean elitism = true;                     //always carryover single best
 	final boolean skipZeroFitnessScaling = true;      //do not scale 0 fitness values
 	final boolean alwaysKeepBest = true;              //select 25% best
-	final boolean bestAreHalfRandom = true;           //select half of 25%best with fitness based chance
+	final boolean bestAreHalfRandom = true;           //select half of 25% best with fitness based chance
 	
 	public static final int choices = 6;  //only change if choices have been added/removed from ais
 	public final static int information = 33; //only change if information has been added/removed from ais
