@@ -39,13 +39,12 @@ public class MutatePopulationThread implements Runnable {
 		this.choices = choices;
 		this.information = information;
 		
-		updateCeilingStepSize = mutateLikelihoodEnd / (4 * GeneticAlgorithm.geneticThreads);
-		updateStepSize = updateCeilingStepSize / 5.0;
+		updateCeilingStepSize = mutateLikelihoodEnd / (10 * GeneticAlgorithm.geneticThreads);
+		updateStepSize = updateCeilingStepSize / 5;
 		updateCeiling = mutateLikelihoodStart + updateCeilingStepSize;
 	}
 	
 	public void run() {
-
 		double newMutateLikelihood = mutateLikelihoodStart;
 		if (updateMutateLikelihood) { increaseMutateLikelihood(); }
 		double mutateLikelihoodStepSize = (mutateLikelihoodEnd - (mutateLikelihoodStart + updateCounter * updateStepSize / GeneticAlgorithm.geneticThreads)) / (end - start);
@@ -57,18 +56,21 @@ public class MutatePopulationThread implements Runnable {
 		double drasticStepSize = (drasticLikelihoodEnd - drasticLikelihoodStart) / (end - start);
 		double newDrasticLikelihood = drasticLikelihoodStart;
 
+		if(Launcher.testMutateLikelihoodRange) { System.out.println("Mutate likelihood range is " + (mutateLikelihoodStart + mutateLikelihoodStepSize + updateCounter * updateStepSize) + " to " + mutateLikelihoodEnd + ", ceiling is " + updateCeiling); }
+		
 		for (int i = start; i < end; i++) {
 			//System.out.println("Mutate i: " + i + "__________________, end: " + end);
 			double[][][][] mutant = choseParents(1, population, scaledFitness, totalFitness, populationLimit);
 			
 			newMutateLikelihood += mutateLikelihoodStepSize;
-			newPopulation[i] = mutate(mutant[0], newMutateLikelihood + updateCounter * updateStepSize, newDrasticLikelihood, coinFlip());
 			newDrasticLikelihood += drasticStepSize;
+			newPopulation[i] = mutate(mutant[0], newMutateLikelihood + updateCounter * updateStepSize, newDrasticLikelihood, coinFlip());
 		}
 	}
 	
 	public double[][][] mutate (double[][][] child, double mutateLikelihood, double drasticLikelihood, boolean wholeTeam) {
 		if (Launcher.testMutateLikelihood) { System.out.println("Mutate likelihood: " + mutateLikelihood); }
+		if (Launcher.testDrasticLikelihood) { System.out.println("Drastic likelihood: " + drasticLikelihood); }
 		double[][][] mutant = new double[3][choices+1][information];
 		int aiType = nextInt(3);
 		

@@ -24,9 +24,11 @@ public class Launcher {
 	public static boolean stop = false;	
 	public static boolean switchBestTeam = false;
 	public static int switchBestTeamNumber = 0;
-	public static boolean testPrintCurrentGame = false;
+	public static boolean testDrasticLikelihood = false;
 	public static boolean testFitnessSubset = false;
 	public static boolean testMutateLikelihood = false;
+	public static boolean testMutateLikelihoodRange = false;
+	public static boolean testPrintCurrentGame = false;
 	public static boolean testUnscaledFitness = false;
 	public static boolean toggleRoundSeparator = false;
 	

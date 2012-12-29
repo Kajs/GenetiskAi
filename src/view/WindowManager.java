@@ -180,6 +180,13 @@ public class WindowManager {
 	    	}
 	    });
 	   
+	   JMenuItem testDrasticLikelihoodOutput = new JMenuItem("Test - Drastic likelihood");
+	   testDrasticLikelihoodOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.testDrasticLikelihood = !(Launcher.testDrasticLikelihood);
+	    	}
+	    });
+	   
 	   JMenuItem testFitnessSubsetOutput = new JMenuItem("Test - Fitness subset (scaled)");
 	   testFitnessSubsetOutput.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
@@ -191,6 +198,13 @@ public class WindowManager {
 	   testMutateLikelihoodOutput.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		Launcher.testMutateLikelihood = !(Launcher.testMutateLikelihood);
+	    	}
+	    });
+	   
+	   JMenuItem testMutateLikelihoodRangeOutput = new JMenuItem("Test - Mutate likelihood range");
+	   testMutateLikelihoodRangeOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.testMutateLikelihoodRange = !(Launcher.testMutateLikelihoodRange);
 	    	}
 	    });
 	   
@@ -335,8 +349,10 @@ public class WindowManager {
 	   output.add(toggleRoundSeparator);
 	   output.add(testAdjacentAiOutput);
 	   output.add(testAngleOutput);
+	   output.add(testDrasticLikelihoodOutput);
 	   output.add(testFitnessSubsetOutput);
 	   output.add(testMutateLikelihoodOutput);
+	   output.add(testMutateLikelihoodRangeOutput);
 	   output.add(testPrintCurrentGameOutput);
 	   output.add(testUnscaledFitnessOutput);
 	   output.add(printLine);
