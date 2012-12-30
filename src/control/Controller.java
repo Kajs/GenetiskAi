@@ -37,7 +37,7 @@ public class Controller {
 	final double keepPercent = 0.25;
     final double crossPercent = 0.25;
     private double[] fitnessMonitor = new double[5];
-	private boolean adaptiveMutateLikelihood = true;  //allow minimum mutate likelihood to increase if best fitness does not change
+	private boolean adaptiveMutateLikelihood = false;  //allow minimum mutate likelihood to increase if best fitness does not change
 	final boolean elitism = true;                     //always carryover single best
 	final boolean skipZeroFitnessScaling = true;      //do not scale 0 fitness values
 	final boolean alwaysKeepBest = true;              //select 25% best
