@@ -192,30 +192,32 @@ public class GeneticAlgorithm {
 		
 		double subsetTotalFitness = 0;
 		if(allwaysKeepBest) {
-			for (int i = 0; i < keepAmount; i++) {
-				if (i < keepAmount/2 || keepAmount/2 == 0) {
+			
+			int border = (int)ceil((double)keepAmount/2.0);
+			for (int i = 0; i < border; i++) {
 					populationSubset[i] = population[i]; 
-					fitnessSubset[i] = scaledFitness[i];
-					
+					fitnessSubset[i] = scaledFitness[i];					
 					if(bestAreHalfRandom) { totalFitness -= scaledFitness[i]; }
-				}
-				else {
-					int pos = i;
-					if (bestAreHalfRandom) {
-						if(preferUniqueBest) {	pos = choseFitnessPosition(scaledFitness, totalFitness, i); }
-						else { pos = choseFitnessPosition(scaledFitness, totalFitness, keepAmount/2); }
-					}
-
-					populationSubset[i] = population[pos];
-					fitnessSubset[i] = scaledFitness[pos];
-
-					if(bestAreHalfRandom && preferUniqueBest) { 
-						totalFitness -= scaledFitness[pos];
-						swapPositions(population, scaledFitness, i, pos);
-					}
-				}
-				subsetTotalFitness += fitnessSubset[i];
 			}
+			
+			for (int i = border; i < keepAmount; i++) {
+				int pos = i;
+				if (bestAreHalfRandom) {
+					int startPos = keepAmount/2;
+					if(preferUniqueBest) { startPos = i; }
+					pos = choseFitnessPosition(scaledFitness, totalFitness, startPos);
+				}
+
+				populationSubset[i] = population[pos];
+				fitnessSubset[i] = scaledFitness[pos];				
+
+				if(bestAreHalfRandom && preferUniqueBest) { 
+					totalFitness -= scaledFitness[pos];
+					swapPositions(population, scaledFitness, i, pos);
+				}
+			}
+			
+			for (int i = 0; i < fitnessSubset.length; i++) { subsetTotalFitness += fitnessSubset[i]; }
 		}
 		else {
 			fitnessSubset = scaledFitness;

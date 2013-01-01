@@ -57,8 +57,8 @@ public class Controller {
 	final int scalingType = exponentialScaling;	
 	final boolean preferUniqueBest = true;              //multiply duplicates by preferUniqueBestFactor
 	final double preferUniqueBestFactor = 0.01;
-	final boolean cutOffUniqueValues = false;     //allows for rougher separation of unique values 
-	final double cutOffDecimal = 4;        //1 allows 0.x, 2 allows 0.xx
+	final boolean cutOffUniqueValues = true;     //allows for rougher separation of unique values 
+	final double cutOffDecimal = 3;        //1 allows 0.x, 2 allows 0.xx
 //-------------------------------------------------------------------Scaling
 	
 	
