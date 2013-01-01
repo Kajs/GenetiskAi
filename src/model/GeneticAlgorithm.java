@@ -203,7 +203,7 @@ public class GeneticAlgorithm {
 			for (int i = border; i < keepAmount; i++) {
 				int pos = i;
 				if (bestAreHalfRandom) {
-					int startPos = keepAmount/2;
+					int startPos = border;
 					if(preferUniqueBest) { startPos = i; }
 					pos = choseFitnessPosition(scaledFitness, totalFitness, startPos);
 				}
