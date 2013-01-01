@@ -215,6 +215,7 @@ public class GeneticAlgorithm {
 		}
 		
 		if(Launcher.testFitnessSubset) { for (int i = 0; i < fitnessSubset.length; i++) { System.out.println("Subset at " + i + ": " + fitnessSubset[i]); }}
+		if(Launcher.countIdenticalFitnessValues) { System.out.println("Identical values = " + countIdenticalValues(fitnessSubset)); }
 		
 		multiThreading.runKeepPopulationThreads(keepPopulationThreads, populationSubset, newPopulation, fitnessSubset, subsetTotalFitness);
 		multiThreading.runCrossPopulationThreads(crossPopulationThreads, populationSubset, newPopulation, fitnessSubset, subsetTotalFitness);
@@ -266,6 +267,16 @@ public class GeneticAlgorithm {
 	//------------------------- misc functions
 	
 	private boolean coinFlip() { return randomGenerator.nextDouble() <= 0.5; }
+	
+	private int countIdenticalValues(double[] fitness) {
+		int count = 0;
+		
+		for (int t = 0; t < fitness.length; t++) {
+			for (int i = t; i < fitness.length; i++) { if(i != t && fitness[t] == fitness[i]) { count++; }}
+		}
+		
+		return count;
+	}
 	
 	private double nextDouble() { return randomGenerator.nextDouble(); }
 	

@@ -180,6 +180,13 @@ public class WindowManager {
 	    	}
 	    });
 	   
+	   JMenuItem testCountIdenticalFitnessValuesOutput = new JMenuItem("Test - Count identical fitness values");
+	   testCountIdenticalFitnessValuesOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.countIdenticalFitnessValues = !(Launcher.countIdenticalFitnessValues);
+	    	}
+	    });
+	   
 	   JMenuItem testDrasticLikelihoodOutput = new JMenuItem("Test - Drastic likelihood");
 	   testDrasticLikelihoodOutput.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
@@ -349,6 +356,7 @@ public class WindowManager {
 	   output.add(toggleRoundSeparator);
 	   output.add(testAdjacentAiOutput);
 	   output.add(testAngleOutput);
+	   output.add(testCountIdenticalFitnessValuesOutput);
 	   output.add(testDrasticLikelihoodOutput);
 	   output.add(testFitnessSubsetOutput);
 	   output.add(testMutateLikelihoodOutput);

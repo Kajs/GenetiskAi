@@ -55,6 +55,9 @@ public class ScaleFitnessThread implements Runnable{
 				case 1:
 					fitness[i] = sqrt(fitValue + constant);       //exponential
 					break;
+				case 2:
+					fitness[i] = fitValue;                        //unscaled
+					break;
 				default:
 					System.out.println("MultiThreading.runScaleFitness(): no case for type " + type);
 				}
