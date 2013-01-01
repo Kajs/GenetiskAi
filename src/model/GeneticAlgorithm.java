@@ -195,9 +195,9 @@ public class GeneticAlgorithm {
 			
 			int border = (int)ceil((double)keepAmount/2.0);
 			for (int i = 0; i < border; i++) {
-					populationSubset[i] = population[i]; 
-					fitnessSubset[i] = scaledFitness[i];					
-					if(bestAreHalfRandom) { totalFitness -= scaledFitness[i]; }
+				populationSubset[i] = population[i]; 
+				fitnessSubset[i] = scaledFitness[i];					
+				if(bestAreHalfRandom) { totalFitness -= scaledFitness[i]; }
 			}
 			
 			for (int i = border; i < keepAmount; i++) {
