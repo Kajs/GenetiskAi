@@ -1,6 +1,14 @@
 package control;
 
 import java.awt.Color;
+import java.io.EOFException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 import static java.lang.Math.toRadians;
@@ -57,7 +65,7 @@ public class Controller {
 	final int scalingType = exponentialScaling;	
 	final boolean preferUniqueBest = true;              //multiply duplicates by preferUniqueBestFactor
 	final double preferUniqueBestFactor = 0.01;
-	final boolean cutOffUniqueValues = false;     //allows for rougher separation of unique values 
+	final boolean cutOffUniqueValues = true;     //allows for rougher separation of unique values 
 	final double cutOffDecimal = 3;        //1 allows 0.x, 2 allows 0.xx
 //-------------------------------------------------------------------Scaling
 	
@@ -84,6 +92,16 @@ public class Controller {
 	final GeneticAlgorithm geneticAlgorithm;
 	private GameThread[] gameThreads;
 //------------------------------------------------------------------Thread
+	
+	
+	
+//____________________________________________________________FILE IO
+	public static int storeLength = 100;
+	public static double[][][][] storedTeams = new double[storeLength][3][choices+1][information];
+	public static double[] storedFitness = new double[storeLength];
+	
+	
+//------------------------------------------------------------------File io
 	
 	
 	
@@ -114,6 +132,8 @@ public class Controller {
 			System.out.println("There are more threads than population size, threads set to " + populationSize + "\n"); 
 		}
 		
+		readStoredFitness();
+		readStoredTeams();
 		setupScenarios();		
 		gameState = new GameState(startPosition, rows, columns, hexSideSize);
 
@@ -556,5 +576,78 @@ public class Controller {
 		dualAxisWeightChartCleric.showResults();
 	}
 	
-	//_________________________________JFreeChart section
+	//---------------------------------JFreeChart section
+	
+	//______________________________File io section
+	
+	public static void writeObject(String filePath, Object obj) {		   
+
+        ObjectOutputStream outputStream = null;
+        
+        try {
+            
+            //Construct the LineNumberReader object
+            outputStream = new ObjectOutputStream(new FileOutputStream(filePath));
+            
+            outputStream.writeObject(obj);            
+            
+        } catch (FileNotFoundException ex) { ex.printStackTrace(); } 
+        catch (IOException ex) { ex.printStackTrace(); } 
+        finally {
+            //Close the ObjectOutputStream
+            try {
+                if (outputStream != null) {
+                    outputStream.flush();
+                    outputStream.close();
+                }
+            } 
+            catch (IOException ex) { ex.printStackTrace(); }
+        }
+	}
+	
+	public static Object readObject(String filePath) {
+		
+		ObjectInputStream inputStream = null;
+		Object storedObject = null;
+        
+        try {
+            
+            //Construct the ObjectInputStream object
+            inputStream = new ObjectInputStream(new FileInputStream(filePath));
+            
+            storedObject = inputStream.readObject();
+            
+         
+        } 
+        
+        catch (EOFException ex) { System.out.println("End of file reached."); } 
+        catch (ClassNotFoundException ex) { ex.printStackTrace(); } 
+        catch (FileNotFoundException ex) { 
+        	//ex.printStackTrace(); 
+        	System.out.println("Could not find " + filePath);
+        } 
+        catch (IOException ex) { ex.printStackTrace(); } 
+        finally {
+            //Close the ObjectInputStream
+            try { if (inputStream != null) { inputStream.close(); }} 
+            catch (IOException ex) { ex.printStackTrace(); }
+        }
+        
+        return storedObject;
+	}
+	
+	public static void readStoredFitness() {
+		String workingDir = System.getProperty("user.dir");
+		String storedFitnessFilePath = workingDir + "//storedFitness.txt";		
+		storedFitness = (double[]) readObject(storedFitnessFilePath);
+		
+	}
+	
+	public static void readStoredTeams() {
+		String workingDir = System.getProperty("user.dir");
+		String storedTeamsFilePath = workingDir + "//storedTeams.txt";
+		storedTeams = (double[][][][]) readObject(storedTeamsFilePath);
+	}
+	
+	//---------------------------------File io section
 }
