@@ -308,7 +308,7 @@ public class WindowManager {
 
 //----------------------------------File io
 	   
-	   JMenuItem storeTeam = new JMenuItem("Store team");
+	   JMenuItem storeTeam = new JMenuItem("Save team to file");
 	   storeTeam.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		boolean previousState = Launcher.isPaused;
@@ -353,7 +353,7 @@ public class WindowManager {
 	    	}
 	    });
 	   
-	   JMenuItem insertStoredTeam = new JMenuItem("Insert stored team");
+	   JMenuItem insertStoredTeam = new JMenuItem("Insert stored team from file");
 	   insertStoredTeam.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		boolean previousState = Launcher.isPaused;
