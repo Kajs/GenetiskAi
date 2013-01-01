@@ -140,7 +140,6 @@ public class GeneticAlgorithm {
 	
 	
 	public double[][][][] initialPopulation(int size, int choices, int information) {
-		
 		double[][][][] population = new double[size][3][choices + 1][information];
 		
 		for (int i = 0; i < size; i++) {
@@ -289,16 +288,15 @@ public class GeneticAlgorithm {
 	}}
 	
 	public int choseFitnessPosition(double[] fitness, double totalFitness) {
-		int counter = 0;
 		
 		double chance = nextDouble();
 		double summedFitness = 0.0;
 		for (int i = 0; i < populationSize; i++) {
 			summedFitness += fitness[i];
-			if (chance <= summedFitness / totalFitness) { 
-				return counter; }
-			counter++;		
+			if (chance <= summedFitness / totalFitness) { return i; }		
 		}
-		return counter;
+		
+		System.out.println("Error in GeneticAlgorithm.choseFitnessPosition: reached end of array without match, summedFitness = " + summedFitness + ", totalFitness = " + totalFitness);
+		return randomGenerator.nextInt(fitness.length);
 	}
 }
