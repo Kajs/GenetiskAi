@@ -196,13 +196,23 @@ public class GeneticAlgorithm {
 				if (i < keepAmount/2 || keepAmount/2 == 0) {
 					populationSubset[i] = population[i]; 
 					fitnessSubset[i] = scaledFitness[i];
+					
+					if(bestAreHalfRandom) { totalFitness -= scaledFitness[i]; }
 				}
 				else {
-					int pos;
-					if (bestAreHalfRandom) { pos = choseFitnessPosition(scaledFitness, totalFitness); }
-					else { pos = i; }
+					int pos = i;
+					if (bestAreHalfRandom) {
+						if(preferUniqueBest) {	pos = choseFitnessPosition(scaledFitness, totalFitness, i); }
+						else { pos = choseFitnessPosition(scaledFitness, totalFitness, keepAmount/2); }
+					}
+
 					populationSubset[i] = population[pos];
 					fitnessSubset[i] = scaledFitness[pos];
+
+					if(bestAreHalfRandom && preferUniqueBest) { 
+						totalFitness -= scaledFitness[pos];
+						swapPositions(population, scaledFitness, i, pos);
+					}
 				}
 				subsetTotalFitness += fitnessSubset[i];
 			}
@@ -271,7 +281,7 @@ public class GeneticAlgorithm {
 		int count = 0;
 		
 		for (int t = 0; t < fitness.length; t++) {
-			for (int i = t; i < fitness.length; i++) { if(i != t && fitness[t] == fitness[i]) { count++; }}
+			for (int i = 0; i < fitness.length; i++) { if(i != t && fitness[t] == fitness[i]) { count++; break;}}
 		}
 		
 		return count;
@@ -287,16 +297,27 @@ public class GeneticAlgorithm {
 		mutatePopulationThreads[i].resetMutateLikelihood(false);
 	}}
 	
-	public int choseFitnessPosition(double[] fitness, double totalFitness) {
+	public int choseFitnessPosition(double[] fitness, double totalFitness, int startPos) {
 		
 		double chance = nextDouble();
 		double summedFitness = 0.0;
-		for (int i = 0; i < populationSize; i++) {
+		for (int i = startPos; i < populationSize; i++) {
 			summedFitness += fitness[i];
 			if (chance <= summedFitness / totalFitness) { return i; }		
 		}
 		
 		System.out.println("Error in GeneticAlgorithm.choseFitnessPosition: reached end of array without match, summedFitness = " + summedFitness + ", totalFitness = " + totalFitness);
-		return randomGenerator.nextInt(fitness.length);
+		return (startPos + randomGenerator.nextInt(fitness.length - startPos));
+	}
+	
+	public void swapPositions(double[][][][] population, double[] fitness, int pos1, int pos2) {
+		double[][][] tempTeam = population[pos1];
+		double tempFit = fitness[pos1];
+		
+		population[pos1] = population[pos2];
+		fitness[pos1] = fitness[pos2];
+		
+		population[pos2] = tempTeam;
+		fitness[pos2] = tempFit;
 	}
 }
