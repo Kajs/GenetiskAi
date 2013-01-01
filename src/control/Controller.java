@@ -65,7 +65,7 @@ public class Controller {
 	final int scalingType = exponentialScaling;	
 	final boolean preferUniqueBest = true;              //multiply duplicates by preferUniqueBestFactor
 	final double preferUniqueBestFactor = 0.01;
-	final boolean cutOffUniqueValues = true;     //allows for rougher separation of unique values 
+	final boolean cutOffUniqueValues = false;     //allows for rougher separation of unique values 
 	final double cutOffDecimal = 3;        //1 allows 0.x, 2 allows 0.xx
 //-------------------------------------------------------------------Scaling
 	
@@ -77,11 +77,11 @@ public class Controller {
 	static Coordinate[][] staticPositions;		
 	final boolean alsoReversedPositions = true;
 	final boolean bothTeamsStart = true;
-	final static boolean allDifficulties = true;
+	final public static boolean allDifficulties = true;
 	
 	final boolean testingStatics = false;		
 	final int testStaticDifficulty = 2;
-	final static int enemyDifficulty = 2;		
+	final public static int enemyDifficulty = 2;		
 //--------------------------------------------------------------------Scenario
 	
 	
@@ -98,7 +98,7 @@ public class Controller {
 //____________________________________________________________FILE IO
 	public static int storeLength = 100;
 	public static double[][][][] storedTeams = new double[storeLength][3][choices+1][information];
-	public static double[] storedFitness = new double[storeLength];
+	public static String[] storedDescriptions = new String[storeLength];
 	
 	
 //------------------------------------------------------------------File io
@@ -132,7 +132,7 @@ public class Controller {
 			System.out.println("There are more threads than population size, threads set to " + populationSize + "\n"); 
 		}
 		
-		readStoredFitness();
+		readStoredDescription();
 		readStoredTeams();
 		setupScenarios();		
 		gameState = new GameState(startPosition, rows, columns, hexSideSize);
@@ -326,9 +326,9 @@ public class Controller {
 		
 	private void setupScenarios() {
 		
-		scenarios = new Scenario[8];
+		scenarios = new Scenario[1];
 		int scenarioCounter = 0;
-		
+		/*
 		//Scenario 1 3v3 standard starting positions
 		
 		geneticPositions = new Coordinate[1][3];
@@ -386,6 +386,7 @@ public class Controller {
 		staticPositions[1][0] = new Coordinate(19, 39);
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);	
+		*/
 				
 
          //Scenario 5 3 vs 2 + 3 sides
@@ -403,6 +404,7 @@ public class Controller {
 		staticPositions[1][2] = new Coordinate(11, 33);
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
+		/*
 		
 		//Scenario 6 3vs 4 warrior
 		
@@ -448,6 +450,7 @@ public class Controller {
 		staticPositions[3][2] = new Coordinate(13, 25);
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
+		*/
 	}
 	
 	
@@ -636,10 +639,11 @@ public class Controller {
         return storedObject;
 	}
 	
-	public static void readStoredFitness() {
+	public static void readStoredDescription() {
 		String workingDir = System.getProperty("user.dir");
-		String storedFitnessFilePath = workingDir + "//storedFitness.txt";		
-		storedFitness = (double[]) readObject(storedFitnessFilePath);
+		String storedDescriptionFilePath = workingDir + "//storedDescription.txt";		
+		storedDescriptions = (String[]) readObject(storedDescriptionFilePath);
+		if(storedDescriptions == null) { storedDescriptions =  new String[storeLength]; }
 		
 	}
 	
@@ -647,6 +651,20 @@ public class Controller {
 		String workingDir = System.getProperty("user.dir");
 		String storedTeamsFilePath = workingDir + "//storedTeams.txt";
 		storedTeams = (double[][][][]) readObject(storedTeamsFilePath);
+		if(storedTeams == null) { storedTeams = new double[storeLength][3][choices+1][information]; }
+	}
+	
+	public static void writeStoredDescription() {
+		String workingDir = System.getProperty("user.dir");
+		String storedDescriptionFilePath = workingDir + "//storedDescription.txt";		
+		writeObject(storedDescriptionFilePath, storedDescriptions);
+		
+	}
+	
+	public static void writeStoredTeams() {
+		String workingDir = System.getProperty("user.dir");
+		String storedTeamsFilePath = workingDir + "//storedTeams.txt";
+		writeObject(storedTeamsFilePath, storedTeams);
 	}
 	
 	//---------------------------------File io section

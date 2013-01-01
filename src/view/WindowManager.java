@@ -299,6 +299,99 @@ public class WindowManager {
 //----------------------------------Speed
 	   
 	   
+	   
+//______________________________File io
+	   
+	   
+	   
+	   
+
+//----------------------------------File io
+	   
+	   JMenuItem storeTeam = new JMenuItem("Store team");
+	   storeTeam.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		boolean previousState = Launcher.isPaused;
+	    		Launcher.isPaused = true;
+	    		
+	    		String teamInput = JOptionPane.showInputDialog(null, "Which team do you whish to save to file?", "Select team number", 1);
+	    		if(teamInput != null && !teamInput.equals("") && checkIntString(teamInput)) {
+	    			int team = new Integer(teamInput) - 1;
+	    			
+	    			if(team < 0 || team >= Controller.bestTeams.length || Controller.bestTeams[team] == null) { System.out.println("No such team found"); }
+	    			else {	    				
+	    				boolean storeConfirmed = false;
+	    				
+	    				String storeInput = JOptionPane.showInputDialog(null, "At what position do you whish to save the team?", "Chose store position", 1);
+	    	    		if(storeInput != null && !storeInput.equals("") && checkIntString(storeInput)) {
+	    	    			int storePos = new Integer(storeInput) - 1;
+	    	    			
+	    	    			if(Controller.storedDescriptions[storePos] != null && !Controller.storedDescriptions[storePos].equals("")) {
+	    						int confirm = JOptionPane.showOptionDialog(frame,
+	    					               "Found team with description " + Controller.storedDescriptions[storePos] + ", do you wish to overwrite?",
+	    					               "Overwrite Confirmation", JOptionPane.YES_NO_OPTION,
+	    					               JOptionPane.QUESTION_MESSAGE, null, null, null);
+	    						if (confirm == JOptionPane.YES_OPTION) { storeConfirmed = true; }
+	    					}
+	    					else { storeConfirmed = true; }
+	    					
+	    					if(storeConfirmed) {
+	    						String description = "Fitness: " + Controller.bestTeamsFitness[team] + ", difficulty: ";
+	    						if(Controller.allDifficulties) { description += "all" ; }
+	    						else { description += Controller.enemyDifficulty; }
+	    						
+	    						Controller.storedDescriptions[storePos] = description;
+	    						Controller.storedTeams[storePos] = Controller.bestTeams[team];
+	    						Controller.writeStoredDescription();
+	    						Controller.writeStoredTeams();
+	    					}
+	    	    		}
+	    			}
+	    		}
+	    		
+	    		Launcher.isPaused = previousState;
+	    	}
+	    });
+	   
+	   JMenuItem insertStoredTeam = new JMenuItem("Insert stored team");
+	   insertStoredTeam.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		boolean previousState = Launcher.isPaused;
+	    		Launcher.isPaused = true;
+	    		String storeInput = JOptionPane.showInputDialog(null, "Chose stored team position to insert", "Insert stored team from position", 1);
+	    		if(storeInput != null && !storeInput.equals("") && checkIntString(storeInput)) {
+	    			int storedPos = new Integer(storeInput) - 1;
+	    			if(Controller.storedDescriptions[storedPos] == null) { System.out.println("No team found at position " + storedPos); }
+	    			else {
+	    				Launcher.insertStoredTeam = true;
+	    				Launcher.insertStoredTeamPosition = storedPos;
+	    			}
+	    		}
+	    		Launcher.isPaused = previousState;
+	    	}
+	    });
+	   
+	   JMenuItem printStoredDescriptions = new JMenuItem("Print stored descriptions");
+	   printStoredDescriptions.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		boolean previousState = Launcher.isPaused;
+	    		Launcher.isPaused = true;
+	    		for (int i = 0; i < Controller.storedDescriptions.length; i++) { 
+	    			if(Controller.storedDescriptions[i] != null && !Controller.storedDescriptions[i].equals("")) {
+	    				System.out.println ("Pos " + (i+1) + ": " + Controller.storedDescriptions[i]);
+	    			}
+	    		}
+	    		Launcher.isPaused = previousState;
+	    	}
+	    });
+	   
+	   
+		
+       
+       
+       
+	   
+	   
 //______________________________Charts
 	   
 	   
@@ -343,6 +436,11 @@ public class WindowManager {
 	   automatic.add(sortBestTeamsLowToHigh);
 	   automatic.add(sortBestTeamsHighToLow);
 	   
+	   JMenu file = new JMenu("File");
+	   file.add(printStoredDescriptions);
+	   file.add(insertStoredTeam);
+	   file.add(storeTeam);
+	   
 	   JMenu output = new JMenu("Output");
 	   output.add(toggleActionOutput);
 	   output.add(toggleAreaDamageOutput);
@@ -382,6 +480,7 @@ public class WindowManager {
 	   
 	   JMenuBar menuBar = new JMenuBar();
 	   menuBar.add(automatic);
+	   menuBar.add(file);
 	   menuBar.add(output);
 	   menuBar.add(speed);
 	   menuBar.add(charts);

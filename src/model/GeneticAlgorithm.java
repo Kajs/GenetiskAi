@@ -2,6 +2,7 @@ package model;
 
 import java.util.Random;
 
+import static control.Controller.storedTeams;
 import control.Launcher;
 
 import static java.lang.Math.floor;
@@ -233,6 +234,10 @@ public class GeneticAlgorithm {
 		multiThreading.runMutatePopulationThreads(mutatePopulationThreads, populationSubset, newPopulation, fitnessSubset, subsetTotalFitness);
 		
 		if(elitism) { newPopulation[0] = bestAi; }
+		if(Launcher.insertStoredTeam) {
+			newPopulation[newPopulation.length-1] = storedTeams[Launcher.insertStoredTeamPosition];
+			Launcher.insertStoredTeam = false;
+		}
 		
 		return newPopulation;
 	}
