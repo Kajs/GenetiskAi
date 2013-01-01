@@ -326,9 +326,9 @@ public class Controller {
 		
 	private void setupScenarios() {
 		
-		scenarios = new Scenario[1];
+		scenarios = new Scenario[8];
 		int scenarioCounter = 0;
-		/*
+
 		//Scenario 1 3v3 standard starting positions
 		
 		geneticPositions = new Coordinate[1][3];
@@ -385,9 +385,7 @@ public class Controller {
 		staticPositions[0][2] = new Coordinate(19, 38);
 		staticPositions[1][0] = new Coordinate(19, 39);
 		
-		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);	
-		*/
-				
+		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);					
 
          //Scenario 5 3 vs 2 + 3 sides
 		
@@ -404,7 +402,6 @@ public class Controller {
 		staticPositions[1][2] = new Coordinate(11, 33);
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
-		/*
 		
 		//Scenario 6 3vs 4 warrior
 		
@@ -450,7 +447,6 @@ public class Controller {
 		staticPositions[3][2] = new Coordinate(13, 25);
 		
 		scenarios[scenarioCounter++] = new Scenario(geneticPositions, staticPositions);
-		*/
 	}
 	
 	
