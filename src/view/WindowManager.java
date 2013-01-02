@@ -55,8 +55,13 @@ public class WindowManager {
 	    		String str = JOptionPane.showInputDialog(null, "Game Number : ", "New Best Team Game", 1);
 	    		if(str != null && !str.equals("") && checkIntString(str)) {
 	    			int bestTeam = new Integer(str);
-	    			Controller.singleBestTeamNumber = bestTeam - 1;
-	    			Controller.runSingleBestTeamGame = true;
+	    			if(bestTeam < 1 || bestTeam > Controller.bestTeams.length) {
+	    				System.out.println("Minimum value = 1, maksimum = " + Controller.bestTeams.length);
+	    			}
+	    			else {
+	    				Controller.singleBestTeamNumber = bestTeam - 1;
+		    			Controller.runSingleBestTeamGame = true;
+	    			}
 	    		}
 	    	}
 	    });
