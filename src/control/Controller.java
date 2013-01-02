@@ -132,7 +132,7 @@ public class Controller {
 			System.out.println("There are more threads than population size, threads set to " + populationSize + "\n"); 
 		}
 		
-		readStoredDescription();
+		readStoredDescriptions();
 		readStoredTeams();
 		setupScenarios();		
 		gameState = new GameState(startPosition, rows, columns, hexSideSize);
@@ -635,11 +635,14 @@ public class Controller {
         return storedObject;
 	}
 	
-	public static void readStoredDescription() {
+	public static void readStoredDescriptions() {
 		String workingDir = System.getProperty("user.dir");
 		String storedDescriptionFilePath = workingDir + "//storedDescription.txt";		
 		storedDescriptions = (String[]) readObject(storedDescriptionFilePath);
-		if(storedDescriptions == null) { storedDescriptions =  new String[storeLength]; }
+		if(storedDescriptions == null) {
+			storedDescriptions =  new String[storeLength];
+			System.out.println("Warning: could not find " + storedDescriptionFilePath + ", local file is now EMPTY"); 
+		}
 		
 	}
 	
@@ -647,10 +650,13 @@ public class Controller {
 		String workingDir = System.getProperty("user.dir");
 		String storedTeamsFilePath = workingDir + "//storedTeams.txt";
 		storedTeams = (double[][][][]) readObject(storedTeamsFilePath);
-		if(storedTeams == null) { storedTeams = new double[storeLength][3][choices+1][information]; }
+		if(storedTeams == null) {
+			storedTeams = new double[storeLength][3][choices+1][information];
+			System.out.println("Warning: could not find " + storedTeamsFilePath + ", local file is now EMPTY");
+		}
 	}
 	
-	public static void writeStoredDescription() {
+	public static void writeStoredDescriptions() {
 		String workingDir = System.getProperty("user.dir");
 		String storedDescriptionFilePath = workingDir + "//storedDescription.txt";		
 		writeObject(storedDescriptionFilePath, storedDescriptions);

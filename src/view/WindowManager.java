@@ -308,8 +308,8 @@ public class WindowManager {
 
 //----------------------------------File io
 	   
-	   JMenuItem storeTeam = new JMenuItem("Save team to file");
-	   storeTeam.addActionListener(new ActionListener() {
+	   JMenuItem saveTeamToFile = new JMenuItem("Save team to file");
+	   saveTeamToFile.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		boolean previousState = Launcher.isPaused;
 	    		Launcher.isPaused = true;
@@ -342,7 +342,7 @@ public class WindowManager {
 	    						
 	    						Controller.storedDescriptions[storePos] = description;
 	    						Controller.storedTeams[storePos] = Controller.bestTeams[team];
-	    						Controller.writeStoredDescription();
+	    						Controller.writeStoredDescriptions();
 	    						Controller.writeStoredTeams();
 	    					}
 	    	    		}
@@ -386,7 +386,16 @@ public class WindowManager {
 	    });
 	   
 	   
-		
+	   JMenuItem reloadStoredTeams = new JMenuItem("Reload stored teams file");
+	   reloadStoredTeams.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		boolean previousState = Launcher.isPaused;
+	    		Launcher.isPaused = true;
+	    		Controller.readStoredTeams();
+	    		Controller.readStoredDescriptions();
+	    		Launcher.isPaused = previousState;
+	    	}
+	    });
        
        
        
@@ -437,9 +446,10 @@ public class WindowManager {
 	   automatic.add(sortBestTeamsHighToLow);
 	   
 	   JMenu file = new JMenu("File");
-	   file.add(printStoredDescriptions);
 	   file.add(insertStoredTeam);
-	   file.add(storeTeam);
+	   file.add(printStoredDescriptions);
+	   file.add(reloadStoredTeams);
+	   file.add(saveTeamToFile);
 	   
 	   JMenu output = new JMenu("Output");
 	   output.add(toggleActionOutput);
