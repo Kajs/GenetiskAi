@@ -87,7 +87,7 @@ public class Controller {
 	
 		
 //____________________________________________________________THREAD
-	static int numThreads = 2;
+	public static int numThreads = 2;
 	final MultiThreading multiThreading;
 	final GeneticAlgorithm geneticAlgorithm;
 	private GameThread[] gameThreads;

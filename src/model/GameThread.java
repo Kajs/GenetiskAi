@@ -12,6 +12,7 @@ public class GameThread implements Runnable {
 	private final int lastTeam;
 	private int enemyDifficulty;
 	private final int maxRounds;
+	private boolean hasPrintedCurrentGame = false;
 	private GeneticAlgorithm geneticAlgorithm;
 	private Coordinate[][] geneticPositions;
 	private Coordinate[][] staticPositions;
@@ -109,7 +110,8 @@ public class GameThread implements Runnable {
 				
 				team1Fitness[team] = tm1ScenarioSummedFit/fitScale;
 				
-				if (Launcher.testPrintCurrentGame) { System.out.println("Completed game " + team); }
+				if (Launcher.testPrintCurrentGame > 0 && !hasPrintedCurrentGame) { Launcher.testPrintCurrentGame--; System.out.println(Thread.currentThread().getName() + " has completed game " + team); hasPrintedCurrentGame = true;}
+				if (Launcher.testPrintCurrentGame == 0) { hasPrintedCurrentGame = false; }
 		}
 		
 		tm1GameAvrFit = tm1GameSummedFitness / (lastTeam - firstTeam);

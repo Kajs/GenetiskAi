@@ -24,7 +24,7 @@ public class MultiThreading {
 		
 		for (int i = 0; i < numThreads; i++) {
 			crossPopulationThreads[i].setVariables(population, newPopulation, scaledFitness, totalFitness);
-			threads[i] = new Thread(crossPopulationThreads[i]);
+			threads[i] = new Thread(crossPopulationThreads[i], "Cross population thread " + i);
 		}
 		runThreads();	
 	}
@@ -35,7 +35,7 @@ public class MultiThreading {
 		for (int i = 0; i < numThreads; i++) {
 			gameThreads[i].setTeam1(team1);
 			gameThreads[i].setTeam1Fitness(team1Fitness);
-			threads[i] = new Thread(gameThreads[i]);
+			threads[i] = new Thread(gameThreads[i], "Game thread " + i);
 		}
 		runThreads();
 	}
@@ -45,7 +45,7 @@ public class MultiThreading {
 
 		for (int i = 0; i < numThreads; i++) {
 			getTotalFitnessThreads[i].setVariables(scaledFitness);
-			threads[i] = new Thread(getTotalFitnessThreads[i]);
+			threads[i] = new Thread(getTotalFitnessThreads[i], "Get total fitness thread " + i);
 		}
 		runThreads();
 		
@@ -59,7 +59,7 @@ public class MultiThreading {
 
 		for (int i = 0; i < numThreads; i++) {
 			keepPopulationThreads[i].setVariables(population, newPopulation, scaledFitness, totalFitness);
-			threads[i] = new Thread(keepPopulationThreads[i]);
+			threads[i] = new Thread(keepPopulationThreads[i], "Keep population thread " + i);
 		}
 		runThreads();		
 	}
@@ -69,7 +69,7 @@ public class MultiThreading {
 
 		for (int i = 0; i < numThreads; i++) {
 			mutatePopulationThreads[i].setVariables(population, newPopulation, scaledFitness, totalFitness);
-			threads[i] = new Thread(mutatePopulationThreads[i]);
+			threads[i] = new Thread(mutatePopulationThreads[i], "Mutate population thread " + i);
 		}
 		runThreads();		
 	}
@@ -79,7 +79,7 @@ public class MultiThreading {
 
 		for (int i = 0; i < numThreads; i++) {
 			scaleFitnessThreads[i].setVariables(scaledFitness);
-			threads[i] = new Thread(scaleFitnessThreads[i]);
+			threads[i] = new Thread(scaleFitnessThreads[i], "Scale fitness thread " + i);
 		}
 		runThreads();
 	}

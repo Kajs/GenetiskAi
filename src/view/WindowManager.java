@@ -222,9 +222,7 @@ public class WindowManager {
 	   
 	   JMenuItem testPrintCurrentGameOutput = new JMenuItem("Test - Print current game");
 	   testPrintCurrentGameOutput.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) {
-	    		Launcher.testPrintCurrentGame = !(Launcher.testPrintCurrentGame);
-	    	}
+	    	public void actionPerformed(ActionEvent e) { Launcher.testPrintCurrentGame = Controller.numThreads; }
 	    });
 	   
 	   JMenuItem testUnscaledFitnessOutput = new JMenuItem("Test - Unscaled fitness");

@@ -31,7 +31,7 @@ public class Launcher {
 	public static boolean testFitnessSubset = false;
 	public static boolean testMutateLikelihood = false;
 	public static boolean testMutateLikelihoodRange = false;
-	public static boolean testPrintCurrentGame = false;
+	public static double testPrintCurrentGame = 0;
 	public static boolean testUnscaledFitness = false;
 	public static boolean toggleRoundSeparator = false;
 	
