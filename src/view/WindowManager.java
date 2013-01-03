@@ -150,7 +150,7 @@ public class WindowManager {
 	    	}
 	    });
 	   
-	   JMenuItem toggleRoundSeparator = new JMenuItem("Game - Round separator");
+	   JMenuItem toggleRoundSeparator = new JMenuItem("Game - Round separator_________");
 	   toggleRoundSeparator.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		Launcher.toggleRoundSeparator = !(Launcher.toggleRoundSeparator);

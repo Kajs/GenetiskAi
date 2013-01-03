@@ -226,9 +226,9 @@ public class GameThread implements Runnable {
 			case 0:
 				return Color.LIGHT_GRAY;
 			case 1:
-				return Color.PINK;
-			case 2:
 				return Color.MAGENTA;
+			case 2:
+				return Color.PINK;
 			}
 		case 1:
 			switch(aiType) {
