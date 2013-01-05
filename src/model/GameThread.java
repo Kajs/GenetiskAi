@@ -30,12 +30,10 @@ public class GameThread implements Runnable {
 	private int bestTeam;
 	private double[] bestFitness = new double[3];
 	private double[] vsBestFitness = new double[3];
-	private double[] tm1ScenarioSummedFitness = new double[3];
-	private double[] tm2ScenarioSummedFitness = new double[3];
+	private double[] tm1ScenarioAvrFitness = new double[3];
+	private double[] tm2ScenarioAvrFitness = new double[3];
 	private double[] tm1GameAvrFitness = new double[3];
 	private double[] tm2GameAvrFitness = new double[3];
-	private double[] tm1GameSummedFitness = new double[3];
-	private double[] tm2GameSummedFitness = new double[3];
 	private int scenarioCounter;
 	
 	private Scenario[] scenarios;
@@ -63,8 +61,6 @@ public class GameThread implements Runnable {
 		fillArray(vsBestFitness, (int)Math.pow(-2, 31));
 		fillArray(tm1GameAvrFitness, 0);
 		fillArray(tm2GameAvrFitness, 0);
-		fillArray(tm1GameSummedFitness, 0);
-		fillArray(tm2GameSummedFitness, 0);
 		bestTeam = 0;
 		
 		for (int team = firstTeam; team < lastTeam; team++) {
@@ -78,10 +74,10 @@ public class GameThread implements Runnable {
 			}
 			
 			//System.out.println("Game " + i + ", team number " + lastAi + "_____________________________");
-			fillArray(tm1ScenarioSummedFitness, 0);
-			fillArray(tm2ScenarioSummedFitness, 0);
+			fillArray(tm1ScenarioAvrFitness, 0);
+			fillArray(tm2ScenarioAvrFitness, 0);
 			
-			scenarioCounter = 0;	
+			scenarioCounter = 0;
 			
 			for (int i = 0; i < scenarios.length; i++) {
 				if(scenarios[i] == null) { continue; }
@@ -96,30 +92,39 @@ public class GameThread implements Runnable {
 			    
 			} //not reversed team 2 starts
 				
-				int individualScenarioCounter = scenarioCounter;
-				if (allDifficulties) {individualScenarioCounter = individualScenarioCounter / 3; }
+				if (allDifficulties) {scenarioCounter = scenarioCounter / 3; }
 				for (int s = 0; s < 3; s++) { 
-					tm1GameSummedFitness[s] += tm1ScenarioSummedFitness[s] / individualScenarioCounter;
-					tm2GameSummedFitness[s] += tm2ScenarioSummedFitness[s] / individualScenarioCounter;
+					tm1ScenarioAvrFitness[s] = tm1ScenarioAvrFitness[s] / scenarioCounter;
+					tm2ScenarioAvrFitness[s] = tm2ScenarioAvrFitness[s] / scenarioCounter;
+					tm1GameAvrFitness[s] += tm1ScenarioAvrFitness[s];
+					tm2GameAvrFitness[s] += tm2ScenarioAvrFitness[s];
 				}
 				
-				if(averageFitness(tm1ScenarioSummedFitness)/scenarioCounter >= averageFitness(bestFitness)) {
+				if(averageFitness(tm1ScenarioAvrFitness) >= averageFitness(bestFitness)) {
 					for (int s = 0; s < 3; s++) { 
-						bestFitness[s] = tm1ScenarioSummedFitness[s] / individualScenarioCounter;
-						vsBestFitness[s] = tm2ScenarioSummedFitness[s] / individualScenarioCounter;
+						bestFitness[s] = tm1ScenarioAvrFitness[s];
+						vsBestFitness[s] = tm2ScenarioAvrFitness[s];
 					}
 					bestTeam = team;
 				}
 				
-				team1Fitness[team] = averageFitness(tm1ScenarioSummedFitness) / scenarioCounter;
+				if(team == team1Fitness.length - 1) {
+					for (int i = 0; i < 3; i++) {
+						System.out.println("Calculated at " + i + ": " + tm1ScenarioAvrFitness[i]);
+					}
+					for (int i = 0; i < 3; i++) {
+						System.out.println("Best at " + i + ": " + bestFitness[i]);
+					}
+				}
+				team1Fitness[team] = averageFitness(tm1ScenarioAvrFitness);
 				
 				if (Launcher.testPrintCurrentGame > 0 && !hasPrintedCurrentGame) { Launcher.testPrintCurrentGame--; System.out.println(Thread.currentThread().getName() + " has completed game " + team); hasPrintedCurrentGame = true;}
 				if (Launcher.testPrintCurrentGame == 0) { hasPrintedCurrentGame = false; }
 		}
 		
 		for (int s = 0; s < 3; s++) { 
-			tm1GameAvrFitness[s] = tm1GameSummedFitness[s] / (lastTeam - firstTeam);
-			tm2GameAvrFitness[s] = tm2GameSummedFitness[s] / (lastTeam - firstTeam);
+			tm1GameAvrFitness[s] = tm1GameAvrFitness[s] / (lastTeam - firstTeam);
+			tm2GameAvrFitness[s] = tm2GameAvrFitness[s] / (lastTeam - firstTeam);
 		}
 		
 		//System.out.println("totalFit " + totalFitness + ", tm1Avr " + tm1GameAvrFit + ", tm2Avr " + tm2GameAvrFit);
@@ -304,8 +309,8 @@ public class GameThread implements Runnable {
 		
 		double[][] results = gameState.newGame(maxRounds, switchStartTeam);
 	    
-	    tm1ScenarioSummedFitness[enemyDifficulty] += geneticAlgorithm.fitness(results[0]);
-	    tm2ScenarioSummedFitness[enemyDifficulty] += geneticAlgorithm.fitness(results[1]);
+	    tm1ScenarioAvrFitness[enemyDifficulty] += geneticAlgorithm.fitness(results[0]);
+	    tm2ScenarioAvrFitness[enemyDifficulty] += geneticAlgorithm.fitness(results[1]);
 	}
 	
 	private double averageFitness(double[] arr) {

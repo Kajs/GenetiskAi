@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 import static java.lang.Math.toRadians;
@@ -192,6 +191,13 @@ public class Controller {
 		double[] team1Fitness = new double[populationSize];
 		
 		for (int generation = 0; generation < maxGenerations && !Launcher.stop; generation++) {
+			if(Launcher.insertStoredTeam) {	
+				readStoredDescriptions();
+				readStoredTeams();
+				team1[team1.length-1] = storedTeams[Launcher.insertStoredTeamPosition]; 
+				Launcher.insertStoredTeam = false;
+			}
+			
 			displayGames(true);
 			lastGeneration = generation;
 			double[] tm1AvrFit = new double[3];
