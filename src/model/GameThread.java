@@ -108,14 +108,6 @@ public class GameThread implements Runnable {
 					bestTeam = team;
 				}
 				
-				if(team == team1Fitness.length - 1) {
-					for (int i = 0; i < 3; i++) {
-						System.out.println("Calculated at " + i + ": " + tm1ScenarioAvrFitness[i]);
-					}
-					for (int i = 0; i < 3; i++) {
-						System.out.println("Best at " + i + ": " + bestFitness[i]);
-					}
-				}
 				team1Fitness[team] = averageFitness(tm1ScenarioAvrFitness);
 				
 				if (Launcher.testPrintCurrentGame > 0 && !hasPrintedCurrentGame) { Launcher.testPrintCurrentGame--; System.out.println(Thread.currentThread().getName() + " has completed game " + team); hasPrintedCurrentGame = true;}
