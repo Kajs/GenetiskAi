@@ -27,14 +27,17 @@ public class GameThread implements Runnable {
 	private int testStaticDifficulty;
 	private boolean allDifficulties;
 	
-	private double bestFitness;
-	private double[] vsBestFitness;
 	private int bestTeam;
-	private double tm1GameAvrFit;
-	private double[] tm2GameAvrFit;
-	private double tm1ScenarioSummedFit;
-	private double[] tm2ScenarioSummedFit;
-	private double fitScale;
+	private int bestTeamFactor;
+	private double[] bestFitness = new double[3];
+	private double[] vsBestFitness = new double[3];
+	private double[] tm1ScenarioSummedFitness = new double[3];
+	private double[] tm2ScenarioSummedFitness = new double[3];
+	private double[] tm1GameAvrFitness = new double[3];
+	private double[] tm2GameAvrFitness = new double[3];
+	private double[] tm1GameSummedFitness = new double[3];
+	private double[] tm2GameSummedFitness = new double[3];
+	private int scenarioCounter;
 	
 	private Scenario[] scenarios;
 	
@@ -57,12 +60,15 @@ public class GameThread implements Runnable {
 	}
 	
 	public void run() {
-		bestFitness = (int)Math.pow(-2, 31);
-		vsBestFitness = new double[3];
-		for (int b = 0; b < 3; b++) { vsBestFitness[b] = (int)Math.pow(-2, 31); }
+		fillArray(bestFitness, (int)Math.pow(-2, 31));
+		fillArray(vsBestFitness, (int)Math.pow(-2, 31));
+		fillArray(tm1GameAvrFitness, 0);
+		fillArray(tm2GameAvrFitness, 0);
+		fillArray(tm1GameSummedFitness, 0);
+		fillArray(tm2GameSummedFitness, 0);
 		bestTeam = 0;
-		double tm1GameSummedFitness = 0;
-		double[] tm2GameSummedFitness = new double[3];
+		if(allDifficulties) { bestTeamFactor = 3; }
+		else { bestTeamFactor = 1; }
 		
 		for (int team = firstTeam; team < lastTeam; team++) {
 			
@@ -75,9 +81,10 @@ public class GameThread implements Runnable {
 			}
 			
 			//System.out.println("Game " + i + ", team number " + lastAi + "_____________________________");
-			tm1ScenarioSummedFit = 0;
-			tm2ScenarioSummedFit = new double[3];
-			fitScale = 0;	
+			fillArray(tm1ScenarioSummedFitness, 0);
+			fillArray(tm2ScenarioSummedFitness, 0);
+			
+			scenarioCounter = 0;	
 			
 			for (int i = 0; i < scenarios.length; i++) {
 				if(scenarios[i] == null) { continue; }
@@ -88,46 +95,50 @@ public class GameThread implements Runnable {
 				if(Launcher.allowBestTeamsFitnessOutput) {System.out.println("\nTeam " + (team + 1) + " with fitness " + round(team1Fitness[team], 3) + " in scenario " + (i + 1) + "\n");}
 				
 				if(!allDifficulties) { runAllGames(enemyDifficulty); }
-				else {
-					runAllGames(0);
-					runAllGames(1);
-					runAllGames(2);
-				}
+				else { runAllGames(0); runAllGames(1); runAllGames(2); }
 			    
 			} //not reversed team 2 starts
 				
-				tm1GameSummedFitness = tm1GameSummedFitness + tm1ScenarioSummedFit/fitScale;
+				int individualScenarioCounter = scenarioCounter;
+				if (allDifficulties) {individualScenarioCounter = individualScenarioCounter / 3; }
+				for (int s = 0; s < 3; s++) { 
+					tm1GameSummedFitness[s] += tm1ScenarioSummedFitness[s] / individualScenarioCounter;
+					tm2GameSummedFitness[s] += tm2ScenarioSummedFitness[s] / individualScenarioCounter;
+				}
 				
-				double staticFitScale = fitScale;
-				if (allDifficulties) {staticFitScale = staticFitScale / 3; }
-				for (int s = 0; s < 3; s++) { tm2GameSummedFitness[s] += tm2ScenarioSummedFit[s]/staticFitScale; }
-				
-				if(tm1ScenarioSummedFit/fitScale >= bestFitness) {
-					bestFitness = tm1ScenarioSummedFit/fitScale;
-					for (int s = 0; s < 3; s++) { vsBestFitness[s] = tm2ScenarioSummedFit[s]/staticFitScale; }
+				if(arrayAverage(tm1ScenarioSummedFitness, bestTeamFactor)/scenarioCounter >= arrayAverage(bestFitness, bestTeamFactor)) {
+					for (int s = 0; s < 3; s++) { 
+						bestFitness[s] = tm1ScenarioSummedFitness[s] / individualScenarioCounter;
+						vsBestFitness[s] = tm2ScenarioSummedFitness[s] / individualScenarioCounter;
+					}
 					bestTeam = team;
 				}
 				
-				team1Fitness[team] = tm1ScenarioSummedFit/fitScale;
+				team1Fitness[team] = arrayAverage(tm1ScenarioSummedFitness, bestTeamFactor) / scenarioCounter;
 				
 				if (Launcher.testPrintCurrentGame > 0 && !hasPrintedCurrentGame) { Launcher.testPrintCurrentGame--; System.out.println(Thread.currentThread().getName() + " has completed game " + team); hasPrintedCurrentGame = true;}
 				if (Launcher.testPrintCurrentGame == 0) { hasPrintedCurrentGame = false; }
 		}
 		
-		tm1GameAvrFit = tm1GameSummedFitness / (lastTeam - firstTeam);
-		tm2GameAvrFit = new double[3];
-		for (int s = 0; s < 3; s++) { tm2GameAvrFit[s] = tm2GameSummedFitness[s] / (lastTeam - firstTeam); }
+		for (int s = 0; s < 3; s++) { 
+			tm1GameAvrFitness[s] = tm1GameSummedFitness[s] / (lastTeam - firstTeam);
+			tm2GameAvrFitness[s] = tm2GameSummedFitness[s] / (lastTeam - firstTeam);
+		}
 		
+		
+		if(Launcher.individualGeneticFitnessValues && allDifficulties) { for (int i = 0; i < 3; i++) { 
+			System.out.println("bestFitness[" + i + "] = " + bestFitness[i] + ", vsBestFitness[" + i + "] = " + vsBestFitness[i]); 
+		}}
 		//System.out.println("totalFit " + totalFitness + ", tm1Avr " + tm1GameAvrFit + ", tm2Avr " + tm2GameAvrFit);
     }
 	
 	public void setTeam1(double[][][][] team1) {this.team1 = team1; }
 	public void setTeam1Fitness(double[] team1Fitness) { this.team1Fitness = team1Fitness; }
 	
-	public double getBestFitness() { return bestFitness; }
+	public double getBestFitness() { return arrayAverage(bestFitness, bestTeamFactor); }
 	public int getBestTeam() { return bestTeam; }
-	public double getTeam1AverageFitness() { return tm1GameAvrFit; }
-	public double[] getTeam2AverageFitness() { return tm2GameAvrFit; }
+	public double getTeam1AverageFitness() { return arrayAverage(tm1GameAvrFitness, bestTeamFactor); }
+	public double[] getTeam2AverageFitness() { return tm2GameAvrFitness; }
 	public double[] getVsBestFitness() { return vsBestFitness; }
 	
 	private void insertGeneticAis(double[][][] geneticAis, Coordinate[][] geneticPositions, int team) {
@@ -280,7 +291,7 @@ public class GameThread implements Runnable {
 		}
 		
 		gameState.reset();
-		fitScale += 1;
+		scenarioCounter += 1;
 		
 		//insert genetic or static ais as team 1. Normal is geneticPositions, reversed is staticPositions
 		if(testingStatics) {
@@ -299,10 +310,19 @@ public class GameThread implements Runnable {
 		else { insertStaticAis(enemyDifficulty, staticPositions, 2); }
 		
 		double[][] results = gameState.newGame(maxRounds, switchStartTeam);
-		double tm1Result = geneticAlgorithm.fitness(results[0]);
-		double tm2Result = geneticAlgorithm.fitness(results[1]);
 	    
-	    tm1ScenarioSummedFit += tm1Result;
-	    tm2ScenarioSummedFit[enemyDifficulty] += tm2Result;
+	    tm1ScenarioSummedFitness[enemyDifficulty] += geneticAlgorithm.fitness(results[0]);
+	    tm2ScenarioSummedFitness[enemyDifficulty] += geneticAlgorithm.fitness(results[1]);
+	}
+	
+	private double arrayAverage(double[] arr, int factor) {
+		int l = arr.length;
+		double total = 0;
+		for (int i = 0; i < l; i++) { total += arr[i]; }
+		return total / factor;
+	}
+	
+	private void fillArray(double[] arr, int val) {
+		for (int i = 0; i < arr.length; i++) { arr[i] = val; }
 	}
 }

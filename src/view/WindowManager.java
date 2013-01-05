@@ -143,6 +143,13 @@ public class WindowManager {
 	    	}
 	    });
 	   
+	   JMenuItem toggleIndividualFitnessValuesOutput = new JMenuItem("Game - Individual genetic fitness values");
+	   toggleIndividualFitnessValuesOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.individualGeneticFitnessValues = !(Launcher.individualGeneticFitnessValues);
+	    	}
+	    });
+	   
 	   JMenuItem toggleNormalDamageOutput = new JMenuItem("Game - Normal damage");
 	   toggleNormalDamageOutput.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
@@ -188,7 +195,7 @@ public class WindowManager {
 	   JMenuItem testCountIdenticalFitnessValuesOutput = new JMenuItem("Test - Count identical fitness values");
 	   testCountIdenticalFitnessValuesOutput.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
-	    		Launcher.countIdenticalFitnessValues = !(Launcher.countIdenticalFitnessValues);
+	    		Launcher.countDuplicateFitnessValues = !(Launcher.countDuplicateFitnessValues);
 	    	}
 	    });
 	   
@@ -220,16 +227,16 @@ public class WindowManager {
 	    	}
 	    });
 	   
-	   JMenuItem testPrintCurrentGameOutput = new JMenuItem("Test - Print current game");
-	   testPrintCurrentGameOutput.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) { Launcher.testPrintCurrentGame = Controller.numThreads; }
-	    });
-	   
 	   JMenuItem testUnscaledFitnessOutput = new JMenuItem("Test - Unscaled fitness");
 	   testUnscaledFitnessOutput.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		Launcher.testUnscaledFitness = !(Launcher.testUnscaledFitness);
 	    	}
+	    });
+	   
+	   JMenuItem testPrintCurrentGameOutput = new JMenuItem("Print current game");
+	   testPrintCurrentGameOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) { Launcher.testPrintCurrentGame = Controller.numThreads; }
 	    });
 	   
 	   JMenuItem printLine = new JMenuItem("Print new line");
@@ -450,9 +457,9 @@ public class WindowManager {
 	   
 	   JMenu file = new JMenu("File");
 	   file.add(insertStoredTeam);
-	   file.add(printStoredDescriptions);
 	   file.add(reloadStoredTeams);
 	   file.add(saveTeamToFile);
+	   file.add(printStoredDescriptions);
 	   
 	   JMenu output = new JMenu("Output");
 	   output.add(toggleActionOutput);
@@ -460,6 +467,7 @@ public class WindowManager {
 	   output.add(toggleBestTeamsFitnessOutput);
 	   output.add(toggleBoostOutput);
 	   output.add(toggleHealOutput);
+	   output.add(toggleIndividualFitnessValuesOutput);
 	   output.add(toggleHpOutput);
 	   output.add(toggleNormalDamageOutput);
 	   output.add(toggleShieldOutput);
@@ -472,8 +480,8 @@ public class WindowManager {
 	   output.add(testFitnessSubsetOutput);
 	   output.add(testMutateLikelihoodOutput);
 	   output.add(testMutateLikelihoodRangeOutput);
-	   output.add(testPrintCurrentGameOutput);
 	   output.add(testUnscaledFitnessOutput);
+	   output.add(testPrintCurrentGameOutput);
 	   output.add(printLine);
 	   
 	   JMenu speed = new JMenu("Speed");

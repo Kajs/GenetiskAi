@@ -18,8 +18,9 @@ public class Launcher {
 	public static boolean allowRoundFitnessOutput = false;
 	public static boolean allowShieldOutput = false;
 	public static boolean allowStunOutput = false;
-	public static boolean countIdenticalFitnessValues = false;
+	public static boolean countDuplicateFitnessValues = false;
 	public static boolean displayAutomatic = true;
+	public static boolean individualGeneticFitnessValues = false;
 	public static boolean insertStoredTeam = false;
 	public static int insertStoredTeamPosition = 0;
 	public static boolean isAutomatic = true;
