@@ -143,6 +143,13 @@ public class WindowManager {
 	    	}
 	    });
 	   
+	   JMenuItem toggleIndividualFitnessValuesOutput = new JMenuItem("Game - Individual genetic fitness values");
+	   toggleIndividualFitnessValuesOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.individualGeneticFitnessValues = !(Launcher.individualGeneticFitnessValues);
+	    	}
+	    });
+	   
 	   JMenuItem toggleNormalDamageOutput = new JMenuItem("Game - Normal damage");
 	   toggleNormalDamageOutput.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
@@ -460,6 +467,7 @@ public class WindowManager {
 	   output.add(toggleBestTeamsFitnessOutput);
 	   output.add(toggleBoostOutput);
 	   output.add(toggleHealOutput);
+	   output.add(toggleIndividualFitnessValuesOutput);
 	   output.add(toggleHpOutput);
 	   output.add(toggleNormalDamageOutput);
 	   output.add(toggleShieldOutput);
