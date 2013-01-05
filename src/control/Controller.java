@@ -194,23 +194,26 @@ public class Controller {
 		for (int generation = 0; generation < maxGenerations && !Launcher.stop; generation++) {
 			displayGames(true);
 			lastGeneration = generation;
-			double tm1AvrFit = 0;
+			double[] tm1AvrFit = new double[3];
 			double[] tm2AvrFit = new double[3];
-			double bestFitness = (int)Math.pow(-2, 31);
+			double[] bestFitness = new double[3];
+			for(int i = 0; i < 3; i++) { bestFitness[i] = (int)Math.pow(-2, 31); }
 			double[] vsBestFitness = new double[3];
 			int bestTeam = 0;
 			
 			multiThreading.runGameThreads(gameThreads, team1, team1Fitness);
 			
 			for (int i = 0; i < numThreads; i++) {
-				tm1AvrFit += gameThreads[i].getTeam1AverageFitness() / numThreads;
-				for (int s = 0; s < 3; s++) { tm2AvrFit[s] += gameThreads[i].getTeam2AverageFitness()[s] / numThreads; }
-				double gameThreadBestFitness = gameThreads[i].getBestFitness();
-				int gameThreadBestTeam = gameThreads[i].getBestTeam();
-				if(gameThreadBestFitness > bestFitness) {
+				for (int s = 0; s < 3; s++) { 
+					tm1AvrFit[s] += gameThreads[i].getTeam1AverageFitness()[s] / numThreads;
+					tm2AvrFit[s] += gameThreads[i].getTeam2AverageFitness()[s] / numThreads; 
+				}
+				double[] gameThreadBestFitness = gameThreads[i].getBestFitness();
+
+				if(averageFitness(gameThreadBestFitness) > averageFitness(bestFitness)) {
 					bestFitness = gameThreadBestFitness;
 					vsBestFitness = gameThreads[i].getVsBestFitness();
-					bestTeam = gameThreadBestTeam;
+					bestTeam = gameThreads[i].getBestTeam();
 				}
 			}
 			
@@ -218,18 +221,19 @@ public class Controller {
 			
 			bestTeams[generation] = team1[bestTeam];
 			
-			bestTeamsFitness[generation] = bestFitness;
+			bestTeamsFitness[generation] = averageFitness(bestFitness);
 			vsBestTeamsFitness[generation] = vsBestFitness;
 
-			tm1FinalAvrFit = tm1FinalAvrFit + tm1AvrFit;
+			tm1FinalAvrFit = tm1FinalAvrFit + averageFitness(tm1AvrFit);
 			for (int s = 0; s < 3; s++) { tm2FinalAvrFit[s] += tm2AvrFit[s]; }
 			
-			team1PopulationFitness[generation] = tm1AvrFit;
+			team1PopulationFitness[generation] = averageFitness(tm1AvrFit);
 			team2PopulationFitness[generation] = tm2AvrFit;
 			
+			individualFitnessOutput(bestFitness, vsBestFitness);
 			generationOutput(generation, bestFitness, vsBestFitness, tm1AvrFit, tm2AvrFit);
 			
-			if(adaptiveMutateLikelihood) { monitorFitness(bestFitness); }
+			if(adaptiveMutateLikelihood) { monitorFitness(averageFitness(bestFitness)); }
 			team1 = geneticAlgorithm.newPopulation(team1, team1Fitness, elitism, bestTeam);
 		}
 		
@@ -255,15 +259,15 @@ public class Controller {
 		else { geneticAlgorithm.updateMutateProbability(); }
 	}
 		
-	private void generationOutput(int generation, double bestFitness, double[] vsBestFitness, double tm1AvrFit, double[] tm2AvrFit) {
-		String output = "Generation " + (generation + 1) + " t1B " + round(bestFitness, 3);
+	private void generationOutput(int generation, double[] bestFitness, double[] vsBestFitness, double tm1AvrFit[], double[] tm2AvrFit) {
+		String output = "Generation " + (generation + 1) + " t1B " + round(averageFitness(bestFitness), 3);
 		if (!allDifficulties) { output += ", vsB " + round(vsBestFitness[enemyDifficulty], 3); }
 		else {
 			output += ", vsB_B " + round(vsBestFitness[0], 3);
 			output += ", vsB_M " + round(vsBestFitness[1], 3);
 			output += ", vsB_H " + round(vsBestFitness[2], 3);
 		}
-		output += ", t1_A = " + round(tm1AvrFit, 3);
+		output += ", t1_A = " + round(averageFitness(tm1AvrFit), 3);
 		if (!allDifficulties) { output += ", t2_A = " + round(tm2AvrFit[enemyDifficulty], 3); }
 		else {
 			output += ", t2_A_B = " + round(tm2AvrFit[0], 3);
@@ -271,6 +275,13 @@ public class Controller {
 			output += ", t2_A_H = " + round(tm2AvrFit[2], 3);
 		}
 		System.out.println(output);
+	}
+	
+	private void individualFitnessOutput(double[] bestFitness, double[] vsBestFitness) {
+		if(Launcher.testIndividualFitnessValues && allDifficulties) { 
+			for (int i = 0; i < 3; i++) { System.out.println("bestFitness[" + i + "] = " + bestFitness[i] + ", vsBestFitness[" + i + "] = " + vsBestFitness[i]);
+			}
+		}
 	}
 	
 	private void displayGames(boolean whileSimulating) {
@@ -477,8 +488,14 @@ public class Controller {
 	    return (double) tmp / factor;
 	}
 	
-	public double[][][][] getBestTeams() {
-		return bestTeams;
+	public double[][][][] getBestTeams() { return bestTeams; }
+	
+	private double averageFitness(double[] arr) {
+		int l = arr.length;
+		double total = 0;
+		for (int i = 0; i < l; i++) { total += arr[i]; }
+		if(allDifficulties) { return total / 3; }
+		else { return arr[enemyDifficulty]; }
 	}
 	
 	//_________________________________JFreeChart section

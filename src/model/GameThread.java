@@ -28,7 +28,6 @@ public class GameThread implements Runnable {
 	private boolean allDifficulties;
 	
 	private int bestTeam;
-	private int bestTeamFactor;
 	private double[] bestFitness = new double[3];
 	private double[] vsBestFitness = new double[3];
 	private double[] tm1ScenarioSummedFitness = new double[3];
@@ -67,8 +66,6 @@ public class GameThread implements Runnable {
 		fillArray(tm1GameSummedFitness, 0);
 		fillArray(tm2GameSummedFitness, 0);
 		bestTeam = 0;
-		if(allDifficulties) { bestTeamFactor = 3; }
-		else { bestTeamFactor = 1; }
 		
 		for (int team = firstTeam; team < lastTeam; team++) {
 			
@@ -106,7 +103,7 @@ public class GameThread implements Runnable {
 					tm2GameSummedFitness[s] += tm2ScenarioSummedFitness[s] / individualScenarioCounter;
 				}
 				
-				if(arrayAverage(tm1ScenarioSummedFitness, bestTeamFactor)/scenarioCounter >= arrayAverage(bestFitness, bestTeamFactor)) {
+				if(averageFitness(tm1ScenarioSummedFitness)/scenarioCounter >= averageFitness(bestFitness)) {
 					for (int s = 0; s < 3; s++) { 
 						bestFitness[s] = tm1ScenarioSummedFitness[s] / individualScenarioCounter;
 						vsBestFitness[s] = tm2ScenarioSummedFitness[s] / individualScenarioCounter;
@@ -114,7 +111,7 @@ public class GameThread implements Runnable {
 					bestTeam = team;
 				}
 				
-				team1Fitness[team] = arrayAverage(tm1ScenarioSummedFitness, bestTeamFactor) / scenarioCounter;
+				team1Fitness[team] = averageFitness(tm1ScenarioSummedFitness) / scenarioCounter;
 				
 				if (Launcher.testPrintCurrentGame > 0 && !hasPrintedCurrentGame) { Launcher.testPrintCurrentGame--; System.out.println(Thread.currentThread().getName() + " has completed game " + team); hasPrintedCurrentGame = true;}
 				if (Launcher.testPrintCurrentGame == 0) { hasPrintedCurrentGame = false; }
@@ -125,19 +122,15 @@ public class GameThread implements Runnable {
 			tm2GameAvrFitness[s] = tm2GameSummedFitness[s] / (lastTeam - firstTeam);
 		}
 		
-		
-		if(Launcher.individualGeneticFitnessValues && allDifficulties) { for (int i = 0; i < 3; i++) { 
-			System.out.println("bestFitness[" + i + "] = " + bestFitness[i] + ", vsBestFitness[" + i + "] = " + vsBestFitness[i]); 
-		}}
 		//System.out.println("totalFit " + totalFitness + ", tm1Avr " + tm1GameAvrFit + ", tm2Avr " + tm2GameAvrFit);
     }
 	
 	public void setTeam1(double[][][][] team1) {this.team1 = team1; }
 	public void setTeam1Fitness(double[] team1Fitness) { this.team1Fitness = team1Fitness; }
 	
-	public double getBestFitness() { return arrayAverage(bestFitness, bestTeamFactor); }
+	public double[] getBestFitness() { return bestFitness; }
 	public int getBestTeam() { return bestTeam; }
-	public double getTeam1AverageFitness() { return arrayAverage(tm1GameAvrFitness, bestTeamFactor); }
+	public double[] getTeam1AverageFitness() { return tm1GameAvrFitness; }
 	public double[] getTeam2AverageFitness() { return tm2GameAvrFitness; }
 	public double[] getVsBestFitness() { return vsBestFitness; }
 	
@@ -315,14 +308,13 @@ public class GameThread implements Runnable {
 	    tm2ScenarioSummedFitness[enemyDifficulty] += geneticAlgorithm.fitness(results[1]);
 	}
 	
-	private double arrayAverage(double[] arr, int factor) {
+	private double averageFitness(double[] arr) {
 		int l = arr.length;
 		double total = 0;
 		for (int i = 0; i < l; i++) { total += arr[i]; }
-		return total / factor;
+		if(allDifficulties) { return total / 3; }
+		else { return arr[enemyDifficulty]; }
 	}
 	
-	private void fillArray(double[] arr, int val) {
-		for (int i = 0; i < arr.length; i++) { arr[i] = val; }
-	}
+	private void fillArray(double[] arr, int val) { for (int i = 0; i < arr.length; i++) { arr[i] = val; }}
 }

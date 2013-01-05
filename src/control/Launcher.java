@@ -20,7 +20,6 @@ public class Launcher {
 	public static boolean allowStunOutput = false;
 	public static boolean countDuplicateFitnessValues = false;
 	public static boolean displayAutomatic = true;
-	public static boolean individualGeneticFitnessValues = false;
 	public static boolean insertStoredTeam = false;
 	public static int insertStoredTeamPosition = 0;
 	public static boolean isAutomatic = true;
@@ -30,6 +29,7 @@ public class Launcher {
 	public static int switchBestTeamNumber = 0;
 	public static boolean testDrasticLikelihood = false;
 	public static boolean testFitnessSubset = false;
+	public static boolean testIndividualFitnessValues = false;
 	public static boolean testMutateLikelihood = false;
 	public static boolean testMutateLikelihoodRange = false;
 	public static double testPrintCurrentGame = 0;

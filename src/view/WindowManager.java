@@ -143,13 +143,6 @@ public class WindowManager {
 	    	}
 	    });
 	   
-	   JMenuItem toggleIndividualFitnessValuesOutput = new JMenuItem("Game - Individual genetic fitness values");
-	   toggleIndividualFitnessValuesOutput.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) {
-	    		Launcher.individualGeneticFitnessValues = !(Launcher.individualGeneticFitnessValues);
-	    	}
-	    });
-	   
 	   JMenuItem toggleNormalDamageOutput = new JMenuItem("Game - Normal damage");
 	   toggleNormalDamageOutput.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
@@ -210,6 +203,13 @@ public class WindowManager {
 	   testFitnessSubsetOutput.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent e) {
 	    		Launcher.testFitnessSubset = !(Launcher.testFitnessSubset);
+	    	}
+	    });
+	   
+	   JMenuItem testIndividualFitnessValuesOutput = new JMenuItem("Test - Individual fitness values");
+	   testIndividualFitnessValuesOutput.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		Launcher.testIndividualFitnessValues = !(Launcher.testIndividualFitnessValues);
 	    	}
 	    });
 	   
@@ -467,7 +467,6 @@ public class WindowManager {
 	   output.add(toggleBestTeamsFitnessOutput);
 	   output.add(toggleBoostOutput);
 	   output.add(toggleHealOutput);
-	   output.add(toggleIndividualFitnessValuesOutput);
 	   output.add(toggleHpOutput);
 	   output.add(toggleNormalDamageOutput);
 	   output.add(toggleShieldOutput);
@@ -478,6 +477,7 @@ public class WindowManager {
 	   output.add(testCountIdenticalFitnessValuesOutput);
 	   output.add(testDrasticLikelihoodOutput);
 	   output.add(testFitnessSubsetOutput);
+	   output.add(testIndividualFitnessValuesOutput);
 	   output.add(testMutateLikelihoodOutput);
 	   output.add(testMutateLikelihoodRangeOutput);
 	   output.add(testUnscaledFitnessOutput);
