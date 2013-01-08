@@ -286,7 +286,7 @@ public class Controller {
 	private void individualFitnessOutput(double[] bestFitness, double[] vsBestFitness) {
 		if(Launcher.testIndividualFitnessValues) { 
 			for (int i = 0; i < 3; i++) { 
-				if(allDifficulties || !allDifficulties && i == enemyDifficulty) {
+				if(i == enemyDifficulty || allDifficulties) {
 					System.out.println("bestFitness[" + i + "] = " + bestFitness[i] + ", vsBestFitness[" + i + "] = " + vsBestFitness[i]);
 				}
 			}
@@ -504,7 +504,7 @@ public class Controller {
 		double total = 0;
 		
 		for (int i = 0; i < l; i++) { 
-			if(allDifficulties || !allDifficulties && i == enemyDifficulty) { total += arr[i]; } 
+			if(i == enemyDifficulty || allDifficulties) { total += arr[i]; } 
 		}
 		if(allDifficulties) { return total / 3; }
 		else { return total; }

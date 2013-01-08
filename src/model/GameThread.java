@@ -310,7 +310,7 @@ public class GameThread implements Runnable {
 		double total = 0;
 		
 		for (int i = 0; i < l; i++) { 
-			if(allDifficulties || !allDifficulties && i == enemyDifficulty) { total += arr[i]; } 
+			if(i == enemyDifficulty || allDifficulties) { total += arr[i]; } 
 		}
 		if(allDifficulties) { return total / 3; }
 		else { return total; }
