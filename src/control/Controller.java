@@ -60,7 +60,7 @@ public class Controller {
 //____________________________________________________________SCALING
 	final int linearScaling = 0;
 	final int exponentialScaling = 1;
-	final int uncaledScaling = 2;
+	final int unscaledScaling = 2;
 	final int scalingType = exponentialScaling;	
 	final boolean preferUniqueBest = true;              //multiply duplicates by preferUniqueBestFactor
 	final double preferUniqueBestFactor = 0.01;
