@@ -236,8 +236,8 @@ public class Controller {
 			team1PopulationFitness[generation] = averageFitness(tm1AvrFit);
 			team2PopulationFitness[generation] = tm2AvrFit;
 			
-			individualFitnessOutput(bestFitness, vsBestFitness);
 			generationOutput(generation, bestFitness, vsBestFitness, tm1AvrFit, tm2AvrFit);
+			individualFitnessOutput(bestFitness, vsBestFitness);
 			
 			if(adaptiveMutateLikelihood) { monitorFitness(averageFitness(bestFitness)); }
 			team1 = geneticAlgorithm.newPopulation(team1, team1Fitness, elitism, bestTeam);
@@ -284,8 +284,11 @@ public class Controller {
 	}
 	
 	private void individualFitnessOutput(double[] bestFitness, double[] vsBestFitness) {
-		if(Launcher.testIndividualFitnessValues && allDifficulties) { 
-			for (int i = 0; i < 3; i++) { System.out.println("bestFitness[" + i + "] = " + bestFitness[i] + ", vsBestFitness[" + i + "] = " + vsBestFitness[i]);
+		if(Launcher.testIndividualFitnessValues) { 
+			for (int i = 0; i < 3; i++) { 
+				if(allDifficulties || !allDifficulties && i == enemyDifficulty) {
+					System.out.println("bestFitness[" + i + "] = " + bestFitness[i] + ", vsBestFitness[" + i + "] = " + vsBestFitness[i]);
+				}
 			}
 		}
 	}
@@ -499,9 +502,12 @@ public class Controller {
 	private double averageFitness(double[] arr) {
 		int l = arr.length;
 		double total = 0;
-		for (int i = 0; i < l; i++) { total += arr[i]; }
+		
+		for (int i = 0; i < l; i++) { 
+			if(allDifficulties || !allDifficulties && i == enemyDifficulty) { total += arr[i]; } 
+		}
 		if(allDifficulties) { return total / 3; }
-		else { return arr[enemyDifficulty]; }
+		else { return total; }
 	}
 	
 	//_________________________________JFreeChart section

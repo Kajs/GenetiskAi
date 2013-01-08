@@ -100,7 +100,7 @@ public class GameThread implements Runnable {
 					tm2GameAvrFitness[s] += tm2ScenarioAvrFitness[s];
 				}
 				
-				if(averageFitness(tm1ScenarioAvrFitness) >= averageFitness(bestFitness)) {
+				if(averageFitness(tm1ScenarioAvrFitness) > averageFitness(bestFitness) || averageFitness(tm1ScenarioAvrFitness) == averageFitness(bestFitness) && averageFitness(tm2ScenarioAvrFitness) < averageFitness(vsBestFitness)) {
 					for (int s = 0; s < 3; s++) { 
 						bestFitness[s] = tm1ScenarioAvrFitness[s];
 						vsBestFitness[s] = tm2ScenarioAvrFitness[s];
@@ -308,9 +308,12 @@ public class GameThread implements Runnable {
 	private double averageFitness(double[] arr) {
 		int l = arr.length;
 		double total = 0;
-		for (int i = 0; i < l; i++) { total += arr[i]; }
+		
+		for (int i = 0; i < l; i++) { 
+			if(allDifficulties || !allDifficulties && i == enemyDifficulty) { total += arr[i]; } 
+		}
 		if(allDifficulties) { return total / 3; }
-		else { return arr[enemyDifficulty]; }
+		else { return total; }
 	}
 	
 	private void fillArray(double[] arr, int val) { for (int i = 0; i < arr.length; i++) { arr[i] = val; }}
